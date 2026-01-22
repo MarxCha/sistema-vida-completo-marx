@@ -1,0 +1,345 @@
+// src/modules/documents/documents.controller.ts
+import { logger } from '../../common/services/logger.service';
+import { Router, Request, Response } from 'express';
+import multer from 'multer';
+import { body, param, query, validationResult } from 'express-validator';
+import { authMiddleware } from '../../common/guards/auth.middleware';
+import { documentsService, CATEGORY_LABELS } from './documents.service';
+import { DocumentCategory } from '@prisma/client';
+
+const router = Router();
+
+// Configurar multer para almacenar en memoria
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB max
+  },
+  fileFilter: (req, file, cb) => {
+    // Tipos permitidos
+    const allowedTypes = [
+      'application/pdf',
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'image/heic',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
+
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Tipo de archivo no permitido. Use PDF, imágenes (JPG, PNG) o documentos Word.'));
+    }
+  },
+});
+
+// Middleware de autenticación para todos los endpoints
+router.use(authMiddleware);
+
+/**
+ * GET /api/v1/documents
+ * Lista documentos del usuario
+ */
+router.get(
+  '/',
+  query('category').optional().isIn(Object.keys(DocumentCategory)),
+  query('search').optional().isString(),
+  async (req: Request, res: Response) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ success: false, errors: errors.array() });
+      }
+
+      const documents = await documentsService.listDocuments(req.userId!, {
+        category: req.query.category as DocumentCategory | undefined,
+        search: req.query.search as string | undefined,
+      });
+
+      res.json({
+        success: true,
+        data: {
+          documents,
+          categories: CATEGORY_LABELS,
+        },
+      });
+    } catch (error: any) {
+      logger.error('Error listando documentos:', error);
+      res.status(500).json({
+        success: false,
+        error: { 
+          code: 'SERVER_ERROR', 
+          message: error.message || 'Error interno del servidor',
+          details: process.env.NODE_ENV === 'development' ? error : undefined
+        },
+      });
+    }
+  }
+);
+
+/**
+ * GET /api/v1/documents/stats
+ * Estadísticas de documentos
+ */
+router.get('/stats', async (req: Request, res: Response) => {
+  try {
+    const stats = await documentsService.getDocumentStats(req.userId!);
+
+    res.json({
+      success: true,
+      data: { stats },
+    });
+  } catch (error) {
+    logger.error('Error obteniendo estadísticas:', error);
+    res.status(500).json({
+      success: false,
+      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+    });
+  }
+});
+
+/**
+ * GET /api/v1/documents/categories
+ * Lista de categorías disponibles
+ */
+router.get('/categories', (req: Request, res: Response) => {
+  const categories = Object.entries(CATEGORY_LABELS).map(([value, label]) => ({
+    value,
+    label,
+  }));
+
+  res.json({
+    success: true,
+    data: { categories },
+  });
+});
+
+/**
+ * GET /api/v1/documents/:id
+ * Obtiene un documento específico
+ */
+router.get(
+  '/:id',
+  param('id').isUUID(),
+  async (req: Request, res: Response) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ success: false, errors: errors.array() });
+      }
+
+      const document = await documentsService.getDocument(req.userId!, req.params.id);
+
+      if (!document) {
+        return res.status(404).json({
+          success: false,
+          error: { code: 'NOT_FOUND', message: 'Documento no encontrado' },
+        });
+      }
+
+      res.json({
+        success: true,
+        data: { document },
+      });
+    } catch (error) {
+      logger.error('Error obteniendo documento:', error);
+      res.status(500).json({
+        success: false,
+        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      });
+    }
+  }
+);
+
+/**
+ * GET /api/v1/documents/:id/download
+ * Obtiene URL de descarga del documento
+ */
+router.get(
+  '/:id/download',
+  param('id').isUUID(),
+  async (req: Request, res: Response) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ success: false, errors: errors.array() });
+      }
+
+      const downloadUrl = await documentsService.getDownloadUrl(req.userId!, req.params.id);
+
+      if (!downloadUrl) {
+        return res.status(404).json({
+          success: false,
+          error: { code: 'NOT_FOUND', message: 'Documento no encontrado' },
+        });
+      }
+
+      res.json({
+        success: true,
+        data: { downloadUrl },
+      });
+    } catch (error) {
+      logger.error('Error obteniendo URL de descarga:', error);
+      res.status(500).json({
+        success: false,
+        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      });
+    }
+  }
+);
+
+/**
+ * POST /api/v1/documents
+ * Sube un nuevo documento
+ */
+router.post(
+  '/',
+  upload.single('file'),
+  body('title').trim().notEmpty().withMessage('Título requerido'),
+  body('category').isIn(Object.keys(DocumentCategory)).withMessage('Categoría inválida'),
+  body('description').optional().trim(),
+  body('documentDate').optional().isISO8601().toDate(),
+  body('doctorName').optional().trim(),
+  body('institution').optional().trim(),
+  body('isVisible').optional().isBoolean(),
+  async (req: Request, res: Response) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ success: false, errors: errors.array() });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({
+          success: false,
+          error: { code: 'NO_FILE', message: 'Archivo requerido' },
+        });
+      }
+
+      const document = await documentsService.createDocument(
+        req.userId!,
+        {
+          title: req.body.title,
+          description: req.body.description,
+          category: req.body.category as DocumentCategory,
+          documentDate: req.body.documentDate,
+          doctorName: req.body.doctorName,
+          institution: req.body.institution,
+          isVisible: req.body.isVisible === 'true' || req.body.isVisible === true,
+        },
+        {
+          buffer: req.file.buffer,
+          originalname: req.file.originalname,
+          mimetype: req.file.mimetype,
+          size: req.file.size,
+        }
+      );
+
+      res.status(201).json({
+        success: true,
+        message: 'Documento subido exitosamente',
+        data: { document },
+      });
+    } catch (error: any) {
+      logger.error('Error subiendo documento:', error);
+      res.status(500).json({
+        success: false,
+        error: { code: 'UPLOAD_ERROR', message: error.message || 'Error al subir documento' },
+      });
+    }
+  }
+);
+
+/**
+ * PUT /api/v1/documents/:id
+ * Actualiza metadatos de un documento
+ */
+router.put(
+  '/:id',
+  param('id').isUUID(),
+  body('title').optional().trim().notEmpty(),
+  body('category').optional().isIn(Object.keys(DocumentCategory)),
+  body('description').optional().trim(),
+  body('documentDate').optional().isISO8601().toDate(),
+  body('doctorName').optional().trim(),
+  body('institution').optional().trim(),
+  body('isVisible').optional().isBoolean(),
+  async (req: Request, res: Response) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ success: false, errors: errors.array() });
+      }
+
+      const document = await documentsService.updateDocument(req.userId!, req.params.id, {
+        title: req.body.title,
+        description: req.body.description,
+        category: req.body.category as DocumentCategory,
+        documentDate: req.body.documentDate,
+        doctorName: req.body.doctorName,
+        institution: req.body.institution,
+        isVisible: req.body.isVisible,
+      });
+
+      if (!document) {
+        return res.status(404).json({
+          success: false,
+          error: { code: 'NOT_FOUND', message: 'Documento no encontrado' },
+        });
+      }
+
+      res.json({
+        success: true,
+        message: 'Documento actualizado exitosamente',
+        data: { document },
+      });
+    } catch (error) {
+      logger.error('Error actualizando documento:', error);
+      res.status(500).json({
+        success: false,
+        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      });
+    }
+  }
+);
+
+/**
+ * DELETE /api/v1/documents/:id
+ * Elimina un documento
+ */
+router.delete(
+  '/:id',
+  param('id').isUUID(),
+  async (req: Request, res: Response) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ success: false, errors: errors.array() });
+      }
+
+      const deleted = await documentsService.deleteDocument(req.userId!, req.params.id);
+
+      if (!deleted) {
+        return res.status(404).json({
+          success: false,
+          error: { code: 'NOT_FOUND', message: 'Documento no encontrado' },
+        });
+      }
+
+      res.json({
+        success: true,
+        message: 'Documento eliminado exitosamente',
+      });
+    } catch (error) {
+      logger.error('Error eliminando documento:', error);
+      res.status(500).json({
+        success: false,
+        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      });
+    }
+  }
+);
+
+export default router;

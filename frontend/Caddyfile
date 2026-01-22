@@ -1,0 +1,23 @@
+:3000 {
+    root * /app/dist
+    
+    # Proper MIME types for JavaScript modules
+    @js path *.js *.mjs
+    header @js Content-Type "application/javascript"
+    
+    # SPA fallback - try files, then index.html
+    try_files {path} /index.html
+    
+    file_server
+    
+    # Compression
+    encode gzip
+    
+    # Cache static assets
+    @static path /assets/*
+    header @static Cache-Control "public, max-age=31536000, immutable"
+    
+    # No cache for index.html
+    @html path /index.html
+    header @html Cache-Control "no-cache, no-store, must-revalidate"
+}

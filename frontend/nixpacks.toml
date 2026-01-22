@@ -1,0 +1,18 @@
+# Nixpacks configuration for Vite React app
+# https://nixpacks.com/docs/configuration/file
+
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+cmds = ["npm ci"]
+
+[phases.build]
+cmds = [
+    "cp .env.production .env 2>/dev/null || true",
+    "npm run build",
+    "cp Caddyfile dist/Caddyfile 2>/dev/null || true"
+]
+
+[start]
+cmd = "caddy run --config /app/Caddyfile"

@@ -1,0 +1,25 @@
+# Nixpacks configuration for Node.js Backend with Prisma
+# https://nixpacks.com/docs/configuration/file
+
+[phases.setup]
+nixPkgs = ["nodejs_20", "postgresql"]
+
+[phases.install]
+cmds = [
+  "npm ci",
+  "npm cache clean --force"
+]
+
+[phases.build]
+cmds = [
+    "npx prisma generate",
+    "npm run build"
+]
+
+[start]
+cmd = "npm start"
+
+[variables]
+NODE_ENV = "production"
+PORT = "3001"
+# PRISMA_GENERATE_DATAPROXY = "true" - CAUSA ERROR P6001

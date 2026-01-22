@@ -1,0 +1,240 @@
+// src/components/pages/EmergencyQR.tsx
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { profileApi } from '../../services/api';
+import { QRCodeSVG } from 'qrcode.react';
+
+export default function EmergencyQR() {
+  const [qrData, setQrData] = useState<{
+    qrToken: string;
+    qrDataUrl: string;
+    generatedAt: string;
+  } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [regenerating, setRegenerating] = useState(false);
+
+  const fetchQR = async () => {
+    try {
+      setLoading(true);
+      const res = await profileApi.getQR();
+      if (res.success && res.data) {
+        setQrData(res.data);
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.error?.message || 'Error al cargar el código QR');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchQR();
+  }, []);
+
+  const handleRegenerate = async () => {
+    if (!confirm('¿Estás seguro de regenerar el código QR? El código anterior dejará de funcionar.')) {
+      return;
+    }
+
+    try {
+      setRegenerating(true);
+      const res = await profileApi.regenerateQR();
+      if (res.success && res.data) {
+        setQrData({
+          qrToken: res.data.qrToken,
+          qrDataUrl: res.data.qrDataUrl,
+          generatedAt: new Date().toISOString(),
+        });
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.error?.message || 'Error al regenerar el código QR');
+    } finally {
+      setRegenerating(false);
+    }
+  };
+
+  const emergencyUrl = qrData ? `${window.location.origin}/emergency/${qrData.qrToken}` : '';
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-vida-200 border-t-vida-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Cargando código QR...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-2xl mx-auto">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={fetchQR}
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Mi Código QR de Emergencia</h1>
+        <p className="text-gray-600 mt-1">
+          Este código permite a personal médico acceder a tu información en caso de emergencia
+        </p>
+      </div>
+
+      {/* QR Card */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-gradient-to-r from-vida-600 to-vida-700 text-white p-6 text-center">
+          <h2 className="text-xl font-semibold">Sistema VIDA</h2>
+          <p className="text-vida-100 text-sm">Código de Acceso de Emergencia</p>
+        </div>
+
+        <div className="p-8 flex flex-col items-center">
+          {qrData && (
+            <>
+              {/* QR Code */}
+              <div className="bg-white p-4 rounded-xl shadow-lg border-4 border-vida-100 mb-6">
+                <QRCodeSVG
+                  value={emergencyUrl}
+                  size={250}
+                  level="H"
+                  includeMargin={true}
+                  fgColor="#1E40AF"
+                />
+              </div>
+
+              {/* Token info */}
+              <p className="text-xs text-gray-400 font-mono mb-4">
+                Token: {qrData.qrToken}
+              </p>
+
+              {/* Generated date */}
+              <p className="text-sm text-gray-500 mb-6">
+                Generado: {new Date(qrData.generatedAt).toLocaleString('es-MX')}
+              </p>
+            </>
+          )}
+
+          {/* Actions */}
+          <div className="flex gap-4">
+            <button
+              onClick={handleRegenerate}
+              disabled={regenerating}
+              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 flex items-center gap-2"
+            >
+              {regenerating ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                  Regenerando...
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Regenerar QR
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={() => {
+                if (qrData?.qrDataUrl) {
+                  const link = document.createElement('a');
+                  link.href = qrData.qrDataUrl;
+                  link.download = 'mi-codigo-qr-vida.png';
+                  link.click();
+                }
+              }}
+              className="px-4 py-2 bg-vida-600 text-white rounded-lg hover:bg-vida-700 flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Descargar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Instructions */}
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+        <h3 className="font-semibold text-amber-800 mb-3 flex items-center gap-2">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Instrucciones de uso
+        </h3>
+        <ul className="text-amber-700 space-y-2 text-sm">
+          <li className="flex items-start gap-2">
+            <span className="font-bold">1.</span>
+            Imprime este código o guárdalo en tu celular
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="font-bold">2.</span>
+            Llévalo contigo en tu cartera, como fondo de pantalla, o en una pulsera médica
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="font-bold">3.</span>
+            En caso de emergencia, el personal médico puede escanear el código para acceder a tu información vital
+          </li>
+          <li className="flex items-start gap-2">
+            <span className="font-bold">4.</span>
+            Cada acceso queda registrado y tus representantes son notificados
+          </li>
+        </ul>
+      </div>
+
+      {/* Security note */}
+      <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
+        <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          Seguridad
+        </h3>
+        <p className="text-gray-600 text-sm">
+          Si crees que tu código ha sido comprometido, puedes regenerarlo en cualquier momento.
+          El código anterior dejará de funcionar inmediatamente.
+        </p>
+      </div>
+
+      {/* NFC Option */}
+      <Link
+        to="/nfc"
+        className="block bg-gradient-to-r from-sky-50 to-vida-50 border border-sky-200 rounded-xl p-6 hover:shadow-md transition"
+      >
+        <div className="flex items-center gap-4">
+          <div className="w-14 h-14 bg-white rounded-xl shadow-sm flex items-center justify-center">
+            <svg className="w-8 h-8 text-vida-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+              Grabar en Tag NFC
+              <span className="text-xs bg-vida-100 text-vida-700 px-2 py-0.5 rounded-full">Nuevo</span>
+            </h3>
+            <p className="text-sm text-gray-600 mt-1">
+              Graba tu información en brazaletes, tarjetas o stickers NFC para acceso aún más rápido
+            </p>
+          </div>
+          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      </Link>
+    </div>
+  );
+}

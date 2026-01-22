@@ -1,0 +1,1044 @@
+// src/components/pages/Documents.tsx
+import { useState, useRef, useMemo } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { documentsApi, MedicalDocument } from '../../services/api';
+import {
+  FileText,
+  Upload,
+  Folder,
+  Search,
+  Filter,
+  Download,
+  Eye,
+  Edit3,
+  Trash2,
+  X,
+  Calendar,
+  User,
+  Building2,
+  Check,
+  Image,
+  File,
+  ChevronDown,
+  AlertCircle,
+  HardDrive,
+} from 'lucide-react';
+import toast from 'react-hot-toast';
+
+interface DocumentStats {
+  total: number;
+  byCategory: Record<string, number>;
+  totalSize: number;
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+  CLINICAL_HISTORY: 'Historial Clínico',
+  LAB_RESULTS: 'Resultados de Laboratorio',
+  IMAGING: 'Estudios de Imagen',
+  PRESCRIPTIONS: 'Recetas Médicas',
+  DISCHARGE_SUMMARY: 'Resumen de Alta',
+  SURGICAL_REPORT: 'Reporte Quirúrgico',
+  VACCINATION: 'Cartilla de Vacunación',
+  INSURANCE: 'Póliza de Seguro',
+  IDENTIFICATION: 'Identificación',
+  OTHER: 'Otro',
+};
+
+const CATEGORY_ICONS: Record<string, React.ReactNode> = {
+  CLINICAL_HISTORY: <FileText className="w-5 h-5" />,
+  LAB_RESULTS: <FileText className="w-5 h-5" />,
+  IMAGING: <Image className="w-5 h-5" />,
+  PRESCRIPTIONS: <FileText className="w-5 h-5" />,
+  DISCHARGE_SUMMARY: <FileText className="w-5 h-5" />,
+  SURGICAL_REPORT: <FileText className="w-5 h-5" />,
+  VACCINATION: <FileText className="w-5 h-5" />,
+  INSURANCE: <FileText className="w-5 h-5" />,
+  IDENTIFICATION: <FileText className="w-5 h-5" />,
+  OTHER: <File className="w-5 h-5" />,
+};
+
+const CATEGORY_COLORS: Record<string, string> = {
+  CLINICAL_HISTORY: 'bg-blue-100 text-blue-700',
+  LAB_RESULTS: 'bg-purple-100 text-purple-700',
+  IMAGING: 'bg-indigo-100 text-indigo-700',
+  PRESCRIPTIONS: 'bg-green-100 text-green-700',
+  DISCHARGE_SUMMARY: 'bg-orange-100 text-orange-700',
+  SURGICAL_REPORT: 'bg-red-100 text-red-700',
+  VACCINATION: 'bg-teal-100 text-teal-700',
+  INSURANCE: 'bg-yellow-100 text-yellow-700',
+  IDENTIFICATION: 'bg-gray-100 text-gray-700',
+  OTHER: 'bg-slate-100 text-slate-700',
+};
+
+function formatFileSize(bytes: number): string {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function formatDate(dateString: string | null): string {
+  if (!dateString) return '-';
+  return new Date(dateString).toLocaleDateString('es-MX', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+export default function Documents() {
+  const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<MedicalDocument | null>(null);
+  const [dragActive, setDragActive] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [loadingPreview, setLoadingPreview] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+
+  // Form state for upload/edit
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    category: 'OTHER',
+    documentDate: '',
+    doctorName: '',
+    institution: '',
+    isVisible: true,
+  });
+
+  // Queries
+  const { data: documentsData, isLoading } = useQuery({
+    queryKey: ['documents', selectedCategory, searchQuery],
+    queryFn: () => documentsApi.list({
+      category: selectedCategory || undefined,
+      search: searchQuery || undefined
+    }),
+  });
+
+  const { data: statsData } = useQuery({
+    queryKey: ['documents-stats'],
+    queryFn: () => documentsApi.getStats(),
+  });
+
+  const documents: MedicalDocument[] = documentsData?.data?.documents || [];
+  const stats: DocumentStats = statsData?.data?.stats || { total: 0, byCategory: {}, totalSize: 0 };
+
+  // Mutations
+  const uploadMutation = useMutation({
+    mutationFn: async () => {
+      if (!uploadFile) throw new Error('No hay archivo seleccionado');
+      return documentsApi.upload(uploadFile, {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        documentDate: formData.documentDate || undefined,
+        doctorName: formData.doctorName || undefined,
+        institution: formData.institution || undefined,
+        isVisible: formData.isVisible,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['documents'] });
+      queryClient.invalidateQueries({ queryKey: ['documents-stats'] });
+      toast.success('Documento subido exitosamente');
+      closeUploadModal();
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Error al subir el documento');
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async () => {
+      if (!selectedDocument) throw new Error('No hay documento seleccionado');
+      return documentsApi.update(selectedDocument.id, {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        documentDate: formData.documentDate || undefined,
+        doctorName: formData.doctorName || undefined,
+        institution: formData.institution || undefined,
+        isVisible: formData.isVisible,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['documents'] });
+      toast.success('Documento actualizado');
+      closeEditModal();
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Error al actualizar el documento');
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      if (!selectedDocument) throw new Error('No hay documento seleccionado');
+      return documentsApi.delete(selectedDocument.id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['documents'] });
+      queryClient.invalidateQueries({ queryKey: ['documents-stats'] });
+      toast.success('Documento eliminado');
+      closeDeleteConfirm();
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Error al eliminar el documento');
+    },
+  });
+
+  // Handlers
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileSelect(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileSelect = (file: File) => {
+    const allowedTypes = [
+      'application/pdf',
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'image/heic',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Tipo de archivo no permitido. Use PDF, imágenes o documentos Word.');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('El archivo excede el límite de 10MB');
+      return;
+    }
+
+    setUploadFile(file);
+    // Pre-fill title with filename
+    const nameWithoutExt = file.name.replace(/\.[^/.]+$/, '');
+    setFormData(prev => ({ ...prev, title: nameWithoutExt }));
+  };
+
+  const openUploadModal = () => {
+    setFormData({
+      title: '',
+      description: '',
+      category: 'OTHER',
+      documentDate: '',
+      doctorName: '',
+      institution: '',
+      isVisible: true,
+    });
+    setUploadFile(null);
+    setShowUploadModal(true);
+  };
+
+  const closeUploadModal = () => {
+    setShowUploadModal(false);
+    setUploadFile(null);
+    setFormData({
+      title: '',
+      description: '',
+      category: 'OTHER',
+      documentDate: '',
+      doctorName: '',
+      institution: '',
+      isVisible: true,
+    });
+  };
+
+  const openViewModal = async (doc: MedicalDocument) => {
+    setSelectedDocument(doc);
+    setShowViewModal(true);
+    setShowPreview(false);
+    setPreviewUrl(null);
+
+    // Auto-load preview for images
+    if (doc.fileType.includes('image')) {
+      loadPreview(doc.id);
+    }
+  };
+
+  const loadPreview = async (docId: string) => {
+    try {
+      setLoadingPreview(true);
+      const response = await documentsApi.getDownloadUrl(docId);
+      if (response.data?.downloadUrl) {
+        setPreviewUrl(response.data.downloadUrl);
+        setShowPreview(true);
+      }
+    } catch (error) {
+      toast.error('Error al cargar vista previa');
+    } finally {
+      setLoadingPreview(false);
+    }
+  };
+
+  const closeViewModal = () => {
+    setShowViewModal(false);
+    setSelectedDocument(null);
+    setPreviewUrl(null);
+    setShowPreview(false);
+  };
+
+  const openEditModal = (doc: MedicalDocument) => {
+    setSelectedDocument(doc);
+    setFormData({
+      title: doc.title,
+      description: doc.description || '',
+      category: doc.category,
+      documentDate: doc.documentDate ? doc.documentDate.split('T')[0] : '',
+      doctorName: doc.doctorName || '',
+      institution: doc.institution || '',
+      isVisible: doc.isVisible,
+    });
+    setShowEditModal(true);
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setSelectedDocument(null);
+  };
+
+  const openDeleteConfirm = (doc: MedicalDocument) => {
+    setSelectedDocument(doc);
+    setShowDeleteConfirm(true);
+  };
+
+  const closeDeleteConfirm = () => {
+    setShowDeleteConfirm(false);
+    setSelectedDocument(null);
+  };
+
+  const handleDownload = async (doc: MedicalDocument) => {
+    try {
+      const response = await documentsApi.getDownloadUrl(doc.id);
+      if (response.data?.downloadUrl) {
+        window.open(response.data.downloadUrl, '_blank');
+      } else {
+        toast.error('No se pudo obtener el enlace de descarga');
+      }
+    } catch {
+      toast.error('Error al descargar el documento');
+    }
+  };
+
+  // Group documents by category for display
+  const documentsByCategory = useMemo(() => {
+    const grouped: Record<string, MedicalDocument[]> = {};
+    documents.forEach(doc => {
+      if (!grouped[doc.category]) {
+        grouped[doc.category] = [];
+      }
+      grouped[doc.category].push(doc);
+    });
+    return grouped;
+  }, [documents]);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6 animate-pulse">
+        <div className="h-8 bg-gray-200 rounded w-48"></div>
+        <div className="card h-96 bg-gray-100"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 animate-fade-in">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Mis Documentos</h1>
+          <p className="text-gray-600 mt-1">
+            Historial clínico, estudios y documentos médicos
+          </p>
+        </div>
+        <button onClick={openUploadModal} className="btn-primary">
+          <Upload className="w-5 h-5 mr-2" />
+          Subir Documento
+        </button>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="card bg-gradient-to-br from-vida-50 to-white">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-vida-100 rounded-lg">
+              <FileText className="w-5 h-5 text-vida-600" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+              <p className="text-sm text-gray-500">Documentos</p>
+            </div>
+          </div>
+        </div>
+        <div className="card bg-gradient-to-br from-salud-50 to-white">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-salud-100 rounded-lg">
+              <Folder className="w-5 h-5 text-salud-600" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900">
+                {Object.keys(stats.byCategory).length}
+              </p>
+              <p className="text-sm text-gray-500">Categorías</p>
+            </div>
+          </div>
+        </div>
+        <div className="card bg-gradient-to-br from-coral-50 to-white col-span-2">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-coral-100 rounded-lg">
+              <HardDrive className="w-5 h-5 text-coral-600" />
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-gray-900">{formatFileSize(stats.totalSize)}</p>
+              <p className="text-sm text-gray-500">Espacio utilizado</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="card">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar documentos..."
+              className="input pl-10"
+            />
+          </div>
+          <div className="relative min-w-[200px]">
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="input pl-10 appearance-none cursor-pointer"
+            >
+              <option value="">Todas las categorías</option>
+              {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+          </div>
+        </div>
+      </div>
+
+      {/* Documents List */}
+      {documents.length === 0 ? (
+        <div className="card text-center py-12">
+          <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">No hay documentos</h3>
+          <p className="text-gray-500 mb-6">
+            {searchQuery || selectedCategory
+              ? 'No se encontraron documentos con los filtros seleccionados'
+              : 'Sube tu primer documento para comenzar'}
+          </p>
+          {!searchQuery && !selectedCategory && (
+            <button onClick={openUploadModal} className="btn-primary inline-flex">
+              <Upload className="w-5 h-5 mr-2" />
+              Subir Documento
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {Object.entries(documentsByCategory).map(([category, docs]) => (
+            <div key={category} className="card">
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`p-2 rounded-lg ${CATEGORY_COLORS[category] || 'bg-gray-100 text-gray-700'}`}>
+                  {CATEGORY_ICONS[category] || <File className="w-5 h-5" />}
+                </div>
+                <h2 className="text-lg font-semibold text-gray-900">
+                  {CATEGORY_LABELS[category] || category}
+                </h2>
+                <span className="px-2 py-0.5 bg-gray-100 text-gray-600 text-sm rounded-full">
+                  {docs.length}
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                {docs.map((doc) => (
+                  <div
+                    key={doc.id}
+                    className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                      <div className="p-2 bg-white rounded-lg border border-gray-200">
+                        {doc.fileType.includes('pdf') ? (
+                          <FileText className="w-6 h-6 text-red-500" />
+                        ) : doc.fileType.includes('image') ? (
+                          <Image className="w-6 h-6 text-blue-500" />
+                        ) : (
+                          <File className="w-6 h-6 text-gray-500" />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-medium text-gray-900 truncate">{doc.title}</h3>
+                        <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-4 h-4" />
+                            {formatDate(doc.documentDate)}
+                          </span>
+                          <span>{formatFileSize(doc.fileSize)}</span>
+                          {!doc.isVisible && (
+                            <span className="text-orange-600 flex items-center gap-1">
+                              <AlertCircle className="w-4 h-4" />
+                              No visible en emergencias
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => openViewModal(doc)}
+                        className="p-2 text-gray-400 hover:text-vida-600 hover:bg-vida-50 rounded-lg transition-colors"
+                        title="Ver detalles"
+                      >
+                        <Eye className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => handleDownload(doc)}
+                        className="p-2 text-gray-400 hover:text-salud-600 hover:bg-salud-50 rounded-lg transition-colors"
+                        title="Descargar"
+                      >
+                        <Download className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => openEditModal(doc)}
+                        className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Editar"
+                      >
+                        <Edit3 className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => openDeleteConfirm(doc)}
+                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Eliminar"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Upload Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20">
+            <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={closeUploadModal} />
+
+            <div className="relative bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white">
+                <h3 className="text-lg font-semibold text-gray-900">Subir Documento</h3>
+                <button onClick={closeUploadModal} className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-4">
+                {/* Drop zone */}
+                <div
+                  onDragEnter={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDragOver={handleDrag}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+                    dragActive
+                      ? 'border-vida-500 bg-vida-50'
+                      : uploadFile
+                      ? 'border-salud-500 bg-salud-50'
+                      : 'border-gray-300 hover:border-vida-400 hover:bg-gray-50'
+                  }`}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    className="hidden"
+                    accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,.doc,.docx"
+                    onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
+                  />
+                  {uploadFile ? (
+                    <div className="flex flex-col items-center">
+                      <Check className="w-12 h-12 text-salud-500 mb-3" />
+                      <p className="font-medium text-gray-900">{uploadFile.name}</p>
+                      <p className="text-sm text-gray-500 mt-1">{formatFileSize(uploadFile.size)}</p>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setUploadFile(null);
+                        }}
+                        className="text-sm text-red-600 hover:text-red-700 mt-2"
+                      >
+                        Cambiar archivo
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center">
+                      <Upload className="w-12 h-12 text-gray-400 mb-3" />
+                      <p className="font-medium text-gray-900">Arrastra un archivo aquí</p>
+                      <p className="text-sm text-gray-500 mt-1">o haz clic para seleccionar</p>
+                      <p className="text-xs text-gray-400 mt-2">PDF, imágenes o Word (máx. 10MB)</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Form fields */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Título *</label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                    className="input"
+                    placeholder="Nombre del documento"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                    className="input"
+                  >
+                    {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
+                      <option key={value} value={value}>{label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                    className="input"
+                    rows={2}
+                    placeholder="Descripción breve del documento"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Fecha del documento</label>
+                    <input
+                      type="date"
+                      value={formData.documentDate}
+                      onChange={(e) => setFormData(prev => ({ ...prev, documentDate: e.target.value }))}
+                      className="input"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Médico</label>
+                    <input
+                      type="text"
+                      value={formData.doctorName}
+                      onChange={(e) => setFormData(prev => ({ ...prev, doctorName: e.target.value }))}
+                      className="input"
+                      placeholder="Dr. ..."
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Institución</label>
+                  <input
+                    type="text"
+                    value={formData.institution}
+                    onChange={(e) => setFormData(prev => ({ ...prev, institution: e.target.value }))}
+                    className="input"
+                    placeholder="Hospital o clínica"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.isVisible}
+                      onChange={(e) => setFormData(prev => ({ ...prev, isVisible: e.target.checked }))}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-vida-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-salud-500"></div>
+                  </label>
+                  <span className="text-sm text-gray-700">Visible en emergencias</span>
+                </div>
+              </div>
+
+              <div className="p-4 border-t bg-gray-50 flex gap-3">
+                <button onClick={closeUploadModal} className="btn-secondary flex-1">
+                  Cancelar
+                </button>
+                <button
+                  onClick={() => uploadMutation.mutate()}
+                  disabled={!uploadFile || !formData.title || uploadMutation.isPending}
+                  className="btn-primary flex-1"
+                >
+                  {uploadMutation.isPending ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Subiendo...
+                    </div>
+                  ) : (
+                    <>
+                      <Upload className="w-5 h-5 mr-2" />
+                      Subir Documento
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Modal */}
+      {showViewModal && selectedDocument && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20">
+            <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={closeViewModal} />
+
+            <div className={`relative bg-white rounded-xl shadow-xl w-full transition-all ${showPreview ? 'max-w-5xl' : 'max-w-lg'}`}>
+              <div className="flex items-center justify-between p-4 border-b">
+                <h3 className="text-lg font-semibold text-gray-900">Detalles del Documento</h3>
+                <button onClick={closeViewModal} className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className={`flex ${showPreview ? 'flex-row' : 'flex-col'}`}>
+                {/* Document Preview */}
+                {showPreview && previewUrl && (
+                  <div className="flex-1 border-r border-gray-200 bg-gray-100 min-h-[500px] max-h-[70vh] overflow-hidden">
+                    {selectedDocument.fileType.includes('image') ? (
+                      <div className="w-full h-full flex items-center justify-center p-4">
+                        <img
+                          src={previewUrl}
+                          alt={selectedDocument.title}
+                          className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+                        />
+                      </div>
+                    ) : selectedDocument.fileType.includes('pdf') ? (
+                      <iframe
+                        src={previewUrl}
+                        className="w-full h-full min-h-[500px]"
+                        title={selectedDocument.title}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-500">
+                        <div className="text-center">
+                          <File className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                          <p>Vista previa no disponible</p>
+                          <p className="text-sm">Descarga el archivo para verlo</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Document Details */}
+                <div className={`${showPreview ? 'w-80' : 'w-full'} p-6 space-y-4`}>
+                  <div className="flex items-center gap-4">
+                    <div className={`p-3 rounded-lg ${CATEGORY_COLORS[selectedDocument.category] || 'bg-gray-100 text-gray-700'}`}>
+                      {selectedDocument.fileType.includes('pdf') ? (
+                        <FileText className="w-8 h-8" />
+                      ) : selectedDocument.fileType.includes('image') ? (
+                        <Image className="w-8 h-8" />
+                      ) : (
+                        <File className="w-8 h-8" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-lg font-semibold text-gray-900 truncate">{selectedDocument.title}</h4>
+                      <span className={`inline-block px-2 py-0.5 text-sm rounded-full mt-1 ${CATEGORY_COLORS[selectedDocument.category] || 'bg-gray-100 text-gray-700'}`}>
+                        {CATEGORY_LABELS[selectedDocument.category] || selectedDocument.category}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Preview Button */}
+                  {!showPreview && (selectedDocument.fileType.includes('pdf') || selectedDocument.fileType.includes('image')) && (
+                    <button
+                      onClick={() => loadPreview(selectedDocument.id)}
+                      disabled={loadingPreview}
+                      className="w-full py-3 px-4 bg-vida-50 text-vida-700 rounded-lg hover:bg-vida-100 transition-colors flex items-center justify-center gap-2 font-medium"
+                    >
+                      {loadingPreview ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-vida-300 border-t-vida-600 rounded-full animate-spin"></div>
+                          Cargando vista previa...
+                        </>
+                      ) : (
+                        <>
+                          <Eye className="w-5 h-5" />
+                          Ver documento
+                        </>
+                      )}
+                    </button>
+                  )}
+
+                  {selectedDocument.description && (
+                    <p className="text-gray-600 text-sm">{selectedDocument.description}</p>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <p className="text-gray-500 text-xs">Fecha</p>
+                      <p className="font-medium flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5" />
+                        {formatDate(selectedDocument.documentDate)}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-gray-500 text-xs">Tamaño</p>
+                      <p className="font-medium">{formatFileSize(selectedDocument.fileSize)}</p>
+                    </div>
+                    {selectedDocument.doctorName && (
+                      <div className="col-span-2">
+                        <p className="text-gray-500 text-xs">Médico</p>
+                        <p className="font-medium flex items-center gap-1">
+                          <User className="w-3.5 h-3.5" />
+                          {selectedDocument.doctorName}
+                        </p>
+                      </div>
+                    )}
+                    {selectedDocument.institution && (
+                      <div className="col-span-2">
+                        <p className="text-gray-500 text-xs">Institución</p>
+                        <p className="font-medium flex items-center gap-1">
+                          <Building2 className="w-3.5 h-3.5" />
+                          {selectedDocument.institution}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2 text-sm">
+                    {selectedDocument.isVisible ? (
+                      <span className="px-2 py-1 bg-salud-100 text-salud-700 rounded-full flex items-center gap-1 text-xs">
+                        <Eye className="w-3.5 h-3.5" />
+                        Visible en emergencias
+                      </span>
+                    ) : (
+                      <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full flex items-center gap-1 text-xs">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        No visible
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="text-xs text-gray-400 pt-2 border-t">
+                    <p className="truncate">Archivo: {selectedDocument.fileName}</p>
+                    <p>Subido: {formatDate(selectedDocument.createdAt)}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 border-t bg-gray-50 flex gap-3">
+                <button onClick={closeViewModal} className="btn-secondary flex-1">
+                  Cerrar
+                </button>
+                <button onClick={() => handleDownload(selectedDocument)} className="btn-primary flex-1">
+                  <Download className="w-5 h-5 mr-2" />
+                  Descargar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && selectedDocument && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20">
+            <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={closeEditModal} />
+
+            <div className="relative bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white">
+                <h3 className="text-lg font-semibold text-gray-900">Editar Documento</h3>
+                <button onClick={closeEditModal} className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Título *</label>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                    className="input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
+                    className="input"
+                  >
+                    {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
+                      <option key={value} value={value}>{label}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                    className="input"
+                    rows={2}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Fecha del documento</label>
+                    <input
+                      type="date"
+                      value={formData.documentDate}
+                      onChange={(e) => setFormData(prev => ({ ...prev, documentDate: e.target.value }))}
+                      className="input"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Médico</label>
+                    <input
+                      type="text"
+                      value={formData.doctorName}
+                      onChange={(e) => setFormData(prev => ({ ...prev, doctorName: e.target.value }))}
+                      className="input"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Institución</label>
+                  <input
+                    type="text"
+                    value={formData.institution}
+                    onChange={(e) => setFormData(prev => ({ ...prev, institution: e.target.value }))}
+                    className="input"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.isVisible}
+                      onChange={(e) => setFormData(prev => ({ ...prev, isVisible: e.target.checked }))}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-vida-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-salud-500"></div>
+                  </label>
+                  <span className="text-sm text-gray-700">Visible en emergencias</span>
+                </div>
+              </div>
+
+              <div className="p-4 border-t bg-gray-50 flex gap-3">
+                <button onClick={closeEditModal} className="btn-secondary flex-1">
+                  Cancelar
+                </button>
+                <button
+                  onClick={() => updateMutation.mutate()}
+                  disabled={!formData.title || updateMutation.isPending}
+                  className="btn-primary flex-1"
+                >
+                  {updateMutation.isPending ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Guardando...
+                    </div>
+                  ) : (
+                    <>
+                      <Check className="w-5 h-5 mr-2" />
+                      Guardar Cambios
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && selectedDocument && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20">
+            <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={closeDeleteConfirm} />
+
+            <div className="relative bg-white rounded-xl shadow-xl max-w-md w-full">
+              <div className="p-6 text-center">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Trash2 className="w-8 h-8 text-red-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Eliminar documento</h3>
+                <p className="text-gray-600 mb-6">
+                  ¿Estás seguro de que deseas eliminar <strong>{selectedDocument.title}</strong>? Esta acción no se puede deshacer.
+                </p>
+                <div className="flex gap-3">
+                  <button onClick={closeDeleteConfirm} className="btn-secondary flex-1">
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={() => deleteMutation.mutate()}
+                    disabled={deleteMutation.isPending}
+                    className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                  >
+                    {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
