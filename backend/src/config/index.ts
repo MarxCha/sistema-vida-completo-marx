@@ -46,7 +46,7 @@ export const config = {
   // Email (Resend)
   email: {
     resendApiKey: process.env.RESEND_API_KEY || '',
-    from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
+    from: process.env.EMAIL_FROM_RESEND || process.env.EMAIL_FROM || 'notificaciones@sistemavida.mx',
   },
   
   // SMS y WhatsApp (Twilio)

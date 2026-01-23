@@ -492,6 +492,19 @@ async function main() {
         notifyOnAccess: true,
       },
     }),
+    prisma.representative.create({
+      data: {
+        userId: testUser.id,
+        name: 'Carlos Amador',
+        phone: '+52 55 7777 8888',
+        email: 'carlos_amador@outlook.com',
+        relation: 'Representante Legal',
+        priority: 5,
+        isDonorSpokesperson: false,
+        notifyOnEmergency: true,
+        notifyOnAccess: true,
+      },
+    }),
   ]);
 
   console.log('Representantes creados:', representatives.length);
