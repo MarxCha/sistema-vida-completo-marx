@@ -445,7 +445,7 @@ async function main() {
         userId: testUser.id,
         name: 'Rafael Chavez',
         phone: '+52 55 3508 4672',  // Número real registrado en Twilio
-        email: 'mdsamca2025@gmail.com',  // Email real para notificaciones
+        email: 'representante.demo@sistemavida.mx',  // Email demo para notificaciones
         relation: 'Apoderado Legal',
         priority: 1,
         isDonorSpokesperson: true,
@@ -477,6 +477,19 @@ async function main() {
         isDonorSpokesperson: false,
         notifyOnEmergency: true,
         notifyOnAccess: false,
+      },
+    }),
+    prisma.representative.create({
+      data: {
+        userId: testUser.id,
+        name: 'Dr. Carlos Mendez',
+        phone: '+52 55 9999 8888',
+        email: 'dr.mendez@hospital-demo.mx',
+        relation: 'Médico Personal',
+        priority: 4,
+        isDonorSpokesperson: false,
+        notifyOnEmergency: true,
+        notifyOnAccess: true,
       },
     }),
   ]);
