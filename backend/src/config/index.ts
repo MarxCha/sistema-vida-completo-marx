@@ -45,17 +45,17 @@ export const config = {
   
   // Email (Resend)
   email: {
-    resendApiKey: process.env.RESEND_API_KEY || '',
-    from: process.env.EMAIL_FROM_RESEND || process.env.EMAIL_FROM || 'notificaciones@sistemavida.mx',
+    resendApiKey: (process.env.RESEND_API_KEY || '').trim(),
+    from: (process.env.EMAIL_FROM_RESEND || process.env.EMAIL_FROM || 'notificaciones@sistemavida.mx').trim(),
   },
   
   // SMS y WhatsApp (Twilio)
   twilio: {
-    sid: process.env.TWILIO_ACCOUNT_SID || '',
-    token: process.env.TWILIO_AUTH_TOKEN || '',
-    phone: process.env.TWILIO_PHONE_NUMBER || '',
-    whatsappPhone: process.env.TWILIO_WHATSAPP_NUMBER || '',
-    whatsappTemplateId: process.env.TWILIO_WHATSAPP_TEMPLATE_ID || 'HXdce98f9ca93895538759cd4b43c550b7',
+    sid: (process.env.TWILIO_ACCOUNT_SID || '').trim(),
+    token: (process.env.TWILIO_AUTH_TOKEN || '').trim(),
+    phone: (process.env.TWILIO_PHONE_NUMBER || '').trim(),
+    whatsappPhone: (process.env.TWILIO_WHATSAPP_NUMBER || '').trim(),
+    whatsappTemplateId: (process.env.TWILIO_WHATSAPP_TEMPLATE_ID || 'HXdce98f9ca93895538759cd4b43c550b7').trim(),
   },
   
   // AWS S3
