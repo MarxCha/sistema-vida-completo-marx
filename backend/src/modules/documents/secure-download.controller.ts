@@ -208,6 +208,13 @@ router.get('/:token', async (req: Request, res: Response) => {
         path.basename(tokenData.s3Key).split('.')[0] ||
         path.basename(filePath).split('.')[0];
 
+      logger.info('🔐 Intentando descifrar archivo', {
+        documentId,
+        s3Key: tokenData.s3Key,
+        hasDocumentIdInToken: !!tokenData.documentId,
+        filePath
+      });
+
       try {
         // Descifrar archivo
         const decryptedData = await documentEncryptionService.decryptFile(filePath, documentId);
@@ -215,18 +222,26 @@ router.get('/:token', async (req: Request, res: Response) => {
         res.setHeader('Content-Length', decryptedData.length);
         res.send(decryptedData);
 
-        logger.debug('Archivo descifrado y enviado', { documentId });
-      } catch (decryptError) {
-        logger.error('Error descifrando archivo', decryptError, {
+        logger.info('✅ Archivo descifrado y enviado exitosamente', {
+          documentId,
+          originalSize: decryptedData.length
+        });
+      } catch (decryptError: any) {
+        logger.error('❌ Error descifrando archivo - NO enviando archivo cifrado', decryptError, {
           filePath,
           documentId,
+          errorMessage: decryptError?.message,
         });
 
-        // Fallback: enviar archivo sin descifrar (puede no ser visible para el cliente)
-        const stat = fs.statSync(filePath);
-        res.setHeader('Content-Length', stat.size);
-        const fileStream = fs.createReadStream(filePath);
-        fileStream.pipe(res);
+        // NO enviar archivo cifrado - retornar error
+        return res.status(500).json({
+          success: false,
+          error: {
+            code: 'DECRYPTION_ERROR',
+            message: 'Error al descifrar el documento. Contacte soporte técnico.',
+            details: process.env.NODE_ENV !== 'production' ? decryptError?.message : undefined
+          }
+        });
       }
     } else {
       // Archivo no cifrado - servir directamente
