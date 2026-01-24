@@ -103,8 +103,11 @@ class DocumentsService {
 
     if (!document) return null;
 
-    // Generar URL firmada valida por 1 hora
-    return s3Service.getSignedUrl(document.s3Key, 3600);
+    // Generar URL firmada valida por 1 hora, incluyendo nombre del archivo
+    return s3Service.getSignedUrl(document.s3Key, 3600, {
+      userId,
+      fileName: document.fileName
+    });
   }
 
   /**

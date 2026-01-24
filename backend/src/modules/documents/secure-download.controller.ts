@@ -26,6 +26,7 @@ const prisma = new PrismaClient();
 // Tipo para datos de token de descarga
 interface DownloadTokenData {
   s3Key: string;
+  fileName?: string; // Nombre original del archivo para Content-Disposition
   expiresAt: string; // ISO string para serialización
   userId?: string;
   emergencyAccessId?: string;
@@ -38,13 +39,14 @@ interface DownloadTokenData {
 export async function generateTemporaryDownloadToken(
   s3Key: string,
   expiresInSeconds: number = 900, // 15 minutos por defecto
-  options?: { userId?: string; emergencyAccessId?: string }
+  options?: { userId?: string; emergencyAccessId?: string; fileName?: string }
 ): Promise<string> {
   const token = crypto.randomBytes(32).toString('hex');
   const expiresAt = new Date(Date.now() + expiresInSeconds * 1000);
 
   const tokenData: DownloadTokenData = {
     s3Key,
+    fileName: options?.fileName,
     expiresAt: expiresAt.toISOString(),
     userId: options?.userId,
     emergencyAccessId: options?.emergencyAccessId,
@@ -64,7 +66,7 @@ export async function generateTemporaryDownloadToken(
 export async function getSecureLocalUrl(
   s3Key: string,
   expiresInSeconds: number = 900,
-  options?: { userId?: string; emergencyAccessId?: string }
+  options?: { userId?: string; emergencyAccessId?: string; fileName?: string }
 ): Promise<string> {
   const token = await generateTemporaryDownloadToken(s3Key, expiresInSeconds, options);
   // Usar backendUrl para las URLs de descarga (puede ser diferente al frontend)
@@ -128,12 +130,15 @@ router.get('/:token', async (req: Request, res: Response) => {
 
     // Obtener información del archivo
     let ext = path.extname(filePath).toLowerCase();
-    let originalFileName = path.basename(filePath);
+    // Usar fileName del token si está disponible, sino usar nombre del archivo en disco
+    let originalFileName = tokenData.fileName || path.basename(filePath);
 
     // Si está cifrado, remover extensión .enc para determinar tipo original
     if (isEncrypted && ext === '.enc') {
-      originalFileName = originalFileName.slice(0, -4); // Remover .enc
-      ext = path.extname(originalFileName).toLowerCase();
+      if (!tokenData.fileName) {
+        originalFileName = originalFileName.slice(0, -4); // Remover .enc solo si no tenemos fileName
+      }
+      ext = path.extname(originalFileName).toLowerCase() || ext.replace('.enc', '');
     }
 
     // Determinar Content-Type

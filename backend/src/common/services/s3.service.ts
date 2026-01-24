@@ -163,12 +163,12 @@ class S3Service {
    * Genera una URL firmada para acceso temporal
    * @param key - S3 key del archivo
    * @param expiresInSeconds - Tiempo de expiración (default: 15 minutos para local, 1 hora para S3)
-   * @param options - Opciones adicionales para auditoría
+   * @param options - Opciones adicionales para auditoría y nombre de archivo
    */
   async getSignedUrl(
     key: string,
     expiresInSeconds: number = 900,
-    options?: { userId?: string; emergencyAccessId?: string }
+    options?: { userId?: string; emergencyAccessId?: string; fileName?: string }
   ): Promise<string> {
     if (this.useLocalStorage) {
       // Usar URL segura con token temporal si está disponible
