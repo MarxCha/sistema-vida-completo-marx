@@ -168,7 +168,7 @@ class S3Service {
   async getSignedUrl(
     key: string,
     expiresInSeconds: number = 900,
-    options?: { userId?: string; emergencyAccessId?: string; fileName?: string }
+    options?: { userId?: string; emergencyAccessId?: string; fileName?: string; documentId?: string }
   ): Promise<string> {
     if (this.useLocalStorage) {
       // Usar URL segura con token temporal si está disponible

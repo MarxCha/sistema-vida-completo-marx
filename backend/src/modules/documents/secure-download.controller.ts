@@ -27,6 +27,7 @@ const prisma = new PrismaClient();
 interface DownloadTokenData {
   s3Key: string;
   fileName?: string; // Nombre original del archivo para Content-Disposition
+  documentId?: string; // ID del documento para descifrado
   expiresAt: string; // ISO string para serialización
   userId?: string;
   emergencyAccessId?: string;
@@ -39,7 +40,7 @@ interface DownloadTokenData {
 export async function generateTemporaryDownloadToken(
   s3Key: string,
   expiresInSeconds: number = 900, // 15 minutos por defecto
-  options?: { userId?: string; emergencyAccessId?: string; fileName?: string }
+  options?: { userId?: string; emergencyAccessId?: string; fileName?: string; documentId?: string }
 ): Promise<string> {
   const token = crypto.randomBytes(32).toString('hex');
   const expiresAt = new Date(Date.now() + expiresInSeconds * 1000);
@@ -47,6 +48,7 @@ export async function generateTemporaryDownloadToken(
   const tokenData: DownloadTokenData = {
     s3Key,
     fileName: options?.fileName,
+    documentId: options?.documentId,
     expiresAt: expiresAt.toISOString(),
     userId: options?.userId,
     emergencyAccessId: options?.emergencyAccessId,
@@ -66,7 +68,7 @@ export async function generateTemporaryDownloadToken(
 export async function getSecureLocalUrl(
   s3Key: string,
   expiresInSeconds: number = 900,
-  options?: { userId?: string; emergencyAccessId?: string; fileName?: string }
+  options?: { userId?: string; emergencyAccessId?: string; fileName?: string; documentId?: string }
 ): Promise<string> {
   const token = await generateTemporaryDownloadToken(s3Key, expiresInSeconds, options);
   // Usar backendUrl para las URLs de descarga (puede ser diferente al frontend)
@@ -201,8 +203,9 @@ router.get('/:token', async (req: Request, res: Response) => {
     res.setHeader('X-Frame-Options', 'SAMEORIGIN');
 
     if (isEncrypted) {
-      // Extraer documentId del nombre del archivo o s3Key para derivar clave
-      const documentId = path.basename(tokenData.s3Key).split('.')[0] ||
+      // Usar documentId del token si está disponible, sino extraer del s3Key (fallback)
+      const documentId = tokenData.documentId ||
+        path.basename(tokenData.s3Key).split('.')[0] ||
         path.basename(filePath).split('.')[0];
 
       try {
