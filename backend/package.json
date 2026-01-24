@@ -14,6 +14,7 @@
     "db:seed-admin": "ts-node prisma/seed-admin.ts",
     "db:studio": "prisma studio",
     "check:notifications": "ts-node scripts/check-notifications.ts",
+    "test:delivery": "ts-node scripts/test-delivery.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
