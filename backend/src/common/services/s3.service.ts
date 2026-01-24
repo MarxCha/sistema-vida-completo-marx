@@ -27,7 +27,7 @@ class S3Service {
 
   constructor() {
     this.bucket = config.aws.bucket;
-    this.localStoragePath = path.join(process.cwd(), 'uploads');
+    this.localStoragePath = process.env.LOCAL_STORAGE_PATH || path.join(process.cwd(), 'uploads');
 
     // Verificar si las credenciales son reales (no placeholders)
     const hasRealCredentials =
@@ -36,12 +36,17 @@ class S3Service {
       !config.aws.accessKeyId.includes('your-') &&
       config.aws.accessKeyId.startsWith('AKIA');
 
-    // En desarrollo sin credenciales reales, usar almacenamiento local
-    if (config.env === 'development' && !hasRealCredentials) {
+    // Forzar almacenamiento local si la variable está configurada
+    const forceLocalStorage = process.env.USE_LOCAL_STORAGE === 'true';
+
+    // Usar almacenamiento local si:
+    // 1. Se fuerza explícitamente con USE_LOCAL_STORAGE=true
+    // 2. No hay credenciales AWS reales (en cualquier entorno)
+    if (forceLocalStorage || !hasRealCredentials) {
       this.useLocalStorage = true;
       this.ensureLocalStorageDir();
-      logger.info('S3 Service inicializado en MODO LOCAL (uploads/)');
-    } else if (hasRealCredentials) {
+      logger.info(`📁 S3 Service inicializado en MODO LOCAL (${this.localStoragePath})`);
+    } else {
       this.s3 = new S3Client({
         credentials: {
           accessKeyId: config.aws.accessKeyId,
@@ -50,12 +55,7 @@ class S3Service {
         region: config.aws.region,
       });
       this.isConfigured = true;
-      logger.info('S3 Service inicializado correctamente');
-    } else {
-      this.s3 = new S3Client({
-        region: config.aws.region || 'us-east-1',
-      });
-      logger.warn('S3 Service en modo simulacion (sin credenciales AWS)');
+      logger.info('S3 Service inicializado correctamente con AWS');
     }
   }
 

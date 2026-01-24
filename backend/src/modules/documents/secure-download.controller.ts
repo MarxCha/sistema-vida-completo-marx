@@ -100,8 +100,8 @@ router.get('/:token', async (req: Request, res: Response) => {
       });
     }
 
-    // Construir ruta del archivo
-    const uploadsPath = path.join(process.cwd(), 'uploads');
+    // Construir ruta del archivo (usar LOCAL_STORAGE_PATH si está definido)
+    const uploadsPath = process.env.LOCAL_STORAGE_PATH || path.join(process.cwd(), 'uploads');
     const filePath = path.join(uploadsPath, tokenData.s3Key);
 
     // Validar que la ruta no escape del directorio de uploads (prevenir path traversal)
@@ -240,7 +240,7 @@ router.get('/:token', async (req: Request, res: Response) => {
       userAgent: req.get('user-agent'),
       success: false,
       errorReason: error instanceof Error ? error.message : 'Unknown error',
-    }).catch(() => {});
+    }).catch(() => { });
 
     logger.error('Error en descarga segura:', error);
     res.status(500).json({
