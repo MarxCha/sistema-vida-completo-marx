@@ -38,7 +38,7 @@ interface NotificationResult {
   error?: string;
 }
 
-class NotificationService {
+export class NotificationService {
   private twilioClient: twilio.Twilio | null = null;
   private resend: Resend | null = null;
   private isSimulationMode: boolean = false;
@@ -50,17 +50,23 @@ class NotificationService {
 
   private initializeTwilio(): void {
     const { sid, token, phone } = config.twilio;
+    const missing: string[] = [];
 
-    if (sid && token && phone) {
+    if (!sid) missing.push('TWILIO_ACCOUNT_SID');
+    if (!token) missing.push('TWILIO_AUTH_TOKEN');
+    if (!phone) missing.push('TWILIO_PHONE_NUMBER');
+
+    if (missing.length === 0) {
       try {
         this.twilioClient = twilio(sid, token);
-        logger.info('Twilio inicializado correctamente');
+        logger.info('✅ Twilio inicializado correctamente');
       } catch (error) {
-        logger.warn('Error inicializando Twilio', { error: String(error) });
+        logger.error('❌ Error inicializando Twilio', { error: String(error) });
         this.isSimulationMode = true;
       }
     } else {
-      logger.warn('Credenciales de Twilio no configuradas. Usando modo simulacion.');
+      logger.warn(`⚠️ Credenciales de Twilio incompletas. Faltan: ${missing.join(', ')}`);
+      logger.warn('⚠️ Usando MODO SIMULACIÓN para SMS y WhatsApp');
       this.isSimulationMode = true;
     }
   }
@@ -71,13 +77,42 @@ class NotificationService {
     if (resendApiKey) {
       try {
         this.resend = new Resend(resendApiKey);
-        logger.info('Resend inicializado correctamente');
+        logger.info('✅ Resend inicializado correctamente');
       } catch (error) {
-        logger.warn('Error inicializando Resend', { error: String(error) });
+        logger.error('❌ Error inicializando Resend', { error: String(error) });
       }
     } else {
-      logger.warn('API Key de Resend no configurada. Usando modo simulacion de email.');
+      logger.warn('⚠️ RESEND_API_KEY no configurada. Usando MODO SIMULACIÓN para Email.');
     }
+  }
+
+  /**
+   * Verifica la configuración actual de notificaciones
+   */
+  validateConfiguration(): { 
+    twilio: { configured: boolean; missing: string[] };
+    email: { configured: boolean; missing: string[] };
+    simulationMode: boolean;
+  } {
+    const twilioMissing: string[] = [];
+    if (!config.twilio.sid) twilioMissing.push('TWILIO_ACCOUNT_SID');
+    if (!config.twilio.token) twilioMissing.push('TWILIO_AUTH_TOKEN');
+    if (!config.twilio.phone) twilioMissing.push('TWILIO_PHONE_NUMBER');
+
+    const emailMissing: string[] = [];
+    if (!config.email.resendApiKey) emailMissing.push('RESEND_API_KEY');
+
+    return {
+      twilio: {
+        configured: twilioMissing.length === 0,
+        missing: twilioMissing
+      },
+      email: {
+        configured: emailMissing.length === 0,
+        missing: emailMissing
+      },
+      simulationMode: this.isSimulationMode || !this.resend
+    };
   }
 
   /**
@@ -450,9 +485,11 @@ class NotificationService {
     });
 
     if (representatives.length === 0) {
-      logger.info('No hay representantes configurados para notificar');
+      logger.warn(`⚠️ No hay representantes configurados para notificar al usuario ${userId}`);
       return [];
     }
+
+    logger.info(`📢 Iniciando notificaciones para ${representatives.length} representantes del usuario ${userId}`);
 
     const results: NotificationResult[] = [];
 
