@@ -42,6 +42,11 @@ COPY --from=builder --chown=nodejs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nodejs:nodejs /app/package*.json ./
 
+# Crear directorio de uploads con permisos para nodejs
+# Este directorio será usado para almacenamiento local de documentos
+RUN mkdir -p /app/uploads/documents /app/uploads/profiles /app/uploads/temp && \
+    chown -R nodejs:nodejs /app/uploads
+
 # Cambiar a usuario no-root
 USER nodejs
 
