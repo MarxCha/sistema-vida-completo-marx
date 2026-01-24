@@ -3,7 +3,7 @@ import { PrismaClient, PatientProfile, DocumentCategory } from '@prisma/client';
 import { v4 as uuidv4 } from 'uuid';
 import { encrypt, decrypt, encryptJSON, decryptJSON } from '../../common/utils/encryption';
 import { generateEmergencyQR } from '../../common/utils/qr-generator';
-import { pdfGeneratorService } from '../../common/services/pdf-generator.service';
+import { pdfGeneratorService, MedicalProfileData } from '../../common/services/pdf-generator.service';
 import { s3Service } from '../../common/services/s3.service';
 import { logger } from '../../common/services/logger.service';
 
@@ -323,34 +323,47 @@ class PupService {
       });
 
       // Preparar datos para el PDF
-      const profileData = {
-        user: {
-          name: user.name,
-          email: user.email,
-          phone: user.phone || undefined,
-          curp: user.curp || undefined,
-          birthDate: user.dateOfBirth || undefined,
-        },
-        profile: {
-          bloodType: profile.bloodType || undefined,
-          photoUrl: profile.photoUrl || undefined,
-          qrToken: profile.qrToken,
+      let medicalData;
+      try {
+        medicalData = {
           allergies: profile.allergiesEnc
             ? decryptJSON<Array<{ name: string; severity: string; reaction?: string }>>(profile.allergiesEnc)
             : undefined,
-          conditions: profile.conditionsEnc
-            ? decryptJSON<Array<{ name: string; diagnosedDate?: string; notes?: string }>>(profile.conditionsEnc)
-            : undefined,
           medications: profile.medicationsEnc
-            ? decryptJSON<Array<{ name: string; dose?: string; frequency?: string }>>(profile.medicationsEnc)
+            ? decryptJSON<Array<{ name: string; dose: string; frequency: string; reason?: string }>>(profile.medicationsEnc)
             : undefined,
-          insuranceProvider: profile.insuranceProvider || undefined,
-          insurancePolicy: profile.insurancePolicy || undefined,
-          insurancePhone: profile.insurancePhone || undefined,
+          conditions: profile.conditionsEnc
+            ? decryptJSON<Array<{ name: string; diagnosisDate?: string; status?: string }>>(profile.conditionsEnc)
+            : undefined,
+        };
+      } catch (decryptError: any) {
+        logger.error('Error crítico descifrando datos del perfil médico. ¿La ENCRYPTION_KEY es correcta?', {
+          userId,
+          errorMessage: decryptError.message
+        });
+        throw new Error(`Decryption Error: Falló el descifrado de datos médicos. Verifique la clave de cifrado del servidor. (${decryptError.message})`);
+      }
+
+      const profileData: MedicalProfileData = {
+        user: {
+          name: user.name,
+          email: user.email,
+          phone: user.phone || '',
+          curp: user.curp || '',
+          birthDate: user.dateOfBirth || undefined,
+        },
+        profile: {
+          bloodType: profile.bloodType || '',
+          qrToken: profile.qrToken,
+          photoUrl: profile.photoUrl || '',
+          insuranceProvider: profile.insuranceProvider || '',
+          insurancePolicy: profile.insurancePolicy || '',
+          insurancePhone: profile.insurancePhone || '',
           isDonor: profile.isDonor,
           donorPreferences: profile.donorPreferencesEnc
             ? decryptJSON<DonorPreferences>(profile.donorPreferencesEnc)
             : undefined,
+          ...medicalData
         },
         representatives: representatives.map(rep => ({
           name: rep.name,

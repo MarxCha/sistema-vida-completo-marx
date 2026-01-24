@@ -5,7 +5,7 @@ import * as fs from 'fs';
 import { config } from '../../config';
 import { logger } from './logger.service';
 
-interface MedicalProfileData {
+export interface MedicalProfileData {
   // Datos del usuario
   user: {
     name: string;
