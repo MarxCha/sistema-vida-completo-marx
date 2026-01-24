@@ -85,7 +85,7 @@ class PDFGeneratorService {
       }
 
       try {
-        this.browser = await puppeteer.launch({
+        const launchOptions: any = {
           headless: true,
           executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
           args: [
@@ -94,9 +94,12 @@ class PDFGeneratorService {
             '--disable-dev-shm-usage',
             '--disable-gpu',
             '--no-zygote',
-            '--disable-extensions'
+            '--disable-extensions',
+            '--disable-features=IsolateOrigins,site-per-process'
           ],
-        });
+        };
+
+        this.browser = await puppeteer.launch(launchOptions);
         logger.info('Navegador Puppeteer iniciado correctamente');
       } catch (error: any) {
         logger.error('Fallo crítico al iniciar Puppeteer', {
@@ -104,7 +107,7 @@ class PDFGeneratorService {
           stack: error.stack,
           env: process.env.NODE_ENV
         });
-        throw new Error(`Error al iniciar el motor de PDF: ${error.message}`);
+        throw new Error(`Puppeteer Error: ${error.message}`);
       }
     }
     return this.browser;
