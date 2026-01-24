@@ -55,7 +55,11 @@ class S3Service {
         region: config.aws.region,
       });
       this.isConfigured = true;
-      logger.info('S3 Service inicializado correctamente con AWS');
+      logger.info('S3 Service inicializado correctamente con AWS', {
+        bucket: this.bucket,
+        region: config.aws.region,
+        hasAccessKey: !!config.aws.accessKeyId
+      });
     }
   }
 
@@ -151,11 +155,17 @@ class S3Service {
       await this.s3.send(command);
 
       const url = `https://${this.bucket}.s3.${config.aws.region}.amazonaws.com/${key}`;
+      logger.info(`[S3] Archivo subido exitosamente: ${key}`);
 
       return { url, key };
-    } catch (error) {
-      logger.error('Error subiendo archivo a S3:', error);
-      throw new Error('Error al subir archivo');
+    } catch (error: any) {
+      logger.error('Error subiendo archivo a S3:', {
+        message: error.message,
+        code: error.code,
+        bucket: this.bucket,
+        key: key
+      });
+      throw new Error(`Storage Error: ${error.message}`);
     }
   }
 
