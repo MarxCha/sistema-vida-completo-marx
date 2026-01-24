@@ -244,54 +244,49 @@ export class NotificationService {
       const formattedPhone = this.formatPhoneNumberForWhatsApp(to);
       logger.info(`📲 Enviando WhatsApp a: whatsapp:${formattedPhone}`);
 
-      let msgOptions: any = {
-        from: `whatsapp:${config.twilio.whatsappPhone}`,
-        to: `whatsapp:${formattedPhone}`,
-      };
+      // ESTRATEGIA: Primero intentar texto plano (funciona en ventana de 24h)
+      // Si falla, intentar con template (funciona fuera de ventana de 24h si está aprobado)
 
-      // Usar Template para Pánico si está configurado
-      // Esto permite enviar mensajes fuera de la ventana de 24h
-      if (type === 'PANIC' && config.twilio.whatsappTemplateId) {
-        logger.info(`📄 Usando Template WhatsApp: ${config.twilio.whatsappTemplateId}`);
-        msgOptions.contentSid = config.twilio.whatsappTemplateId;
-        msgOptions.contentVariables = JSON.stringify({
-          1: patientName,
-          2: mapsUrl,
-          3: nearestHospital || 'No identificado'
+      // Intento 1: Texto plano (funciona si hay sesión activa en últimas 24h)
+      try {
+        logger.info('📨 Intentando enviar WhatsApp con texto plano...');
+        const textResult = await this.twilioClient.messages.create({
+          body: message,
+          from: `whatsapp:${config.twilio.whatsappPhone}`,
+          to: `whatsapp:${formattedPhone}`,
         });
-      } else {
-        // Fallback a texto simple (solo funciona dentro de ventana de 24h)
-        msgOptions.body = message;
+        logger.info(`✅ WhatsApp (texto) enviado! SID: ${textResult.sid}, Status: ${textResult.status}`);
+        return { success: true, messageId: textResult.sid };
+      } catch (textError: any) {
+        logger.warn(`⚠️ WhatsApp texto falló (${textError.code}): ${textError.message}`);
+
+        // Intento 2: Template (funciona fuera de ventana de 24h si está aprobado)
+        if (type === 'PANIC' && config.twilio.whatsappTemplateId) {
+          logger.info(`📄 Intentando con Template WhatsApp: ${config.twilio.whatsappTemplateId}`);
+          try {
+            const templateResult = await this.twilioClient.messages.create({
+              from: `whatsapp:${config.twilio.whatsappPhone}`,
+              to: `whatsapp:${formattedPhone}`,
+              contentSid: config.twilio.whatsappTemplateId,
+              contentVariables: JSON.stringify({
+                1: patientName,
+                2: mapsUrl,
+                3: nearestHospital || 'No identificado'
+              }),
+            });
+            logger.info(`✅ WhatsApp (template) enviado! SID: ${templateResult.sid}, Status: ${templateResult.status}`);
+            return { success: true, messageId: templateResult.sid };
+          } catch (templateError: any) {
+            logger.error(`❌ WhatsApp template también falló (${templateError.code}): ${templateError.message}`);
+          }
+        }
+
+        // Ambos métodos fallaron
+        throw textError;
       }
-
-      logger.info('📨 Intentando enviar WhatsApp con opciones:', { options: msgOptions });
-      const result = await this.twilioClient.messages.create(msgOptions);
-
-      logger.info(`✅ WhatsApp enviado! SID: ${result.sid}, Status: ${result.status}`);
-      return { success: true, messageId: result.sid };
     } catch (error: any) {
       logger.error('❌ Error enviando WhatsApp:', error.message);
       logger.error('❌ Error code:', error.code);
-
-      // RETRY FALLBACK: Si falló el Template (ej. no aprobado), intentar enviar como texto simple
-      // Esto permitirá que al menos funcione para números con sesión activa (como el tuyo)
-      if (type === 'PANIC' && config.twilio.whatsappTemplateId) {
-        logger.warn('⚠️ Falló envío con Template. Intentando fallback a texto plano...');
-        try {
-          const formattedPhone = this.formatPhoneNumberForWhatsApp(to);
-          const fallbackResult = await this.twilioClient.messages.create({
-            body: message,
-            from: `whatsapp:${config.twilio.whatsappPhone}`,
-            to: `whatsapp:${formattedPhone}`,
-          });
-          logger.info(`✅ Fallback enviado! SID: ${fallbackResult.sid}`);
-          return { success: true, messageId: fallbackResult.sid };
-        } catch (fallbackError: any) {
-          logger.error('❌ Falló también el fallback:', fallbackError.message);
-          logger.error('❌ Fallback error code:', fallbackError.code);
-        }
-      }
-
       return { success: false, error: error.message };
     }
   }
