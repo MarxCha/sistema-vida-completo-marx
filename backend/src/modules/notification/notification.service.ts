@@ -231,7 +231,7 @@ export class NotificationService {
     }
 
     // Modo simulación
-    if (this.isSimulationMode || !this.twilioClient || !config.twilio.whatsappPhone) {
+    if (this.isSimulationMode || !this.twilioClient) {
       logger.info('=== WHATSAPP SIMULADO ===');
       logger.info(`Para: ${to}`);
       logger.info(`Mensaje: ${message}`);
@@ -244,58 +244,81 @@ export class NotificationService {
       const formattedPhone = this.formatPhoneNumberForWhatsApp(to);
       logger.info(`📲 Enviando WhatsApp a: whatsapp:${formattedPhone}`);
 
-      // ESTRATEGIA: Primero intentar con Template (funciona fuera de ventana de 24h si está aprobado)
-      // Si falla, intentar texto plano (solo funciona en ventana de 24h)
+      // ESTRATEGIA: Intentar con Template si está configurado
+      // Si falla, caer en fallback de texto plano
 
-      if (type === 'PANIC' && config.twilio.whatsappTemplateId) {
-        // Intento 1: Template (para emergencias, funciona fuera de ventana de 24h)
+      let contentSid: string | undefined;
+      let contentVariables: string | undefined;
+
+      if (type === 'PANIC') {
+        contentSid = config.twilio.whatsappTemplateId;
+        contentVariables = JSON.stringify({
+          '1': patientName,
+          '2': mapsUrl,
+          '3': nearestHospital || 'No identificado'
+        });
+      } else if (type === 'QR_ACCESS') {
+        contentSid = config.twilio.whatsappAccessTemplateId;
+        contentVariables = JSON.stringify({
+          '1': patientName,
+          '2': accessorName || 'Personal Médico',
+          '3': mapsUrl
+        });
+      }
+
+      if (contentSid) {
         try {
-          logger.info(`� Intentando con Template WhatsApp: ${config.twilio.whatsappTemplateId}`);
-          const templateResult = await this.twilioClient.messages.create({
+          logger.info(`📨 Intentando WhatsApp con Template: ${contentSid} (Tipo: ${type})`);
+
+          const messageOptions: any = {
             from: `whatsapp:${config.twilio.whatsappPhone}`,
             to: `whatsapp:${formattedPhone}`,
-            contentSid: config.twilio.whatsappTemplateId,
-            contentVariables: JSON.stringify({
-              1: patientName,
-              2: mapsUrl,
-              3: nearestHospital || 'No identificado'
-            }),
-          });
+            contentSid: contentSid,
+            contentVariables: contentVariables,
+          };
+
+          // Si hay un Messaging Service SID configurado, usarlo para mayor confiabilidad
+          if (config.twilio.messagingServiceSid) {
+            messageOptions.messagingServiceSid = config.twilio.messagingServiceSid;
+            // Cuando se usa messagingServiceSid, Twilio prefiere que no se envíe 'from' explícito 
+            // a menos que se quiera forzar un número específico.
+            delete messageOptions.from;
+          }
+
+          const templateResult = await this.twilioClient.messages.create(messageOptions);
           logger.info(`✅ WhatsApp (template) enviado! SID: ${templateResult.sid}, Status: ${templateResult.status}`);
           return { success: true, messageId: templateResult.sid };
         } catch (templateError: any) {
           logger.warn(`⚠️ WhatsApp template falló (${templateError.code}): ${templateError.message}`);
           logger.info('📨 Intentando fallback con texto plano...');
-
-          // Intento 2: Texto plano (solo funciona si hay sesión activa en últimas 24h)
-          try {
-            const textResult = await this.twilioClient.messages.create({
-              body: message,
-              from: `whatsapp:${config.twilio.whatsappPhone}`,
-              to: `whatsapp:${formattedPhone}`,
-            });
-            logger.info(`✅ WhatsApp (texto fallback) enviado! SID: ${textResult.sid}, Status: ${textResult.status}`);
-            return { success: true, messageId: textResult.sid };
-          } catch (textError: any) {
-            logger.error(`❌ WhatsApp texto también falló (${textError.code}): ${textError.message}`);
-            throw templateError; // Reportar el error original del template
-          }
         }
-      } else {
-        // Sin template configurado, usar texto plano directamente
-        logger.info('📨 Enviando WhatsApp con texto plano (sin template)...');
-        const textResult = await this.twilioClient.messages.create({
-          body: message,
-          from: `whatsapp:${config.twilio.whatsappPhone}`,
-          to: `whatsapp:${formattedPhone}`,
-        });
-        logger.info(`✅ WhatsApp (texto) enviado! SID: ${textResult.sid}, Status: ${textResult.status}`);
-        return { success: true, messageId: textResult.sid };
       }
+
+      // Si no hay template o el template falló, intentar texto plano
+      logger.info('📨 Enviando WhatsApp con texto plano (fallback o sin template)...');
+
+      const plainTextOptions: any = {
+        body: message,
+        from: `whatsapp:${config.twilio.whatsappPhone}`,
+        to: `whatsapp:${formattedPhone}`,
+      };
+
+      if (config.twilio.messagingServiceSid) {
+        plainTextOptions.messagingServiceSid = config.twilio.messagingServiceSid;
+        delete plainTextOptions.from;
+      }
+
+      const textResult = await this.twilioClient.messages.create(plainTextOptions);
+      logger.info(`✅ WhatsApp (texto) enviado! SID: ${textResult.sid}, Status: ${textResult.status}`);
+      return { success: true, messageId: textResult.sid };
+
     } catch (error: any) {
-      logger.error('❌ Error enviando WhatsApp:', error.message);
-      logger.error('❌ Error code:', error.code);
-      return { success: false, error: error.message };
+      logger.error('❌ Error fatal enviando WhatsApp:', {
+        message: error.message,
+        code: error.code,
+        moreInfo: error.moreInfo
+      });
+      return { success: false, error: `${error.message} (${error.code})` };
     }
   }
 

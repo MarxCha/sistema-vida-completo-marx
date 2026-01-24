@@ -56,6 +56,8 @@ export const config = {
     phone: (process.env.TWILIO_PHONE_NUMBER || '').trim(),
     whatsappPhone: (process.env.TWILIO_WHATSAPP_NUMBER || '').trim(),
     whatsappTemplateId: (process.env.TWILIO_WHATSAPP_TEMPLATE_ID || 'HXdce98f9ca93895538759cd4b43c550b7').trim(),
+    whatsappAccessTemplateId: (process.env.TWILIO_WHATSAPP_ACCESS_TEMPLATE_ID || '').trim(),
+    messagingServiceSid: (process.env.TWILIO_MESSAGING_SERVICE_SID || '').trim(),
   },
 
   // AWS S3
