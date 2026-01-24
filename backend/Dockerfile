@@ -40,7 +40,10 @@ RUN apk add --no-cache \
     ca-certificates \
     ttf-freefont \
     font-noto \
-    libstdc++
+    libstdc++ \
+    fontconfig \
+    dbus \
+    gcompat
 
 # Configurar variables de entorno para Puppeteer
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
