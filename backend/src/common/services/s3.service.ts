@@ -61,15 +61,40 @@ class S3Service {
 
   /**
    * Asegura que el directorio de almacenamiento local exista
+   * Si hay errores de permisos, intenta con una ruta de fallback
    */
   private ensureLocalStorageDir(): void {
     const dirs = ['documents', 'profiles', 'temp'];
-    dirs.forEach(dir => {
-      const fullPath = path.join(this.localStoragePath, dir);
-      if (!fs.existsSync(fullPath)) {
-        fs.mkdirSync(fullPath, { recursive: true });
+
+    try {
+      dirs.forEach(dir => {
+        const fullPath = path.join(this.localStoragePath, dir);
+        if (!fs.existsSync(fullPath)) {
+          fs.mkdirSync(fullPath, { recursive: true });
+        }
+      });
+    } catch (error: any) {
+      // Si hay error de permisos, intentar con ruta de fallback dentro de /app
+      if (error.code === 'EACCES') {
+        const fallbackPath = path.join(process.cwd(), 'uploads');
+        logger.warn(`⚠️ Sin permisos en ${this.localStoragePath}, usando fallback: ${fallbackPath}`);
+        this.localStoragePath = fallbackPath;
+
+        try {
+          dirs.forEach(dir => {
+            const fullPath = path.join(this.localStoragePath, dir);
+            if (!fs.existsSync(fullPath)) {
+              fs.mkdirSync(fullPath, { recursive: true });
+            }
+          });
+        } catch (fallbackError) {
+          logger.error('❌ Error creando directorio de uploads en fallback:', fallbackError);
+          // No lanzar error - permitir que la app inicie
+        }
+      } else {
+        logger.error('❌ Error creando directorios de almacenamiento:', error);
       }
-    });
+    }
   }
 
   /**
