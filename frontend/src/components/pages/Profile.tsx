@@ -17,7 +17,8 @@ import {
   Building2,
   Phone,
   MapPin,
-  ChevronDown
+  ChevronDown,
+  FileDown
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import type { ProfileForm } from '../../types';
@@ -120,6 +121,17 @@ export default function Profile() {
     },
   });
 
+  const generateDocMutation = useMutation({
+    mutationFn: () => profileApi.generateDocument(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['documents'] });
+      toast.success('Documento de perfil generado y guardado en tus documentos');
+    },
+    onError: () => {
+      toast.error('Error al generar el documento de perfil');
+    },
+  });
+
   const onSubmit = (data: ProfileForm) => {
     updateMutation.mutate(data);
   };
@@ -158,6 +170,19 @@ export default function Profile() {
             Información crítica que estará disponible en emergencias
           </p>
         </div>
+        <button
+          type="button"
+          onClick={() => generateDocMutation.mutate()}
+          disabled={generateDocMutation.isPending}
+          className="btn-secondary flex items-center gap-2"
+        >
+          {generateDocMutation.isPending ? (
+            <div className="w-4 h-4 border-2 border-vida-600 border-t-transparent rounded-full animate-spin"></div>
+          ) : (
+            <FileDown className="w-4 h-4" />
+          )}
+          Generar PDF de Perfil
+        </button>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -204,7 +229,7 @@ export default function Profile() {
           <p className="text-sm text-gray-600 mb-4">
             Lista de alergias conocidas (medicamentos, alimentos, etc.)
           </p>
-          
+
           <div className="flex gap-2 mb-4">
             <input
               type="text"
@@ -222,7 +247,7 @@ export default function Profile() {
               <Plus className="w-5 h-5" />
             </button>
           </div>
-          
+
           <div className="flex flex-wrap gap-2">
             {allergies.map((allergy, index) => (
               <span key={index} className="inline-flex items-center gap-1 px-3 py-1.5 bg-coral-100 text-coral-800 rounded-full text-sm">
@@ -251,7 +276,7 @@ export default function Profile() {
           <p className="text-sm text-gray-600 mb-4">
             Enfermedades crónicas o condiciones relevantes
           </p>
-          
+
           <div className="flex gap-2 mb-4">
             <input
               type="text"
@@ -269,7 +294,7 @@ export default function Profile() {
               <Plus className="w-5 h-5" />
             </button>
           </div>
-          
+
           <div className="flex flex-wrap gap-2">
             {conditions.map((condition, index) => (
               <span key={index} className="inline-flex items-center gap-1 px-3 py-1.5 bg-vida-100 text-vida-800 rounded-full text-sm">
@@ -298,7 +323,7 @@ export default function Profile() {
           <p className="text-sm text-gray-600 mb-4">
             Medicamentos que tomas regularmente
           </p>
-          
+
           <div className="flex gap-2 mb-4">
             <input
               type="text"
@@ -316,7 +341,7 @@ export default function Profile() {
               <Plus className="w-5 h-5" />
             </button>
           </div>
-          
+
           <div className="flex flex-wrap gap-2">
             {medications.map((medication, index) => (
               <span key={index} className="inline-flex items-center gap-1 px-3 py-1.5 bg-salud-100 text-salud-800 rounded-full text-sm">
@@ -393,9 +418,8 @@ export default function Profile() {
                         key={ins.id}
                         type="button"
                         onClick={() => selectInsurance(ins)}
-                        className={`w-full px-3 py-2 text-left hover:bg-vida-50 flex items-center justify-between ${
-                          selectedInsurance === ins.shortName ? 'bg-vida-50' : ''
-                        }`}
+                        className={`w-full px-3 py-2 text-left hover:bg-vida-50 flex items-center justify-between ${selectedInsurance === ins.shortName ? 'bg-vida-50' : ''
+                          }`}
                       >
                         <div>
                           <div className="font-medium text-gray-900">{ins.shortName || ins.name}</div>
@@ -582,6 +606,6 @@ export default function Profile() {
         onError={(error) => toast.error(error)}
         onSuccess={(message) => toast.success(message)}
       />
-    </div>
+    </div >
   );
 }

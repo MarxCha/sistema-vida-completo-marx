@@ -64,6 +64,7 @@ class PDFGeneratorService {
     if (!this.browser) {
       this.browser = await puppeteer.launch({
         headless: true,
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
@@ -689,11 +690,11 @@ class PDFGeneratorService {
         </div>
         <div class="alert-list">
           ${profile.allergies && profile.allergies.length > 0
-            ? profile.allergies.map(allergy => {
-                const name = typeof allergy === 'string' ? allergy : allergy.name;
-                const severity = typeof allergy === 'string' ? 'Media' : (allergy.severity || 'Media');
-                const reaction = typeof allergy === 'string' ? null : allergy.reaction;
-                return `
+        ? profile.allergies.map(allergy => {
+          const name = typeof allergy === 'string' ? allergy : allergy.name;
+          const severity = typeof allergy === 'string' ? 'Media' : (allergy.severity || 'Media');
+          const reaction = typeof allergy === 'string' ? null : allergy.reaction;
+          return `
               <div class="alert-item allergy">
                 <span class="alert-badge ${severity?.toLowerCase() === 'alta' || severity?.toLowerCase() === 'high' ? 'badge-high' : severity?.toLowerCase() === 'media' || severity?.toLowerCase() === 'medium' ? 'badge-medium' : 'badge-low'}">${severity}</span>
                 <div class="alert-content">
@@ -701,9 +702,10 @@ class PDFGeneratorService {
                   ${reaction ? `<div class="alert-detail">Reacción: ${reaction}</div>` : ''}
                 </div>
               </div>
-            `;}).join('')
-            : '<p class="no-data">No se han registrado alergias</p>'
-          }
+            `;
+        }).join('')
+        : '<p class="no-data">No se han registrado alergias</p>'
+      }
         </div>
       </div>
 
@@ -715,11 +717,11 @@ class PDFGeneratorService {
         </div>
         <div class="alert-list">
           ${profile.conditions && profile.conditions.length > 0
-            ? profile.conditions.map(condition => {
-                const name = typeof condition === 'string' ? condition : condition.name;
-                const diagnosedDate = typeof condition === 'string' ? null : condition.diagnosedDate;
-                const notes = typeof condition === 'string' ? null : condition.notes;
-                return `
+        ? profile.conditions.map(condition => {
+          const name = typeof condition === 'string' ? condition : condition.name;
+          const diagnosedDate = typeof condition === 'string' ? null : condition.diagnosedDate;
+          const notes = typeof condition === 'string' ? null : condition.notes;
+          return `
               <div class="alert-item condition">
                 <div class="alert-content">
                   <div class="alert-name">${name}</div>
@@ -727,9 +729,10 @@ class PDFGeneratorService {
                   ${notes ? `<div class="alert-detail">${notes}</div>` : ''}
                 </div>
               </div>
-            `;}).join('')
-            : '<p class="no-data">No se han registrado condiciones médicas</p>'
-          }
+            `;
+        }).join('')
+        : '<p class="no-data">No se han registrado condiciones médicas</p>'
+      }
         </div>
       </div>
     </div>
@@ -742,20 +745,21 @@ class PDFGeneratorService {
       </div>
       <div class="alert-list">
         ${profile.medications && profile.medications.length > 0
-          ? profile.medications.map(med => {
-              const name = typeof med === 'string' ? med : med.name;
-              const dose = typeof med === 'string' ? '' : (med.dose || '');
-              const frequency = typeof med === 'string' ? '' : (med.frequency || '');
-              return `
+        ? profile.medications.map(med => {
+          const name = typeof med === 'string' ? med : med.name;
+          const dose = typeof med === 'string' ? '' : (med.dose || '');
+          const frequency = typeof med === 'string' ? '' : (med.frequency || '');
+          return `
             <div class="alert-item medication">
               <div class="alert-content">
                 <div class="alert-name">${name}</div>
                 ${dose || frequency ? `<div class="alert-detail">${dose} ${frequency ? `- ${frequency}` : ''}</div>` : ''}
               </div>
             </div>
-          `;}).join('')
-          : '<p class="no-data">No se han registrado medicamentos</p>'
-        }
+          `;
+        }).join('')
+        : '<p class="no-data">No se han registrado medicamentos</p>'
+      }
       </div>
     </div>
 
@@ -767,7 +771,7 @@ class PDFGeneratorService {
           <span class="section-title">Seguro Médico</span>
         </div>
         ${profile.insuranceProvider
-          ? `
+        ? `
             <div class="insurance-card">
               <div class="insurance-header">
                 <span class="insurance-provider">${profile.insuranceProvider}</span>
@@ -784,8 +788,8 @@ class PDFGeneratorService {
               </div>
             </div>
           `
-          : '<p class="no-data">No se ha registrado información de seguro médico</p>'
-        }
+        : '<p class="no-data">No se ha registrado información de seguro médico</p>'
+      }
       </div>
 
       <!-- Donor -->
@@ -833,7 +837,7 @@ class PDFGeneratorService {
       </div>
       <div class="info-grid">
         ${representatives && representatives.length > 0
-          ? representatives.map(rep => `
+        ? representatives.map(rep => `
             <div class="contact-card">
               <div class="contact-avatar">${rep.name.charAt(0).toUpperCase()}</div>
               <div class="contact-info">
@@ -849,8 +853,8 @@ class PDFGeneratorService {
               </div>
             </div>
           `).join('')
-          : '<p class="no-data">No se han registrado contactos de emergencia</p>'
-        }
+        : '<p class="no-data">No se han registrado contactos de emergencia</p>'
+      }
       </div>
     </div>
 
