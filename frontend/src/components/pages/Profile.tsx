@@ -174,14 +174,15 @@ export default function Profile() {
           type="button"
           onClick={() => generateDocMutation.mutate()}
           disabled={generateDocMutation.isPending}
-          className="btn-secondary flex items-center gap-2"
+          className="btn-outline flex items-center gap-2 shadow-sm"
         >
           {generateDocMutation.isPending ? (
             <div className="w-4 h-4 border-2 border-vida-600 border-t-transparent rounded-full animate-spin"></div>
           ) : (
-            <FileDown className="w-4 h-4" />
+            <FileDown className="w-5 h-5" />
           )}
-          Generar PDF de Perfil
+          <span className="hidden sm:inline">Generar PDF de Perfil</span>
+          <span className="sm:hidden">Generar PDF</span>
         </button>
       </div>
 
