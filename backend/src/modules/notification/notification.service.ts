@@ -244,12 +244,46 @@ export class NotificationService {
       const formattedPhone = this.formatPhoneNumberForWhatsApp(to);
       logger.info(`📲 Enviando WhatsApp a: whatsapp:${formattedPhone}`);
 
-      // ESTRATEGIA: Primero intentar texto plano (funciona en ventana de 24h)
-      // Si falla, intentar con template (funciona fuera de ventana de 24h si está aprobado)
+      // ESTRATEGIA: Primero intentar con Template (funciona fuera de ventana de 24h si está aprobado)
+      // Si falla, intentar texto plano (solo funciona en ventana de 24h)
 
-      // Intento 1: Texto plano (funciona si hay sesión activa en últimas 24h)
-      try {
-        logger.info('📨 Intentando enviar WhatsApp con texto plano...');
+      if (type === 'PANIC' && config.twilio.whatsappTemplateId) {
+        // Intento 1: Template (para emergencias, funciona fuera de ventana de 24h)
+        try {
+          logger.info(`� Intentando con Template WhatsApp: ${config.twilio.whatsappTemplateId}`);
+          const templateResult = await this.twilioClient.messages.create({
+            from: `whatsapp:${config.twilio.whatsappPhone}`,
+            to: `whatsapp:${formattedPhone}`,
+            contentSid: config.twilio.whatsappTemplateId,
+            contentVariables: JSON.stringify({
+              1: patientName,
+              2: mapsUrl,
+              3: nearestHospital || 'No identificado'
+            }),
+          });
+          logger.info(`✅ WhatsApp (template) enviado! SID: ${templateResult.sid}, Status: ${templateResult.status}`);
+          return { success: true, messageId: templateResult.sid };
+        } catch (templateError: any) {
+          logger.warn(`⚠️ WhatsApp template falló (${templateError.code}): ${templateError.message}`);
+          logger.info('📨 Intentando fallback con texto plano...');
+
+          // Intento 2: Texto plano (solo funciona si hay sesión activa en últimas 24h)
+          try {
+            const textResult = await this.twilioClient.messages.create({
+              body: message,
+              from: `whatsapp:${config.twilio.whatsappPhone}`,
+              to: `whatsapp:${formattedPhone}`,
+            });
+            logger.info(`✅ WhatsApp (texto fallback) enviado! SID: ${textResult.sid}, Status: ${textResult.status}`);
+            return { success: true, messageId: textResult.sid };
+          } catch (textError: any) {
+            logger.error(`❌ WhatsApp texto también falló (${textError.code}): ${textError.message}`);
+            throw templateError; // Reportar el error original del template
+          }
+        }
+      } else {
+        // Sin template configurado, usar texto plano directamente
+        logger.info('📨 Enviando WhatsApp con texto plano (sin template)...');
         const textResult = await this.twilioClient.messages.create({
           body: message,
           from: `whatsapp:${config.twilio.whatsappPhone}`,
@@ -257,32 +291,6 @@ export class NotificationService {
         });
         logger.info(`✅ WhatsApp (texto) enviado! SID: ${textResult.sid}, Status: ${textResult.status}`);
         return { success: true, messageId: textResult.sid };
-      } catch (textError: any) {
-        logger.warn(`⚠️ WhatsApp texto falló (${textError.code}): ${textError.message}`);
-
-        // Intento 2: Template (funciona fuera de ventana de 24h si está aprobado)
-        if (type === 'PANIC' && config.twilio.whatsappTemplateId) {
-          logger.info(`📄 Intentando con Template WhatsApp: ${config.twilio.whatsappTemplateId}`);
-          try {
-            const templateResult = await this.twilioClient.messages.create({
-              from: `whatsapp:${config.twilio.whatsappPhone}`,
-              to: `whatsapp:${formattedPhone}`,
-              contentSid: config.twilio.whatsappTemplateId,
-              contentVariables: JSON.stringify({
-                1: patientName,
-                2: mapsUrl,
-                3: nearestHospital || 'No identificado'
-              }),
-            });
-            logger.info(`✅ WhatsApp (template) enviado! SID: ${templateResult.sid}, Status: ${templateResult.status}`);
-            return { success: true, messageId: templateResult.sid };
-          } catch (templateError: any) {
-            logger.error(`❌ WhatsApp template también falló (${templateError.code}): ${templateError.message}`);
-          }
-        }
-
-        // Ambos métodos fallaron
-        throw textError;
       }
     } catch (error: any) {
       logger.error('❌ Error enviando WhatsApp:', error.message);
