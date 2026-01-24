@@ -127,8 +127,9 @@ export default function Profile() {
       queryClient.invalidateQueries({ queryKey: ['documents'] });
       toast.success('Documento de perfil generado y guardado en tus documentos');
     },
-    onError: () => {
-      toast.error('Error al generar el documento de perfil');
+    onError: (error: any) => {
+      const detail = error?.response?.data?.error?.details || error?.response?.data?.error?.message;
+      toast.error(detail ? `Error: ${detail}` : 'Error al generar el documento de perfil');
     },
   });
 
