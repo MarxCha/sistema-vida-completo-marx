@@ -62,17 +62,33 @@ class PDFGeneratorService {
 
   private async getBrowser(): Promise<puppeteer.Browser> {
     if (!this.browser) {
-      this.browser = await puppeteer.launch({
-        headless: true,
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-gpu',
-          '--no-zygote',
-        ],
+      logger.info('Iniciando instancia de Puppeteer...', {
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
+        skipDownload: process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
       });
+
+      try {
+        this.browser = await puppeteer.launch({
+          headless: true,
+          executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+          args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-gpu',
+            '--no-zygote',
+            '--single-process',
+            '--disable-extensions'
+          ],
+        });
+        logger.info('Navegador Puppeteer iniciado correctamente');
+      } catch (error: any) {
+        logger.error('Fallo crítico al iniciar Puppeteer', {
+          message: error.message,
+          stack: error.stack
+        });
+        throw error;
+      }
     }
     return this.browser;
   }
