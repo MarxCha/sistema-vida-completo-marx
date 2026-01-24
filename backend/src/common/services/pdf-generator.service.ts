@@ -1,6 +1,7 @@
 // src/common/services/pdf-generator.service.ts
 import * as puppeteer from 'puppeteer';
 import * as QRCode from 'qrcode';
+import * as fs from 'fs';
 import { config } from '../../config';
 import { logger } from './logger.service';
 
@@ -62,10 +63,26 @@ class PDFGeneratorService {
 
   private async getBrowser(): Promise<puppeteer.Browser> {
     if (!this.browser) {
+      const exePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+      const skipDownload = process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD;
+
+      const exeExists = exePath ? fs.existsSync(exePath) : 'no-path-provided';
+
       logger.info('Iniciando instancia de Puppeteer...', {
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
-        skipDownload: process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
+        executablePath: exePath,
+        exists: exeExists,
+        skipDownload: skipDownload
       });
+
+      if (exePath && !fs.existsSync(exePath)) {
+        logger.warn(`El ejecutable de Chromium no se encuentra en: ${exePath}`);
+        // Intentar ruta alternativa común en Alpine
+        const altPath = '/usr/bin/chromium';
+        if (fs.existsSync(altPath)) {
+          logger.info(`Usando ruta alternativa: ${altPath}`);
+          process.env.PUPPETEER_EXECUTABLE_PATH = altPath;
+        }
+      }
 
       try {
         this.browser = await puppeteer.launch({
@@ -77,7 +94,6 @@ class PDFGeneratorService {
             '--disable-dev-shm-usage',
             '--disable-gpu',
             '--no-zygote',
-            '--single-process',
             '--disable-extensions'
           ],
         });
@@ -85,9 +101,10 @@ class PDFGeneratorService {
       } catch (error: any) {
         logger.error('Fallo crítico al iniciar Puppeteer', {
           message: error.message,
-          stack: error.stack
+          stack: error.stack,
+          env: process.env.NODE_ENV
         });
-        throw error;
+        throw new Error(`Error al iniciar el motor de PDF: ${error.message}`);
       }
     }
     return this.browser;
@@ -112,10 +129,10 @@ class PDFGeneratorService {
         // Generar HTML
         const html = this.generateMedicalProfileHTML(data, qrDataUrl);
 
-        // Cargar HTML en la página con timeout
+        // Cargar HTML en la página
         await page.setContent(html, {
-          waitUntil: 'networkidle0',
-          timeout: 30000 // 30 segundos
+          waitUntil: ['domcontentloaded', 'networkidle2'],
+          timeout: 45000
         });
 
         // Generar PDF
