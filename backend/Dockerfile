@@ -4,6 +4,9 @@ FROM node:20-alpine AS builder
 # Instalar dependencias del sistema para Prisma y compilación
 RUN apk add --no-cache libc6-compat openssl python3 make g++
 
+# Evitar descarga de chromium durante npm ci
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+
 # Crear directorio de trabajo
 WORKDIR /app
 
@@ -35,11 +38,14 @@ RUN apk add --no-cache \
     freetype \
     harfbuzz \
     ca-certificates \
-    ttf-freefont
+    ttf-freefont \
+    font-noto \
+    libstdc++
 
 # Configurar variables de entorno para Puppeteer
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser \
+    PUPPETEER_CACHE_DIR=/app/.cache/puppeteer
 
 # Crear directorio de trabajo
 WORKDIR /app
@@ -54,10 +60,9 @@ COPY --from=builder --chown=nodejs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nodejs:nodejs /app/package*.json ./
 
-# Crear directorio de uploads con permisos para nodejs
-# Este directorio será usado para almacenamiento local de documentos
-RUN mkdir -p /app/uploads/documents /app/uploads/profiles /app/uploads/temp && \
-    chown -R nodejs:nodejs /app/uploads
+# Crear directorio de uploads y cache con permisos para nodejs
+RUN mkdir -p /app/uploads/documents /app/uploads/profiles /app/uploads/temp /app/.cache/puppeteer && \
+    chown -R nodejs:nodejs /app/uploads /app/.cache/puppeteer
 
 # Cambiar a usuario no-root
 USER nodejs

@@ -70,6 +70,7 @@ class PDFGeneratorService {
           '--disable-setuid-sandbox',
           '--disable-dev-shm-usage',
           '--disable-gpu',
+          '--no-zygote',
         ],
       });
     }
@@ -84,35 +85,53 @@ class PDFGeneratorService {
   }
 
   async generateMedicalProfilePDF(data: MedicalProfileData): Promise<Buffer> {
-    const browser = await this.getBrowser();
-    const page = await browser.newPage();
-
     try {
-      // Generar QR code como data URL
-      const qrDataUrl = await this.generateQRDataUrl(data.profile.qrToken);
+      const browser = await this.getBrowser();
+      const page = await browser.newPage();
 
-      // Generar HTML
-      const html = this.generateMedicalProfileHTML(data, qrDataUrl);
+      try {
+        // Generar QR code como data URL
+        const qrDataUrl = await this.generateQRDataUrl(data.profile.qrToken);
 
-      // Cargar HTML en la página
-      await page.setContent(html, { waitUntil: 'networkidle0' });
+        // Generar HTML
+        const html = this.generateMedicalProfileHTML(data, qrDataUrl);
 
-      // Generar PDF
-      const pdfBuffer = await page.pdf({
-        format: 'A4',
-        printBackground: true,
-        margin: {
-          top: '20px',
-          right: '20px',
-          bottom: '20px',
-          left: '20px',
-        },
+        // Cargar HTML en la página con timeout
+        await page.setContent(html, {
+          waitUntil: 'networkidle0',
+          timeout: 30000 // 30 segundos
+        });
+
+        // Generar PDF
+        const pdfBuffer = await page.pdf({
+          format: 'A4',
+          printBackground: true,
+          margin: {
+            top: '20px',
+            right: '20px',
+            bottom: '20px',
+            left: '20px',
+          },
+        });
+
+        logger.info('PDF del perfil médico generado exitosamente');
+        return Buffer.from(pdfBuffer);
+      } catch (pageError: any) {
+        logger.error('Error durante el procesamiento de la página PDF', {
+          error: pageError.message,
+          stack: pageError.stack
+        });
+        throw pageError;
+      } finally {
+        await page.close();
+      }
+    } catch (browserError: any) {
+      logger.error('Error fatal al iniciar navegador o generar PDF', {
+        error: browserError.message,
+        stack: browserError.stack,
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH
       });
-
-      logger.info('PDF del perfil médico generado exitosamente');
-      return Buffer.from(pdfBuffer);
-    } finally {
-      await page.close();
+      throw browserError;
     }
   }
 
