@@ -56,6 +56,9 @@ const prisma = new PrismaClient();
 // Crear aplicación Express
 const app = express();
 
+// Confiar en el proxy (necesario para Coolify/Docker y express-rate-limit)
+app.set('trust proxy', 1);
+
 // Crear servidor HTTP para Socket.io
 const httpServer = createServer(app);
 

@@ -313,12 +313,14 @@ export class NotificationService {
       return { success: true, messageId: textResult.sid };
 
     } catch (error: any) {
-      logger.error('❌ Error fatal enviando WhatsApp:', {
+      const errorDetail = {
         message: error.message,
         code: error.code,
+        status: error.status,
         moreInfo: error.moreInfo
-      });
-      return { success: false, error: `${error.message} (${error.code})` };
+      };
+      logger.error('❌ Error fatal enviando WhatsApp:', errorDetail);
+      return { success: false, error: `${error.message} (${error.code || 'UNKNOWN'})` };
     }
   }
 
