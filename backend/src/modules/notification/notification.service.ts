@@ -89,7 +89,7 @@ export class NotificationService {
   /**
    * Verifica la configuración actual de notificaciones
    */
-  validateConfiguration(): { 
+  validateConfiguration(): {
     twilio: { configured: boolean; missing: string[] };
     email: { configured: boolean; missing: string[] };
     simulationMode: boolean;
@@ -357,9 +357,9 @@ export class NotificationService {
           <div style="padding: 24px;">
             <p style="font-size: 18px; color: #1f2937; margin-bottom: 20px;">
               ${isPanic
-                ? `<strong>${patientName}</strong> ha activado el botón de pánico y necesita ayuda inmediata.`
-                : `Se ha accedido a la información médica de <strong>${patientName}</strong>.`
-              }
+        ? `<strong>${patientName}</strong> ha activado el botón de pánico y necesita ayuda inmediata.`
+        : `Se ha accedido a la información médica de <strong>${patientName}</strong>.`
+      }
             </p>
 
             ${!isPanic && accessorName ? `
@@ -490,56 +490,83 @@ export class NotificationService {
     }
 
     logger.info(`📢 Iniciando notificaciones para ${representatives.length} representantes del usuario ${userId}`);
+    logger.info(`📋 Representantes a notificar: ${representatives.map(r => `${r.name} (${r.phone}${r.email ? ', ' + r.email : ''})`).join(', ')}`);
+
 
     const results: NotificationResult[] = [];
 
     for (const rep of representatives) {
-      // Enviar SMS
-      const smsResult = await this.sendEmergencySMS({
-        to: rep.phone,
-        patientName,
-        location,
-        type,
-        accessorName,
-        nearestHospital,
-      });
+      try {
+        logger.info(`📤 Procesando notificaciones para representante: ${rep.name} (${rep.phone})`);
 
-      // Enviar WhatsApp
-      const whatsappResult = await this.sendEmergencyWhatsApp({
-        to: rep.phone,
-        patientName,
-        location,
-        type,
-        accessorName,
-        nearestHospital,
-      });
-
-      // Enviar Email si tiene email configurado
-      let emailResult: EmailResult = { success: false };
-      if (rep.email) {
-        emailResult = await this.sendEmergencyEmail({
-          to: rep.email,
+        // Enviar SMS
+        const smsResult = await this.sendEmergencySMS({
+          to: rep.phone,
           patientName,
           location,
           type,
           accessorName,
           nearestHospital,
-          nearbyHospitals,
         });
-      }
 
-      results.push({
-        representativeId: rep.id,
-        name: rep.name,
-        phone: rep.phone,
-        email: rep.email || undefined,
-        smsStatus: smsResult.success ? 'sent' : 'failed',
-        whatsappStatus: whatsappResult.success ? 'sent' : 'failed',
-        emailStatus: rep.email ? (emailResult.success ? 'sent' : 'failed') : 'skipped',
-        messageId: smsResult.messageId,
-        error: smsResult.error || whatsappResult.error || emailResult.error,
-      });
+        // Enviar WhatsApp
+        const whatsappResult = await this.sendEmergencyWhatsApp({
+          to: rep.phone,
+          patientName,
+          location,
+          type,
+          accessorName,
+          nearestHospital,
+        });
+
+        // Enviar Email si tiene email configurado
+        let emailResult: EmailResult = { success: false };
+        if (rep.email) {
+          emailResult = await this.sendEmergencyEmail({
+            to: rep.email,
+            patientName,
+            location,
+            type,
+            accessorName,
+            nearestHospital,
+            nearbyHospitals,
+          });
+        }
+
+        results.push({
+          representativeId: rep.id,
+          name: rep.name,
+          phone: rep.phone,
+          email: rep.email || undefined,
+          smsStatus: smsResult.success ? 'sent' : 'failed',
+          whatsappStatus: whatsappResult.success ? 'sent' : 'failed',
+          emailStatus: rep.email ? (emailResult.success ? 'sent' : 'failed') : 'skipped',
+          messageId: smsResult.messageId,
+          error: smsResult.error || whatsappResult.error || emailResult.error,
+        });
+
+        logger.info(`✅ Notificaciones procesadas para ${rep.name}: SMS=${smsResult.success ? 'OK' : 'FAIL'}, WhatsApp=${whatsappResult.success ? 'OK' : 'FAIL'}, Email=${rep.email ? (emailResult.success ? 'OK' : 'FAIL') : 'SKIPPED'}`);
+      } catch (error: any) {
+        // Capturar errores inesperados para este representante, pero continuar con los demás
+        logger.error(`❌ Error inesperado procesando notificaciones para ${rep.name}:`, error);
+        results.push({
+          representativeId: rep.id,
+          name: rep.name,
+          phone: rep.phone,
+          email: rep.email || undefined,
+          smsStatus: 'failed',
+          whatsappStatus: 'failed',
+          emailStatus: 'failed',
+          error: `Error inesperado: ${error.message}`,
+        });
+        // Continuar con el siguiente representante
+      }
     }
+
+    // Resumen de notificaciones enviadas
+    const successCount = results.filter(r => r.smsStatus === 'sent' || r.whatsappStatus === 'sent' || r.emailStatus === 'sent').length;
+    const failCount = results.filter(r => r.smsStatus === 'failed' && r.whatsappStatus === 'failed' && (r.emailStatus === 'failed' || r.emailStatus === 'skipped')).length;
+    logger.info(`📊 Resumen de notificaciones: ${successCount}/${results.length} representantes notificados exitosamente${failCount > 0 ? `, ${failCount} con fallos` : ''}`);
 
     return results;
   }
@@ -618,10 +645,10 @@ export class NotificationService {
         cleaned = '+52' + cleaned;
       }
     }
-    
+
     // NOTA: Anteriormente se forzaba +521, pero las pruebas indican que +52 funciona mejor
     // para los templates actuales.
-    
+
     return cleaned;
   }
 
