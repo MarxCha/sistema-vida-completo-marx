@@ -62,6 +62,11 @@ class PDFGeneratorService {
   private browser: puppeteer.Browser | null = null;
 
   private async getBrowser(): Promise<puppeteer.Browser> {
+    if (this.browser && !this.browser.isConnected()) {
+      logger.warn('La instancia de Puppeteer perdió la conexión, reiniciando...');
+      this.browser = null;
+    }
+
     if (!this.browser) {
       const exePath = process.env.PUPPETEER_EXECUTABLE_PATH;
       const skipDownload = process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD;

@@ -285,6 +285,8 @@ class PupService {
   async generateProfileDocument(userId: string): Promise<{ documentId: string; title: string } | null> {
     try {
       // Obtener datos del usuario
+      logger.info('Iniciando proceso de generación de PDF para usuario', { userId });
+
       const user = await prisma.user.findUnique({
         where: { id: userId },
         select: {
@@ -299,8 +301,9 @@ class PupService {
 
       if (!user) {
         logger.error('Usuario no encontrado para generar PDF', { userId });
-        return null;
+        throw new Error('Usuario no encontrado');
       }
+      logger.info('Usuario encontrado', { userName: user.name });
 
       // Obtener perfil médico
       const profile = await prisma.patientProfile.findUnique({
@@ -309,8 +312,9 @@ class PupService {
 
       if (!profile) {
         logger.error('Perfil no encontrado para generar PDF', { userId });
-        return null;
+        throw new Error('Perfil médico no configurado');
       }
+      logger.info('Perfil médico encontrado, procediendo a descifrar datos');
 
       // Obtener representantes
       const representatives = await prisma.representative.findMany({
@@ -357,8 +361,11 @@ class PupService {
         })),
       };
 
-      // Generar PDF
+      logger.info('Enviando datos al motor de PDF (Puppeteer)...');
+      const startTime = Date.now();
       const pdfBuffer = await pdfGeneratorService.generateMedicalProfilePDF(profileData);
+      const generationTime = Date.now() - startTime;
+      logger.info(`PDF generado en ${generationTime}ms`, { size: pdfBuffer.length });
 
       const documentTitle = 'Perfil Médico de Emergencia';
       const fileName = `perfil-medico-${user.name.toLowerCase().replace(/\s+/g, '-')}.pdf`;
