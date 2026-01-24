@@ -134,8 +134,8 @@ class PDFGeneratorService {
 
         // Cargar HTML en la página
         await page.setContent(html, {
-          waitUntil: ['domcontentloaded', 'networkidle2'],
-          timeout: 45000
+          waitUntil: ['domcontentloaded', 'networkidle0'],
+          timeout: 60000
         });
 
         // Generar PDF
