@@ -15,7 +15,7 @@ COPY package*.json ./
 COPY prisma ./prisma/
 
 # Instalar dependencias (incluyendo devDependencies para Prisma CLI)
-RUN npm ci
+RUN npm ci --quiet --no-audit --no-fund --no-progress
 
 # Copiar código fuente
 COPY . .
@@ -24,7 +24,7 @@ COPY . .
 RUN npx prisma generate && npm run build
 
 # Eliminar dependencias de desarrollo para reducir tamaño
-RUN npm prune --production
+RUN npm prune --production --quiet --no-audit --no-fund --no-progress
 
 # Stage de producción más ligero
 FROM node:20-alpine AS runner
