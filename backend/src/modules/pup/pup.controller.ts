@@ -20,14 +20,14 @@ router.use(authMiddleware);
 router.get('/', async (req: Request, res: Response) => {
   try {
     const profile = await pupService.getProfile(req.userId!);
-    
+
     if (!profile) {
       return res.status(404).json({
         success: false,
         error: { code: 'PROFILE_NOT_FOUND', message: 'Perfil no encontrado' },
       });
     }
-    
+
     res.json({
       success: true,
       data: { profile },
@@ -106,11 +106,15 @@ router.post('/generate-document', async (req: Request, res: Response) => {
       message: 'Documento de perfil médico generado exitosamente',
       data: result,
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error('Error generando documento de perfil:', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: {
+        code: 'SERVER_ERROR',
+        message: 'Error interno del servidor al generar el documento',
+        details: error?.message
+      },
     });
   }
 });
@@ -131,9 +135,9 @@ router.post('/photo',
           errors: errors.array(),
         });
       }
-      
+
       const profile = await pupService.updatePhoto(req.userId!, req.body.photoUrl);
-      
+
       res.json({
         success: true,
         data: { profile },
@@ -155,14 +159,14 @@ router.post('/photo',
 router.get('/qr', async (req: Request, res: Response) => {
   try {
     const qrData = await pupService.getQR(req.userId!);
-    
+
     if (!qrData) {
       return res.status(404).json({
         success: false,
         error: { code: 'QR_NOT_FOUND', message: 'Código QR no encontrado' },
       });
     }
-    
+
     res.json({
       success: true,
       data: qrData,
@@ -183,7 +187,7 @@ router.get('/qr', async (req: Request, res: Response) => {
 router.post('/qr/regenerate', async (req: Request, res: Response) => {
   try {
     const qrData = await pupService.regenerateQR(req.userId!);
-    
+
     res.json({
       success: true,
       message: 'Código QR regenerado exitosamente. El código anterior ya no es válido.',
