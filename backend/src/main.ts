@@ -40,6 +40,7 @@ import documentsController from './modules/documents/documents.controller';
 import secureDownloadController, { getSecureLocalUrl } from './modules/documents/secure-download.controller';
 import odooController from './modules/odoo/odoo.controller';
 import walletController from './modules/wallet/wallet.controller';
+import notificationController from './modules/notification/notification.controller';
 
 // Inicializar generador de URLs seguras para S3 local
 import { initSecureUrlGenerator } from './common/services/s3.service';
@@ -264,6 +265,9 @@ app.use('/api/v1/secure-download', secureDownloadController);
 
 // Wallet (Apple/Google Wallet passes)
 app.use('/api/v1/wallet', walletController);
+
+// Diagnóstico de notificaciones
+app.use('/api/v1/notifications', notificationController);
 
 // ==================== RUTAS DE ADMINISTRACION ====================
 
