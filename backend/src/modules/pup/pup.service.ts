@@ -58,14 +58,14 @@ class PupService {
     const profile = await prisma.patientProfile.findUnique({
       where: { userId },
     });
-    
+
     if (!profile) {
       return null;
     }
-    
+
     return this.decryptProfile(profile);
   }
-  
+
   /**
    * Actualiza el perfil del paciente (crea si no existe)
    */
@@ -123,7 +123,7 @@ class PupService {
 
     return this.decryptProfile(profile);
   }
-  
+
   /**
    * Actualiza la foto de perfil
    */
@@ -132,16 +132,16 @@ class PupService {
       where: { userId },
       data: { photoUrl },
     });
-    
+
     return this.decryptProfile(profile);
   }
-  
+
   /**
    * Regenera el código QR
    */
   async regenerateQR(userId: string): Promise<{ qrToken: string; qrDataUrl: string }> {
     const newQrToken = uuidv4();
-    
+
     await prisma.patientProfile.update({
       where: { userId },
       data: {
@@ -149,15 +149,15 @@ class PupService {
         qrGeneratedAt: new Date(),
       },
     });
-    
+
     const qrResult = await generateEmergencyQR(newQrToken);
-    
+
     return {
       qrToken: newQrToken,
       qrDataUrl: qrResult.qrDataUrl,
     };
   }
-  
+
   /**
    * Obtiene el código QR del usuario (crea perfil si no existe)
    */
@@ -193,7 +193,7 @@ class PupService {
       generatedAt: profile.qrGeneratedAt,
     };
   }
-  
+
   /**
    * Obtiene perfil por QR token (para acceso de emergencia)
    * Solo retorna datos críticos
@@ -223,11 +223,11 @@ class PupService {
         },
       },
     });
-    
+
     if (!profile) {
       return null;
     }
-    
+
     return {
       userId: profile.user.id,
       name: profile.user.name,
@@ -241,7 +241,7 @@ class PupService {
       photoUrl: profile.photoUrl,
     };
   }
-  
+
   /**
    * Descifra un perfil de la base de datos
    */
@@ -390,7 +390,7 @@ class PupService {
 
         // Eliminar archivo anterior de S3 si es diferente
         if (existingDoc.s3Key !== s3Key) {
-          await s3Service.deleteFile(existingDoc.s3Key).catch(() => {});
+          await s3Service.deleteFile(existingDoc.s3Key).catch(() => { });
         }
 
         await prisma.medicalDocument.update({
@@ -435,8 +435,7 @@ class PupService {
         errorMessage: error?.message,
         errorStack: error?.stack,
       });
-      console.error('Error completo:', error);
-      return null;
+      throw error;
     }
   }
 }
