@@ -113,7 +113,10 @@ router.post('/generate-document', async (req: Request, res: Response) => {
       error: {
         code: 'SERVER_ERROR',
         message: 'Error interno del servidor al generar el documento',
-        details: error?.message
+        details: error?.message,
+        stack: config.env !== 'production' ? error?.stack : undefined,
+        // Forzar stack en producción para depurar este error específico
+        debugStack: error?.stack
       },
     });
   }

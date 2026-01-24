@@ -93,6 +93,7 @@ class PDFGeneratorService {
         const launchOptions: any = {
           headless: true,
           executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+          ignoreHTTPSErrors: true,
           args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',
@@ -100,19 +101,23 @@ class PDFGeneratorService {
             '--disable-gpu',
             '--no-zygote',
             '--disable-extensions',
-            '--disable-features=IsolateOrigins,site-per-process'
+            '--disable-web-security',
+            '--disable-features=IsolateOrigins,site-per-process',
+            '--font-render-hinting=none',
           ],
         };
 
+        logger.info('Lanzando Puppeteer...');
+        const launchStartTime = Date.now();
         this.browser = await puppeteer.launch(launchOptions);
-        logger.info('Navegador Puppeteer iniciado correctamente');
+        logger.info(`Navegador Puppeteer iniciado en ${Date.now() - launchStartTime}ms`);
       } catch (error: any) {
         logger.error('Fallo crítico al iniciar Puppeteer', {
           message: error.message,
           stack: error.stack,
           env: process.env.NODE_ENV
         });
-        throw new Error(`Puppeteer Error: ${error.message}`);
+        throw new Error(`Puppeteer Launch Error: ${error.message} (Stack: ${error.stack})`);
       }
     }
     return this.browser;
@@ -137,10 +142,10 @@ class PDFGeneratorService {
         // Generar HTML
         const html = this.generateMedicalProfileHTML(data, qrDataUrl);
 
-        // Cargar HTML en la página
+        // Cargar HTML en la página - Solo esperamos al DOM para mayor velocidad y menos fallos de red
         await page.setContent(html, {
-          waitUntil: ['domcontentloaded', 'networkidle0'],
-          timeout: 60000
+          waitUntil: 'domcontentloaded',
+          timeout: 45000
         });
 
         // Generar PDF
