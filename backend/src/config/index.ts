@@ -6,17 +6,17 @@ export const config = {
   // Entorno
   env: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT || '3001', 10),
-  
+
   // Base de datos
   database: {
     url: process.env.DATABASE_URL || 'postgres://postgres:KQqiN935P8ShyTDxYIgJRvOE0udE0itRCZDWHiboOpaPmVbHAdhxJcDnvKcPMOTg@pk4wo4s0goco8wgcgwwwkw40:5432/postgres',
   },
-  
+
   // Redis
   redis: {
     url: process.env.REDIS_URL || 'redis://default:SfUbrDH4lrqeLpjvWSvsSM4b1I0Gb9Fcsdh4GbqTFV88WemfJITmGnE4DP5hk51X@yc8004w8gsckcg404goc8wss:6379/0',
   },
-  
+
   // JWT - NOTA: Estas variables son validadas en env-validation.ts antes de cargar este archivo
   jwt: {
     secret: process.env.JWT_SECRET!, // Requerido - validado al iniciar
@@ -31,24 +31,24 @@ export const config = {
     lockoutDurationMinutes: 30,
     sessionTimeoutMinutes: 60,
   },
-  
+
   // Cifrado - NOTA: ENCRYPTION_KEY es validado en env-validation.ts antes de cargar este archivo
   encryption: {
     key: process.env.ENCRYPTION_KEY!, // Requerido - validado al iniciar (64 caracteres hex = 256 bits)
   },
-  
+
   // PSC NOM-151
   psc: {
     endpoint: process.env.PSC_ENDPOINT || 'https://api.psc-demo.mx/v1',
     apiKey: process.env.PSC_API_KEY || 'demo-key',
   },
-  
+
   // Email (Resend)
   email: {
     resendApiKey: (process.env.RESEND_API_KEY || '').trim(),
     from: (process.env.EMAIL_FROM_RESEND || process.env.EMAIL_FROM || 'notificaciones@vida.mdconsultoria-ti.org').trim(),
   },
-  
+
   // SMS y WhatsApp (Twilio)
   twilio: {
     sid: (process.env.TWILIO_ACCOUNT_SID || '').trim(),
@@ -57,7 +57,7 @@ export const config = {
     whatsappPhone: (process.env.TWILIO_WHATSAPP_NUMBER || '').trim(),
     whatsappTemplateId: (process.env.TWILIO_WHATSAPP_TEMPLATE_ID || 'HXdce98f9ca93895538759cd4b43c550b7').trim(),
   },
-  
+
   // AWS S3
   aws: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
@@ -97,13 +97,18 @@ export const config = {
   // Frontend URL (para CORS y emails)
   frontendUrl: process.env.FRONTEND_URL || 'https://vida.mdconsultoria-ti.org',
 
+  // Backend URL (para URLs de descarga segura)
+  // Si frontend y backend están en el mismo dominio, usar FRONTEND_URL
+  // Si están separados, configurar BACKEND_URL explícitamente
+  backendUrl: process.env.BACKEND_URL || process.env.FRONTEND_URL || 'https://vida.mdconsultoria-ti.org',
+
   // URLs permitidas para CORS (desarrollo)
   corsOrigins: [
     ...(process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : []),
-    'http://localhost:5173', 
-    'http://localhost:5174', 
-    'http://localhost:3000', 
-    'http://192.168.68.120:5173', 
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:3000',
+    'http://192.168.68.120:5173',
     'http://192.168.68.120:3000',
     'https://vida.mdconsultoria-ti.org',
     'https://app.vida.mdconsultoria-ti.org',
@@ -112,7 +117,7 @@ export const config = {
     'https://www.mdconsultoria-ti.org',
     'https://api.mdconsultoria-ti.org'
   ],
-  
+
   // Rate limiting
   rateLimit: {
     windowMs: 15 * 60 * 1000, // 15 minutos

@@ -125,7 +125,7 @@ class S3Service {
       logger.info(`[LOCAL] Archivo guardado: ${key} (${buffer.length} bytes)`);
 
       // URL local que será servida por Express
-      const url = `${config.frontendUrl.replace('5173', '3000')}/uploads/${key}`;
+      const url = `${config.backendUrl}/uploads/${key}`;
 
       return { url, key };
     }
@@ -177,7 +177,7 @@ class S3Service {
       }
       // Fallback a URL directa (solo para desarrollo inicial)
       logger.warn('[S3Service] getSecureLocalUrl no inicializado, usando URL directa');
-      return `${config.frontendUrl.replace('5173', '3000')}/uploads/${key}`;
+      return `${config.backendUrl}/uploads/${key}`;
     }
 
     if (!this.isConfigured) {

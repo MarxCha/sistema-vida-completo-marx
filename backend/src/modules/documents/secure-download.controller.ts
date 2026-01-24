@@ -67,7 +67,8 @@ export async function getSecureLocalUrl(
   options?: { userId?: string; emergencyAccessId?: string }
 ): Promise<string> {
   const token = await generateTemporaryDownloadToken(s3Key, expiresInSeconds, options);
-  const baseUrl = config.frontendUrl.replace('5173', '3000');
+  // Usar backendUrl para las URLs de descarga (puede ser diferente al frontend)
+  const baseUrl = config.backendUrl;
   return `${baseUrl}/api/v1/secure-download/${token}`;
 }
 
