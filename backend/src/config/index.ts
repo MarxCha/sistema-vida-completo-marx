@@ -57,6 +57,19 @@ export const config = {
     whatsappPhone: process.env.TWILIO_WHATSAPP_NUMBER || '',
     whatsappTemplateId: process.env.TWILIO_WHATSAPP_TEMPLATE_ID || 'HXdce98f9ca93895538759cd4b43c550b7',
   },
+
+  // WhatsApp Business API (WABA - Meta Cloud API)
+  waba: {
+    provider: (process.env.WHATSAPP_PROVIDER || 'twilio') as 'waba' | 'twilio',
+    phoneNumberId: process.env.WABA_PHONE_NUMBER_ID || '',
+    accessToken: process.env.WABA_ACCESS_TOKEN || '',
+    businessAccountId: process.env.WABA_BUSINESS_ACCOUNT_ID || '',
+    webhookVerifyToken: process.env.WABA_WEBHOOK_VERIFY_TOKEN || '',
+    apiVersion: process.env.WABA_API_VERSION || 'v18.0',
+    fallbackToTwilio: process.env.WABA_FALLBACK_TO_TWILIO === 'true',
+    templateEmergency: process.env.WABA_TEMPLATE_EMERGENCY || '',
+    templateAccess: process.env.WABA_TEMPLATE_ACCESS || '',
+  },
   
   // AWS S3
   aws: {

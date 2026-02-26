@@ -103,9 +103,21 @@ function performValidation(): ValidationResult {
   // ADVERTENCIAS - Servicios opcionales
   // ═══════════════════════════════════════════════════════════════════════════
 
-  // Twilio (notificaciones SMS/WhatsApp)
+  // Twilio (notificaciones SMS/WhatsApp legacy)
   if (!process.env.TWILIO_ACCOUNT_SID || !process.env.TWILIO_AUTH_TOKEN) {
-    warnings.push('Twilio no configurado - notificaciones SMS/WhatsApp deshabilitadas');
+    warnings.push('Twilio no configurado - notificaciones SMS deshabilitadas');
+  }
+
+  // WABA (WhatsApp Business API)
+  const waProvider = process.env.WHATSAPP_PROVIDER || 'twilio';
+  if (waProvider === 'waba') {
+    if (!process.env.WABA_PHONE_NUMBER_ID || !process.env.WABA_ACCESS_TOKEN) {
+      warnings.push('WHATSAPP_PROVIDER=waba pero WABA_PHONE_NUMBER_ID o WABA_ACCESS_TOKEN no configurados - WhatsApp caerá a modo simulación');
+    }
+  } else if (waProvider === 'twilio') {
+    if (!process.env.TWILIO_WHATSAPP_NUMBER) {
+      warnings.push('TWILIO_WHATSAPP_NUMBER no configurado - WhatsApp via Twilio deshabilitado');
+    }
   }
 
   // Resend (email)

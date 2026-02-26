@@ -716,6 +716,7 @@ enum NotificationType {
 enum NotificationChannel {
   EMAIL
   SMS
+  WHATSAPP
   PUSH
 }
 
