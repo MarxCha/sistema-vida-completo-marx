@@ -1,6 +1,7 @@
 // src/components/pages/NotificationSettings.tsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useNotifications } from '../../context/NotificationContext';
 import {
   Bell,
@@ -81,6 +82,7 @@ function savePreferences(prefs: NotificationPreferences): void {
 }
 
 export default function NotificationSettings() {
+  const { t } = useTranslation('notifications');
   const { permission, supported, requestPermission } = useNotifications();
   const [preferences, setPreferences] = useState<NotificationPreferences>(loadPreferences);
   const [saving, setSaving] = useState(false);
@@ -104,10 +106,10 @@ export default function NotificationSettings() {
     setSaving(true);
     try {
       savePreferences(preferences);
-      toast.success('Preferencias guardadas');
+      toast.success(t('settings.toast.saved'));
       setHasChanges(false);
     } catch (error) {
-      toast.error('Error al guardar preferencias');
+      toast.error(t('settings.toast.saveError'));
     } finally {
       setSaving(false);
     }
@@ -116,10 +118,10 @@ export default function NotificationSettings() {
   const handleRequestPermission = async () => {
     const result = await requestPermission();
     if (result === 'granted') {
-      toast.success('Notificaciones activadas');
+      toast.success(t('settings.toast.permissionGranted'));
       updatePreference('pushEnabled', true);
     } else if (result === 'denied') {
-      toast.error('Permisos denegados. Activalos desde la configuracion del navegador.');
+      toast.error(t('settings.toast.permissionDenied'));
     }
   };
 
@@ -163,8 +165,8 @@ export default function NotificationSettings() {
           <ArrowLeft className="w-5 h-5 text-gray-600" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Configuracion de Notificaciones</h1>
-          <p className="text-gray-600 mt-1">Personaliza como y cuando recibir alertas</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('settings.title')}</h1>
+          <p className="text-gray-600 mt-1">{t('settings.subtitle')}</p>
         </div>
       </div>
 
@@ -176,15 +178,15 @@ export default function NotificationSettings() {
               <BellOff className="w-6 h-6 text-amber-600" />
             </div>
             <div className="flex-1">
-              <h3 className="font-medium text-amber-900">Notificaciones del navegador desactivadas</h3>
+              <h3 className="font-medium text-amber-900">{t('settings.permissions.disabled.title')}</h3>
               <p className="text-sm text-amber-700 mt-1">
-                Para recibir notificaciones push, necesitas activar los permisos del navegador.
+                {t('settings.permissions.disabled.description')}
               </p>
               <button
                 onClick={handleRequestPermission}
                 className="mt-3 bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-700 transition-colors"
               >
-                Activar permisos
+                {t('settings.permissions.disabled.enable')}
               </button>
             </div>
           </div>
@@ -198,8 +200,8 @@ export default function NotificationSettings() {
               <Check className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <h3 className="font-medium text-green-900">Notificaciones push activas</h3>
-              <p className="text-sm text-green-700">Recibiras alertas incluso cuando no estes en la app</p>
+              <h3 className="font-medium text-green-900">{t('settings.permissions.granted.title')}</h3>
+              <p className="text-sm text-green-700">{t('settings.permissions.granted.description')}</p>
             </div>
           </div>
         </div>
@@ -208,8 +210,8 @@ export default function NotificationSettings() {
       {/* Tipos de notificaciones */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100">
-          <h2 className="font-semibold text-gray-900">Tipos de Notificaciones</h2>
-          <p className="text-sm text-gray-500 mt-1">Elige que notificaciones deseas recibir</p>
+          <h2 className="font-semibold text-gray-900">{t('settings.types.sectionTitle')}</h2>
+          <p className="text-sm text-gray-500 mt-1">{t('settings.types.sectionSubtitle')}</p>
         </div>
 
         <div className="divide-y divide-gray-100">
@@ -220,8 +222,8 @@ export default function NotificationSettings() {
                 <AlertTriangle className="w-5 h-5 text-red-600" />
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">Alertas de Panico</h3>
-                <p className="text-sm text-gray-500">Notificaciones cuando se activa una alerta de emergencia</p>
+                <h3 className="font-medium text-gray-900">{t('settings.types.panicAlerts.title')}</h3>
+                <p className="text-sm text-gray-500">{t('settings.types.panicAlerts.description')}</p>
               </div>
             </div>
             <ToggleSwitch
@@ -237,8 +239,8 @@ export default function NotificationSettings() {
                 <QrCode className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">Accesos a tu Informacion</h3>
-                <p className="text-sm text-gray-500">Cuando alguien escanea tu codigo QR de emergencia</p>
+                <h3 className="font-medium text-gray-900">{t('settings.types.qrAccess.title')}</h3>
+                <p className="text-sm text-gray-500">{t('settings.types.qrAccess.description')}</p>
               </div>
             </div>
             <ToggleSwitch
@@ -254,8 +256,8 @@ export default function NotificationSettings() {
                 <Users className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">Actualizaciones de Representantes</h3>
-                <p className="text-sm text-gray-500">Cambios en tus representantes legales</p>
+                <h3 className="font-medium text-gray-900">{t('settings.types.representatives.title')}</h3>
+                <p className="text-sm text-gray-500">{t('settings.types.representatives.description')}</p>
               </div>
             </div>
             <ToggleSwitch
@@ -271,8 +273,8 @@ export default function NotificationSettings() {
                 <FileText className="w-5 h-5 text-amber-600" />
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">Documentos</h3>
-                <p className="text-sm text-gray-500">Actualizaciones sobre tus directivas y documentos</p>
+                <h3 className="font-medium text-gray-900">{t('settings.types.documents.title')}</h3>
+                <p className="text-sm text-gray-500">{t('settings.types.documents.description')}</p>
               </div>
             </div>
             <ToggleSwitch
@@ -288,8 +290,8 @@ export default function NotificationSettings() {
                 <Bell className="w-5 h-5 text-gray-600" />
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">Notificaciones del Sistema</h3>
-                <p className="text-sm text-gray-500">Actualizaciones, mantenimiento y novedades</p>
+                <h3 className="font-medium text-gray-900">{t('settings.types.system.title')}</h3>
+                <p className="text-sm text-gray-500">{t('settings.types.system.description')}</p>
               </div>
             </div>
             <ToggleSwitch
@@ -303,8 +305,8 @@ export default function NotificationSettings() {
       {/* Canales de notificacion */}
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100">
-          <h2 className="font-semibold text-gray-900">Canales de Notificacion</h2>
-          <p className="text-sm text-gray-500 mt-1">Como deseas recibir las notificaciones</p>
+          <h2 className="font-semibold text-gray-900">{t('settings.channels.sectionTitle')}</h2>
+          <p className="text-sm text-gray-500 mt-1">{t('settings.channels.sectionSubtitle')}</p>
         </div>
 
         <div className="divide-y divide-gray-100">
@@ -315,8 +317,8 @@ export default function NotificationSettings() {
                 <Smartphone className="w-5 h-5 text-vida-600" />
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">Notificaciones Push</h3>
-                <p className="text-sm text-gray-500">Alertas instantaneas en tu dispositivo</p>
+                <h3 className="font-medium text-gray-900">{t('settings.channels.push.title')}</h3>
+                <p className="text-sm text-gray-500">{t('settings.channels.push.description')}</p>
               </div>
             </div>
             <ToggleSwitch
@@ -333,8 +335,8 @@ export default function NotificationSettings() {
                 <Mail className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">Correo Electronico</h3>
-                <p className="text-sm text-gray-500">Resumen de actividad y alertas importantes</p>
+                <h3 className="font-medium text-gray-900">{t('settings.channels.email.title')}</h3>
+                <p className="text-sm text-gray-500">{t('settings.channels.email.description')}</p>
               </div>
             </div>
             <ToggleSwitch
@@ -350,11 +352,11 @@ export default function NotificationSettings() {
                 <MessageSquare className="w-5 h-5 text-green-600" />
               </div>
               <div>
-                <h3 className="font-medium text-gray-900">SMS</h3>
-                <p className="text-sm text-gray-500">Mensajes de texto para alertas criticas</p>
+                <h3 className="font-medium text-gray-900">{t('settings.channels.sms.title')}</h3>
+                <p className="text-sm text-gray-500">{t('settings.channels.sms.description')}</p>
                 <span className="inline-flex items-center gap-1 mt-1 text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
                   <Info className="w-3 h-3" />
-                  Requiere plan Premium
+                  {t('settings.channels.sms.premiumBadge')}
                 </span>
               </div>
             </div>
@@ -371,8 +373,8 @@ export default function NotificationSettings() {
         <div className="px-6 py-4 border-b border-gray-100">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-semibold text-gray-900">Horario de No Molestar</h2>
-              <p className="text-sm text-gray-500 mt-1">Silenciar notificaciones durante cierto horario</p>
+              <h2 className="font-semibold text-gray-900">{t('settings.dnd.title')}</h2>
+              <p className="text-sm text-gray-500 mt-1">{t('settings.dnd.subtitle')}</p>
             </div>
             <ToggleSwitch
               enabled={preferences.doNotDisturbEnabled}
@@ -387,7 +389,7 @@ export default function NotificationSettings() {
               <Moon className="w-5 h-5 text-indigo-500" />
               <div className="flex items-center gap-3">
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Desde</label>
+                  <label className="block text-xs text-gray-500 mb-1">{t('settings.dnd.from')}</label>
                   <input
                     type="time"
                     value={preferences.doNotDisturbStart}
@@ -397,7 +399,7 @@ export default function NotificationSettings() {
                 </div>
                 <span className="text-gray-400 mt-5">-</span>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Hasta</label>
+                  <label className="block text-xs text-gray-500 mb-1">{t('settings.dnd.to')}</label>
                   <input
                     type="time"
                     value={preferences.doNotDisturbEnd}
@@ -408,7 +410,7 @@ export default function NotificationSettings() {
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-3 ml-9">
-              Las alertas de panico siempre se mostraran, incluso en horario de no molestar.
+              {t('settings.dnd.note')}
             </p>
           </div>
         )}
@@ -426,8 +428,8 @@ export default function NotificationSettings() {
               )}
             </div>
             <div>
-              <h3 className="font-medium text-gray-900">Sonido de Notificaciones</h3>
-              <p className="text-sm text-gray-500">Reproducir sonido al recibir notificaciones</p>
+              <h3 className="font-medium text-gray-900">{t('settings.sound.title')}</h3>
+              <p className="text-sm text-gray-500">{t('settings.sound.description')}</p>
             </div>
           </div>
           <ToggleSwitch
@@ -448,12 +450,12 @@ export default function NotificationSettings() {
             {saving ? (
               <>
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Guardando...
+                {t('settings.saving')}
               </>
             ) : (
               <>
                 <Check className="w-5 h-5" />
-                Guardar cambios
+                {t('settings.save')}
               </>
             )}
           </button>

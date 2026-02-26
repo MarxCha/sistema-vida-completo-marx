@@ -1,0 +1,71 @@
+{
+  "welcome": "Hello, {{name}}!",
+  "subtitle": "Welcome to your VIDA control panel",
+  "alerts": {
+    "incompleteProfile": "Your profile is incomplete ({{percent}}%)",
+    "completeInfo": "Complete your medical information so it is available in emergencies.",
+    "complete": "Complete",
+    "noDirective": "You don't have an active advance directive",
+    "createDirectiveInfo": "Create your advance directive to ensure your decisions are respected.",
+    "createNow": "Create now"
+  },
+  "cards": {
+    "medicalProfile": "Medical Profile",
+    "complete": "Complete",
+    "percentComplete": "{{percent}}% complete",
+    "directive": "Advance Directive",
+    "active": "Active",
+    "notRegistered": "Not registered",
+    "directiveProtected": "Your advance directive is protected",
+    "directiveRegister": "Register your medical preferences",
+    "representatives": "Representatives",
+    "representativesCount": "{{count}} registered",
+    "representativesCount_plural": "{{count}} registered",
+    "representativesPrimary": "(primary)",
+    "representativesDesignate": "Designate your representatives",
+    "documents": "My Documents",
+    "documentsCount": "{{count}} document",
+    "documentsCount_plural": "{{count}} documents",
+    "noDocuments": "No documents",
+    "documentsVisible": "{{count}} visible in emergencies",
+    "documentsVisible_plural": "{{count}} visible in emergencies",
+    "documentsUpload": "Upload your medical history and studies"
+  },
+  "criticalInfo": {
+    "title": "Critical Information",
+    "bloodType": "Blood type",
+    "allergies": "Allergies",
+    "donor": "Organ donor",
+    "noneRegistered": "None registered",
+    "notSpecified": "Not specified",
+    "yes": "Yes",
+    "no": "No",
+    "loadInfo": "Load your medical information to see it here"
+  },
+  "recentAccesses": {
+    "title": "Recent Accesses",
+    "viewAll": "View all",
+    "unknownInstitution": "Institution not specified",
+    "noAccesses": "No accesses recorded yet"
+  },
+  "recentDocuments": {
+    "title": "Recent Documents",
+    "viewAll": "View all",
+    "uploadFirst": "Upload first document",
+    "noDocuments": "You have no uploaded documents",
+    "visible": "Visible",
+    "categories": {
+      "CLINICAL_HISTORY": "History",
+      "LAB_RESULTS": "Lab",
+      "IMAGING": "Imaging",
+      "PRESCRIPTIONS": "Prescription",
+      "DISCHARGE_SUMMARY": "Discharge",
+      "SURGICAL_REPORT": "Surgery",
+      "VACCINATION": "Vaccine",
+      "INSURANCE": "Insurance",
+      "IDENTIFICATION": "ID",
+      "OTHER": "Other"
+    }
+  },
+  "viewEmergencyQR": "View my emergency QR"
+}

@@ -1,6 +1,8 @@
 // src/components/pages/Documents.tsx
 import { useState, useRef, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from '../../hooks/useLocale';
 import { documentsApi, MedicalDocument } from '../../services/api';
 import {
   FileText,
@@ -31,17 +33,17 @@ interface DocumentStats {
   totalSize: number;
 }
 
-const CATEGORY_LABELS: Record<string, string> = {
-  CLINICAL_HISTORY: 'Historial Clínico',
-  LAB_RESULTS: 'Resultados de Laboratorio',
-  IMAGING: 'Estudios de Imagen',
-  PRESCRIPTIONS: 'Recetas Médicas',
-  DISCHARGE_SUMMARY: 'Resumen de Alta',
-  SURGICAL_REPORT: 'Reporte Quirúrgico',
-  VACCINATION: 'Cartilla de Vacunación',
-  INSURANCE: 'Póliza de Seguro',
-  IDENTIFICATION: 'Identificación',
-  OTHER: 'Otro',
+const CATEGORY_COLORS: Record<string, string> = {
+  CLINICAL_HISTORY: 'bg-blue-100 text-blue-700',
+  LAB_RESULTS: 'bg-purple-100 text-purple-700',
+  IMAGING: 'bg-indigo-100 text-indigo-700',
+  PRESCRIPTIONS: 'bg-green-100 text-green-700',
+  DISCHARGE_SUMMARY: 'bg-orange-100 text-orange-700',
+  SURGICAL_REPORT: 'bg-red-100 text-red-700',
+  VACCINATION: 'bg-teal-100 text-teal-700',
+  INSURANCE: 'bg-yellow-100 text-yellow-700',
+  IDENTIFICATION: 'bg-gray-100 text-gray-700',
+  OTHER: 'bg-slate-100 text-slate-700',
 };
 
 const CATEGORY_ICONS: Record<string, React.ReactNode> = {
@@ -57,19 +59,6 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
   OTHER: <File className="w-5 h-5" />,
 };
 
-const CATEGORY_COLORS: Record<string, string> = {
-  CLINICAL_HISTORY: 'bg-blue-100 text-blue-700',
-  LAB_RESULTS: 'bg-purple-100 text-purple-700',
-  IMAGING: 'bg-indigo-100 text-indigo-700',
-  PRESCRIPTIONS: 'bg-green-100 text-green-700',
-  DISCHARGE_SUMMARY: 'bg-orange-100 text-orange-700',
-  SURGICAL_REPORT: 'bg-red-100 text-red-700',
-  VACCINATION: 'bg-teal-100 text-teal-700',
-  INSURANCE: 'bg-yellow-100 text-yellow-700',
-  IDENTIFICATION: 'bg-gray-100 text-gray-700',
-  OTHER: 'bg-slate-100 text-slate-700',
-};
-
 function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes';
   const k = 1024;
@@ -78,16 +67,9 @@ function formatFileSize(bytes: number): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
 
-function formatDate(dateString: string | null): string {
-  if (!dateString) return '-';
-  return new Date(dateString).toLocaleDateString('es-MX', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  });
-}
-
 export default function Documents() {
+  const { t } = useTranslation('documents');
+  const { formatDate } = useLocale();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -115,6 +97,20 @@ export default function Documents() {
     isVisible: true,
   });
 
+  // Category labels derived from translations
+  const CATEGORY_LABELS: Record<string, string> = {
+    CLINICAL_HISTORY: t('categories.CLINICAL_HISTORY'),
+    LAB_RESULTS: t('categories.LAB_RESULTS'),
+    IMAGING: t('categories.IMAGING'),
+    PRESCRIPTIONS: t('categories.PRESCRIPTIONS'),
+    DISCHARGE_SUMMARY: t('categories.DISCHARGE_SUMMARY'),
+    SURGICAL_REPORT: t('categories.SURGICAL_REPORT'),
+    VACCINATION: t('categories.VACCINATION'),
+    INSURANCE: t('categories.INSURANCE'),
+    IDENTIFICATION: t('categories.IDENTIFICATION'),
+    OTHER: t('categories.OTHER'),
+  };
+
   // Queries
   const { data: documentsData, isLoading } = useQuery({
     queryKey: ['documents', selectedCategory, searchQuery],
@@ -135,7 +131,7 @@ export default function Documents() {
   // Mutations
   const uploadMutation = useMutation({
     mutationFn: async () => {
-      if (!uploadFile) throw new Error('No hay archivo seleccionado');
+      if (!uploadFile) throw new Error(t('toast.noFile'));
       return documentsApi.upload(uploadFile, {
         title: formData.title,
         description: formData.description,
@@ -149,17 +145,17 @@ export default function Documents() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents'] });
       queryClient.invalidateQueries({ queryKey: ['documents-stats'] });
-      toast.success('Documento subido exitosamente');
+      toast.success(t('toast.uploadSuccess'));
       closeUploadModal();
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Error al subir el documento');
+      toast.error(error.message || t('toast.uploadError'));
     },
   });
 
   const updateMutation = useMutation({
     mutationFn: async () => {
-      if (!selectedDocument) throw new Error('No hay documento seleccionado');
+      if (!selectedDocument) throw new Error(t('toast.noDocument'));
       return documentsApi.update(selectedDocument.id, {
         title: formData.title,
         description: formData.description,
@@ -172,27 +168,27 @@ export default function Documents() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents'] });
-      toast.success('Documento actualizado');
+      toast.success(t('toast.updateSuccess'));
       closeEditModal();
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Error al actualizar el documento');
+      toast.error(error.message || t('toast.updateError'));
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      if (!selectedDocument) throw new Error('No hay documento seleccionado');
+      if (!selectedDocument) throw new Error(t('toast.noDocument'));
       return documentsApi.delete(selectedDocument.id);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents'] });
       queryClient.invalidateQueries({ queryKey: ['documents-stats'] });
-      toast.success('Documento eliminado');
+      toast.success(t('toast.deleteSuccess'));
       closeDeleteConfirm();
     },
     onError: (error: any) => {
-      toast.error(error.message || 'Error al eliminar el documento');
+      toast.error(error.message || t('toast.deleteError'));
     },
   });
 
@@ -229,12 +225,12 @@ export default function Documents() {
     ];
 
     if (!allowedTypes.includes(file.type)) {
-      toast.error('Tipo de archivo no permitido. Use PDF, imágenes o documentos Word.');
+      toast.error(t('toast.fileTypeError'));
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      toast.error('El archivo excede el límite de 10MB');
+      toast.error(t('toast.fileSizeError'));
       return;
     }
 
@@ -293,7 +289,7 @@ export default function Documents() {
         setShowPreview(true);
       }
     } catch (error) {
-      toast.error('Error al cargar vista previa');
+      toast.error(t('toast.previewError'));
     } finally {
       setLoadingPreview(false);
     }
@@ -341,10 +337,10 @@ export default function Documents() {
       if (response.data?.downloadUrl) {
         window.open(response.data.downloadUrl, '_blank');
       } else {
-        toast.error('No se pudo obtener el enlace de descarga');
+        toast.error(t('toast.downloadError'));
       }
     } catch {
-      toast.error('Error al descargar el documento');
+      toast.error(t('toast.downloadErrorGeneric'));
     }
   };
 
@@ -374,14 +370,14 @@ export default function Documents() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Mis Documentos</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
           <p className="text-gray-600 mt-1">
-            Historial clínico, estudios y documentos médicos
+            {t('subtitle')}
           </p>
         </div>
         <button onClick={openUploadModal} className="btn-primary">
           <Upload className="w-5 h-5 mr-2" />
-          Subir Documento
+          {t('uploadButton')}
         </button>
       </div>
 
@@ -394,7 +390,7 @@ export default function Documents() {
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-              <p className="text-sm text-gray-500">Documentos</p>
+              <p className="text-sm text-gray-500">{t('stats.documents')}</p>
             </div>
           </div>
         </div>
@@ -407,7 +403,7 @@ export default function Documents() {
               <p className="text-2xl font-bold text-gray-900">
                 {Object.keys(stats.byCategory).length}
               </p>
-              <p className="text-sm text-gray-500">Categorías</p>
+              <p className="text-sm text-gray-500">{t('stats.categories')}</p>
             </div>
           </div>
         </div>
@@ -418,7 +414,7 @@ export default function Documents() {
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900">{formatFileSize(stats.totalSize)}</p>
-              <p className="text-sm text-gray-500">Espacio utilizado</p>
+              <p className="text-sm text-gray-500">{t('stats.storageUsed')}</p>
             </div>
           </div>
         </div>
@@ -433,7 +429,7 @@ export default function Documents() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar documentos..."
+              placeholder={t('filters.searchPlaceholder')}
               className="input pl-10"
             />
           </div>
@@ -444,7 +440,7 @@ export default function Documents() {
               onChange={(e) => setSelectedCategory(e.target.value)}
               className="input pl-10 appearance-none cursor-pointer"
             >
-              <option value="">Todas las categorías</option>
+              <option value="">{t('filters.allCategories')}</option>
               {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
                 <option key={value} value={value}>{label}</option>
               ))}
@@ -458,16 +454,16 @@ export default function Documents() {
       {documents.length === 0 ? (
         <div className="card text-center py-12">
           <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No hay documentos</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('emptyState.title')}</h3>
           <p className="text-gray-500 mb-6">
             {searchQuery || selectedCategory
-              ? 'No se encontraron documentos con los filtros seleccionados'
-              : 'Sube tu primer documento para comenzar'}
+              ? t('emptyState.withFilters')
+              : t('emptyState.noDocuments')}
           </p>
           {!searchQuery && !selectedCategory && (
             <button onClick={openUploadModal} className="btn-primary inline-flex">
               <Upload className="w-5 h-5 mr-2" />
-              Subir Documento
+              {t('uploadButton')}
             </button>
           )}
         </div>
@@ -508,13 +504,13 @@ export default function Documents() {
                         <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
                           <span className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
-                            {formatDate(doc.documentDate)}
+                            {doc.documentDate ? formatDate(doc.documentDate) : '-'}
                           </span>
                           <span>{formatFileSize(doc.fileSize)}</span>
                           {!doc.isVisible && (
                             <span className="text-orange-600 flex items-center gap-1">
                               <AlertCircle className="w-4 h-4" />
-                              No visible en emergencias
+                              {t('document.notVisibleInEmergency')}
                             </span>
                           )}
                         </div>
@@ -525,28 +521,28 @@ export default function Documents() {
                       <button
                         onClick={() => openViewModal(doc)}
                         className="p-2 text-gray-400 hover:text-vida-600 hover:bg-vida-50 rounded-lg transition-colors"
-                        title="Ver detalles"
+                        title={t('tooltips.view')}
                       >
                         <Eye className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => handleDownload(doc)}
                         className="p-2 text-gray-400 hover:text-salud-600 hover:bg-salud-50 rounded-lg transition-colors"
-                        title="Descargar"
+                        title={t('tooltips.download')}
                       >
                         <Download className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => openEditModal(doc)}
                         className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                        title="Editar"
+                        title={t('tooltips.edit')}
                       >
                         <Edit3 className="w-5 h-5" />
                       </button>
                       <button
                         onClick={() => openDeleteConfirm(doc)}
                         className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Eliminar"
+                        title={t('tooltips.delete')}
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>
@@ -567,7 +563,7 @@ export default function Documents() {
 
             <div className="relative bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white">
-                <h3 className="text-lg font-semibold text-gray-900">Subir Documento</h3>
+                <h3 className="text-lg font-semibold text-gray-900">{t('uploadModal.title')}</h3>
                 <button onClick={closeUploadModal} className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
                   <X className="w-5 h-5" />
                 </button>
@@ -608,33 +604,33 @@ export default function Documents() {
                         }}
                         className="text-sm text-red-600 hover:text-red-700 mt-2"
                       >
-                        Cambiar archivo
+                        {t('uploadModal.dropzone.changeFile')}
                       </button>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center">
                       <Upload className="w-12 h-12 text-gray-400 mb-3" />
-                      <p className="font-medium text-gray-900">Arrastra un archivo aquí</p>
-                      <p className="text-sm text-gray-500 mt-1">o haz clic para seleccionar</p>
-                      <p className="text-xs text-gray-400 mt-2">PDF, imágenes o Word (máx. 10MB)</p>
+                      <p className="font-medium text-gray-900">{t('uploadModal.dropzone.drag')}</p>
+                      <p className="text-sm text-gray-500 mt-1">{t('uploadModal.dropzone.click')}</p>
+                      <p className="text-xs text-gray-400 mt-2">{t('uploadModal.dropzone.formats')}</p>
                     </div>
                   )}
                 </div>
 
                 {/* Form fields */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Título *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('uploadModal.fields.title')}</label>
                   <input
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                     className="input"
-                    placeholder="Nombre del documento"
+                    placeholder={t('uploadModal.fields.titlePlaceholder')}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('uploadModal.fields.category')}</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
@@ -647,19 +643,19 @@ export default function Documents() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('uploadModal.fields.description')}</label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                     className="input"
                     rows={2}
-                    placeholder="Descripción breve del documento"
+                    placeholder={t('uploadModal.fields.descriptionPlaceholder')}
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Fecha del documento</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('uploadModal.fields.documentDate')}</label>
                     <input
                       type="date"
                       value={formData.documentDate}
@@ -668,25 +664,25 @@ export default function Documents() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Médico</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('uploadModal.fields.doctor')}</label>
                     <input
                       type="text"
                       value={formData.doctorName}
                       onChange={(e) => setFormData(prev => ({ ...prev, doctorName: e.target.value }))}
                       className="input"
-                      placeholder="Dr. ..."
+                      placeholder={t('uploadModal.fields.doctorPlaceholder')}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Institución</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('uploadModal.fields.institution')}</label>
                   <input
                     type="text"
                     value={formData.institution}
                     onChange={(e) => setFormData(prev => ({ ...prev, institution: e.target.value }))}
                     className="input"
-                    placeholder="Hospital o clínica"
+                    placeholder={t('uploadModal.fields.institutionPlaceholder')}
                   />
                 </div>
 
@@ -700,13 +696,13 @@ export default function Documents() {
                     />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-vida-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-salud-500"></div>
                   </label>
-                  <span className="text-sm text-gray-700">Visible en emergencias</span>
+                  <span className="text-sm text-gray-700">{t('uploadModal.fields.visibleInEmergency')}</span>
                 </div>
               </div>
 
               <div className="p-4 border-t bg-gray-50 flex gap-3">
                 <button onClick={closeUploadModal} className="btn-secondary flex-1">
-                  Cancelar
+                  {t('uploadModal.buttons.cancel')}
                 </button>
                 <button
                   onClick={() => uploadMutation.mutate()}
@@ -716,12 +712,12 @@ export default function Documents() {
                   {uploadMutation.isPending ? (
                     <div className="flex items-center justify-center gap-2">
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Subiendo...
+                      {t('uploadModal.buttons.uploading')}
                     </div>
                   ) : (
                     <>
                       <Upload className="w-5 h-5 mr-2" />
-                      Subir Documento
+                      {t('uploadModal.buttons.upload')}
                     </>
                   )}
                 </button>
@@ -739,7 +735,7 @@ export default function Documents() {
 
             <div className={`relative bg-white rounded-xl shadow-xl w-full transition-all ${showPreview ? 'max-w-5xl' : 'max-w-lg'}`}>
               <div className="flex items-center justify-between p-4 border-b">
-                <h3 className="text-lg font-semibold text-gray-900">Detalles del Documento</h3>
+                <h3 className="text-lg font-semibold text-gray-900">{t('viewModal.title')}</h3>
                 <button onClick={closeViewModal} className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
                   <X className="w-5 h-5" />
                 </button>
@@ -767,8 +763,8 @@ export default function Documents() {
                       <div className="w-full h-full flex items-center justify-center text-gray-500">
                         <div className="text-center">
                           <File className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                          <p>Vista previa no disponible</p>
-                          <p className="text-sm">Descarga el archivo para verlo</p>
+                          <p>{t('viewModal.noPreview')}</p>
+                          <p className="text-sm">{t('viewModal.noPreviewDesc')}</p>
                         </div>
                       </div>
                     )}
@@ -805,12 +801,12 @@ export default function Documents() {
                       {loadingPreview ? (
                         <>
                           <div className="w-5 h-5 border-2 border-vida-300 border-t-vida-600 rounded-full animate-spin"></div>
-                          Cargando vista previa...
+                          {t('viewModal.loadingPreview')}
                         </>
                       ) : (
                         <>
                           <Eye className="w-5 h-5" />
-                          Ver documento
+                          {t('viewModal.previewButton')}
                         </>
                       )}
                     </button>
@@ -822,19 +818,19 @@ export default function Documents() {
 
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
-                      <p className="text-gray-500 text-xs">Fecha</p>
+                      <p className="text-gray-500 text-xs">{t('viewModal.fields.date')}</p>
                       <p className="font-medium flex items-center gap-1">
                         <Calendar className="w-3.5 h-3.5" />
-                        {formatDate(selectedDocument.documentDate)}
+                        {selectedDocument.documentDate ? formatDate(selectedDocument.documentDate) : '-'}
                       </p>
                     </div>
                     <div>
-                      <p className="text-gray-500 text-xs">Tamaño</p>
+                      <p className="text-gray-500 text-xs">{t('viewModal.fields.size')}</p>
                       <p className="font-medium">{formatFileSize(selectedDocument.fileSize)}</p>
                     </div>
                     {selectedDocument.doctorName && (
                       <div className="col-span-2">
-                        <p className="text-gray-500 text-xs">Médico</p>
+                        <p className="text-gray-500 text-xs">{t('viewModal.fields.doctor')}</p>
                         <p className="font-medium flex items-center gap-1">
                           <User className="w-3.5 h-3.5" />
                           {selectedDocument.doctorName}
@@ -843,7 +839,7 @@ export default function Documents() {
                     )}
                     {selectedDocument.institution && (
                       <div className="col-span-2">
-                        <p className="text-gray-500 text-xs">Institución</p>
+                        <p className="text-gray-500 text-xs">{t('viewModal.fields.institution')}</p>
                         <p className="font-medium flex items-center gap-1">
                           <Building2 className="w-3.5 h-3.5" />
                           {selectedDocument.institution}
@@ -856,30 +852,30 @@ export default function Documents() {
                     {selectedDocument.isVisible ? (
                       <span className="px-2 py-1 bg-salud-100 text-salud-700 rounded-full flex items-center gap-1 text-xs">
                         <Eye className="w-3.5 h-3.5" />
-                        Visible en emergencias
+                        {t('document.visibleInEmergency')}
                       </span>
                     ) : (
                       <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full flex items-center gap-1 text-xs">
                         <AlertCircle className="w-3.5 h-3.5" />
-                        No visible
+                        {t('document.notVisible')}
                       </span>
                     )}
                   </div>
 
                   <div className="text-xs text-gray-400 pt-2 border-t">
-                    <p className="truncate">Archivo: {selectedDocument.fileName}</p>
-                    <p>Subido: {formatDate(selectedDocument.createdAt)}</p>
+                    <p className="truncate">{t('viewModal.fields.fileName')}: {selectedDocument.fileName}</p>
+                    <p>{t('viewModal.fields.uploadedAt')}: {formatDate(selectedDocument.createdAt)}</p>
                   </div>
                 </div>
               </div>
 
               <div className="p-4 border-t bg-gray-50 flex gap-3">
                 <button onClick={closeViewModal} className="btn-secondary flex-1">
-                  Cerrar
+                  {t('viewModal.buttons.close')}
                 </button>
                 <button onClick={() => handleDownload(selectedDocument)} className="btn-primary flex-1">
                   <Download className="w-5 h-5 mr-2" />
-                  Descargar
+                  {t('viewModal.buttons.download')}
                 </button>
               </div>
             </div>
@@ -895,7 +891,7 @@ export default function Documents() {
 
             <div className="relative bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between p-4 border-b sticky top-0 bg-white">
-                <h3 className="text-lg font-semibold text-gray-900">Editar Documento</h3>
+                <h3 className="text-lg font-semibold text-gray-900">{t('editModal.title')}</h3>
                 <button onClick={closeEditModal} className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
                   <X className="w-5 h-5" />
                 </button>
@@ -903,7 +899,7 @@ export default function Documents() {
 
               <div className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Título *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('uploadModal.fields.title')}</label>
                   <input
                     type="text"
                     value={formData.title}
@@ -913,7 +909,7 @@ export default function Documents() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('uploadModal.fields.category')}</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
@@ -926,7 +922,7 @@ export default function Documents() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('uploadModal.fields.description')}</label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
@@ -937,7 +933,7 @@ export default function Documents() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Fecha del documento</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('uploadModal.fields.documentDate')}</label>
                     <input
                       type="date"
                       value={formData.documentDate}
@@ -946,7 +942,7 @@ export default function Documents() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Médico</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">{t('uploadModal.fields.doctor')}</label>
                     <input
                       type="text"
                       value={formData.doctorName}
@@ -957,7 +953,7 @@ export default function Documents() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Institución</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('uploadModal.fields.institution')}</label>
                   <input
                     type="text"
                     value={formData.institution}
@@ -976,13 +972,13 @@ export default function Documents() {
                     />
                     <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-vida-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-salud-500"></div>
                   </label>
-                  <span className="text-sm text-gray-700">Visible en emergencias</span>
+                  <span className="text-sm text-gray-700">{t('uploadModal.fields.visibleInEmergency')}</span>
                 </div>
               </div>
 
               <div className="p-4 border-t bg-gray-50 flex gap-3">
                 <button onClick={closeEditModal} className="btn-secondary flex-1">
-                  Cancelar
+                  {t('editModal.buttons.cancel')}
                 </button>
                 <button
                   onClick={() => updateMutation.mutate()}
@@ -992,12 +988,12 @@ export default function Documents() {
                   {updateMutation.isPending ? (
                     <div className="flex items-center justify-center gap-2">
                       <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Guardando...
+                      {t('editModal.buttons.saving')}
                     </div>
                   ) : (
                     <>
                       <Check className="w-5 h-5 mr-2" />
-                      Guardar Cambios
+                      {t('editModal.buttons.save')}
                     </>
                   )}
                 </button>
@@ -1018,20 +1014,22 @@ export default function Documents() {
                 <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Trash2 className="w-8 h-8 text-red-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Eliminar documento</h3>
-                <p className="text-gray-600 mb-6">
-                  ¿Estás seguro de que deseas eliminar <strong>{selectedDocument.title}</strong>? Esta acción no se puede deshacer.
-                </p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('deleteModal.title')}</h3>
+                <p className="text-gray-600 mb-6"
+                  dangerouslySetInnerHTML={{
+                    __html: t('deleteModal.description', { name: selectedDocument.title })
+                  }}
+                />
                 <div className="flex gap-3">
                   <button onClick={closeDeleteConfirm} className="btn-secondary flex-1">
-                    Cancelar
+                    {t('deleteModal.buttons.cancel')}
                   </button>
                   <button
                     onClick={() => deleteMutation.mutate()}
                     disabled={deleteMutation.isPending}
                     className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
                   >
-                    {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
+                    {deleteMutation.isPending ? t('deleteModal.buttons.deleting') : t('deleteModal.buttons.delete')}
                   </button>
                 </div>
               </div>

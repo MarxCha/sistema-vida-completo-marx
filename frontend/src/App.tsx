@@ -1,6 +1,7 @@
 // src/App.tsx
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 // Layouts
 import MainLayout from './components/layouts/MainLayout';
@@ -43,14 +44,17 @@ import {
 } from './components/admin/pages';
 
 // Componente de carga
-const LoadingScreen = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-vida-50 to-white">
-    <div className="text-center">
-      <div className="w-16 h-16 border-4 border-vida-200 border-t-vida-600 rounded-full animate-spin mx-auto mb-4"></div>
-      <p className="text-vida-600 font-medium">Cargando VIDA...</p>
+const LoadingScreen = () => {
+  const { t } = useTranslation('common');
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-vida-50 to-white">
+      <div className="text-center">
+        <div className="w-16 h-16 border-4 border-vida-200 border-t-vida-600 rounded-full animate-spin mx-auto mb-4"></div>
+        <p className="text-vida-600 font-medium">{t('loading')}</p>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Ruta protegida
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -82,12 +86,27 @@ const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   return <>{children}</>;
 };
 
+const NotFoundPage = () => {
+  const { t } = useTranslation('common');
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center">
+        <h1 className="text-6xl font-bold text-vida-600 mb-4">{t('notFound.title')}</h1>
+        <p className="text-gray-600 mb-6">{t('notFound.message')}</p>
+        <a href="/" className="btn-primary">
+          {t('notFound.backHome')}
+        </a>
+      </div>
+    </div>
+  );
+};
+
 function App() {
   return (
     <Routes>
       {/* Landing pública */}
       <Route path="/" element={<Landing />} />
-      
+
       {/* Rutas de autenticación */}
       <Route element={<AuthLayout />}>
         <Route
@@ -107,10 +126,10 @@ function App() {
           }
         />
       </Route>
-      
+
       {/* Acceso de emergencia (público) */}
       <Route path="/emergency/:qrToken" element={<EmergencyView />} />
-      
+
       {/* Rutas protegidas */}
       <Route
         element={
@@ -136,7 +155,7 @@ function App() {
         <Route path="/subscription/plans" element={<SubscriptionPlans />} />
         <Route path="/subscription/success" element={<SubscriptionSuccess />} />
       </Route>
-      
+
       {/* ==================== RUTAS DE ADMIN ==================== */}
 
       {/* Login de admin (publico) */}
@@ -170,20 +189,7 @@ function App() {
       </Route>
 
       {/* 404 */}
-      <Route
-        path="*"
-        element={
-          <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="text-center">
-              <h1 className="text-6xl font-bold text-vida-600 mb-4">404</h1>
-              <p className="text-gray-600 mb-6">Pagina no encontrada</p>
-              <a href="/" className="btn-primary">
-                Volver al inicio
-              </a>
-            </div>
-          </div>
-        }
-      />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }

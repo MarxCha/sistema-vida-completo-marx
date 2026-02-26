@@ -1,10 +1,15 @@
 // src/components/pages/EmergencyQR.tsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { profileApi } from '../../services/api';
 import { QRCodeSVG } from 'qrcode.react';
+import { useLocale } from '../../hooks/useLocale';
 
 export default function EmergencyQR() {
+  const { t } = useTranslation('emergency');
+  const { formatDateTime } = useLocale();
+
   const [qrData, setQrData] = useState<{
     qrToken: string;
     qrDataUrl: string;
@@ -22,7 +27,7 @@ export default function EmergencyQR() {
         setQrData(res.data);
       }
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Error al cargar el código QR');
+      setError(err.response?.data?.error?.message || t('qr.error_load'));
     } finally {
       setLoading(false);
     }
@@ -33,7 +38,7 @@ export default function EmergencyQR() {
   }, []);
 
   const handleRegenerate = async () => {
-    if (!confirm('¿Estás seguro de regenerar el código QR? El código anterior dejará de funcionar.')) {
+    if (!confirm(t('qr.confirm_regenerate'))) {
       return;
     }
 
@@ -48,7 +53,7 @@ export default function EmergencyQR() {
         });
       }
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Error al regenerar el código QR');
+      setError(err.response?.data?.error?.message || t('qr.error_regenerate'));
     } finally {
       setRegenerating(false);
     }
@@ -61,7 +66,7 @@ export default function EmergencyQR() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-vida-200 border-t-vida-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando código QR...</p>
+          <p className="text-gray-600">{t('qr.loading')}</p>
         </div>
       </div>
     );
@@ -76,7 +81,7 @@ export default function EmergencyQR() {
             onClick={fetchQR}
             className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
           >
-            Reintentar
+            {t('qr.buttons.retry')}
           </button>
         </div>
       </div>
@@ -87,17 +92,17 @@ export default function EmergencyQR() {
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Mi Código QR de Emergencia</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('qr.title')}</h1>
         <p className="text-gray-600 mt-1">
-          Este código permite a personal médico acceder a tu información en caso de emergencia
+          {t('qr.subtitle')}
         </p>
       </div>
 
       {/* QR Card */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="bg-gradient-to-r from-vida-600 to-vida-700 text-white p-6 text-center">
-          <h2 className="text-xl font-semibold">Sistema VIDA</h2>
-          <p className="text-vida-100 text-sm">Código de Acceso de Emergencia</p>
+          <h2 className="text-xl font-semibold">{t('qr.card.header_title')}</h2>
+          <p className="text-vida-100 text-sm">{t('qr.card.header_subtitle')}</p>
         </div>
 
         <div className="p-8 flex flex-col items-center">
@@ -116,12 +121,12 @@ export default function EmergencyQR() {
 
               {/* Token info */}
               <p className="text-xs text-gray-400 font-mono mb-4">
-                Token: {qrData.qrToken}
+                {t('qr.card.token_label')} {qrData.qrToken}
               </p>
 
               {/* Generated date */}
               <p className="text-sm text-gray-500 mb-6">
-                Generado: {new Date(qrData.generatedAt).toLocaleString('es-MX')}
+                {t('qr.card.generated_label')} {formatDateTime(qrData.generatedAt)}
               </p>
             </>
           )}
@@ -136,14 +141,14 @@ export default function EmergencyQR() {
               {regenerating ? (
                 <>
                   <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
-                  Regenerando...
+                  {t('qr.buttons.regenerating')}
                 </>
               ) : (
                 <>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
-                  Regenerar QR
+                  {t('qr.buttons.regenerate')}
                 </>
               )}
             </button>
@@ -162,7 +167,7 @@ export default function EmergencyQR() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
-              Descargar
+              {t('qr.buttons.download')}
             </button>
           </div>
         </div>
@@ -174,24 +179,24 @@ export default function EmergencyQR() {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          Instrucciones de uso
+          {t('qr.instructions.title')}
         </h3>
         <ul className="text-amber-700 space-y-2 text-sm">
           <li className="flex items-start gap-2">
             <span className="font-bold">1.</span>
-            Imprime este código o guárdalo en tu celular
+            {t('qr.instructions.step_1')}
           </li>
           <li className="flex items-start gap-2">
             <span className="font-bold">2.</span>
-            Llévalo contigo en tu cartera, como fondo de pantalla, o en una pulsera médica
+            {t('qr.instructions.step_2')}
           </li>
           <li className="flex items-start gap-2">
             <span className="font-bold">3.</span>
-            En caso de emergencia, el personal médico puede escanear el código para acceder a tu información vital
+            {t('qr.instructions.step_3')}
           </li>
           <li className="flex items-start gap-2">
             <span className="font-bold">4.</span>
-            Cada acceso queda registrado y tus representantes son notificados
+            {t('qr.instructions.step_4')}
           </li>
         </ul>
       </div>
@@ -202,11 +207,10 @@ export default function EmergencyQR() {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
-          Seguridad
+          {t('qr.security.title')}
         </h3>
         <p className="text-gray-600 text-sm">
-          Si crees que tu código ha sido comprometido, puedes regenerarlo en cualquier momento.
-          El código anterior dejará de funcionar inmediatamente.
+          {t('qr.security.text')}
         </p>
       </div>
 
@@ -223,11 +227,11 @@ export default function EmergencyQR() {
           </div>
           <div className="flex-1">
             <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-              Grabar en Tag NFC
-              <span className="text-xs bg-vida-100 text-vida-700 px-2 py-0.5 rounded-full">Nuevo</span>
+              {t('qr.nfc.title')}
+              <span className="text-xs bg-vida-100 text-vida-700 px-2 py-0.5 rounded-full">{t('qr.nfc.badge')}</span>
             </h3>
             <p className="text-sm text-gray-600 mt-1">
-              Graba tu información en brazaletes, tarjetas o stickers NFC para acceso aún más rápido
+              {t('qr.nfc.description')}
             </p>
           </div>
           <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

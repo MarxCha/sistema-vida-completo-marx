@@ -1,0 +1,126 @@
+{
+  "title": "Notificaciones",
+  "unreadCount_one": "{{count}} notificacion sin leer",
+  "unreadCount_other": "{{count}} notificaciones sin leer",
+  "allRead": "Todas las notificaciones leidas",
+  "configure": "Configurar",
+  "markAllRead": "Marcar todas leidas",
+  "types": {
+    "PANIC_ALERT": "Alerta de Panico",
+    "QR_ACCESS": "Acceso QR",
+    "SYSTEM": "Sistema",
+    "REPRESENTATIVE": "Representante",
+    "DOCUMENT": "Documento"
+  },
+  "filters": {
+    "all": "Todas",
+    "unread": "Sin leer",
+    "alerts": "Alertas",
+    "access": "Accesos",
+    "system": "Sistema"
+  },
+  "groups": {
+    "today": "Hoy",
+    "yesterday": "Ayer"
+  },
+  "permissionBanner": {
+    "title": "Notificaciones deshabilitadas",
+    "description": "Activa las notificaciones para recibir alertas importantes sobre accesos a tu informacion y alertas de emergencia, incluso cuando no estes usando la app.",
+    "enable": "Activar notificaciones"
+  },
+  "empty": {
+    "all": "No tienes notificaciones",
+    "unread": "No tienes notificaciones sin leer",
+    "filtered": "No hay notificaciones de este tipo",
+    "description": "Las notificaciones apareceran aqui cuando recibas alertas o accesos a tu informacion."
+  },
+  "actions": {
+    "markRead": "Marcar como leida",
+    "delete": "Eliminar",
+    "deleteAll": "Eliminar todas las notificaciones"
+  },
+  "data": {
+    "role": "Rol",
+    "location": "Ubicacion"
+  },
+  "confirmClear": {
+    "question": "Eliminar todas?",
+    "confirm": "Si, eliminar",
+    "cancel": "Cancelar"
+  },
+  "settings": {
+    "title": "Configuracion de Notificaciones",
+    "subtitle": "Personaliza como y cuando recibir alertas",
+    "types": {
+      "sectionTitle": "Tipos de Notificaciones",
+      "sectionSubtitle": "Elige que notificaciones deseas recibir",
+      "panicAlerts": {
+        "title": "Alertas de Panico",
+        "description": "Notificaciones cuando se activa una alerta de emergencia"
+      },
+      "qrAccess": {
+        "title": "Accesos a tu Informacion",
+        "description": "Cuando alguien escanea tu codigo QR de emergencia"
+      },
+      "representatives": {
+        "title": "Actualizaciones de Representantes",
+        "description": "Cambios en tus representantes legales"
+      },
+      "documents": {
+        "title": "Documentos",
+        "description": "Actualizaciones sobre tus directivas y documentos"
+      },
+      "system": {
+        "title": "Notificaciones del Sistema",
+        "description": "Actualizaciones, mantenimiento y novedades"
+      }
+    },
+    "channels": {
+      "sectionTitle": "Canales de Notificacion",
+      "sectionSubtitle": "Como deseas recibir las notificaciones",
+      "push": {
+        "title": "Notificaciones Push",
+        "description": "Alertas instantaneas en tu dispositivo"
+      },
+      "email": {
+        "title": "Correo Electronico",
+        "description": "Resumen de actividad y alertas importantes"
+      },
+      "sms": {
+        "title": "SMS",
+        "description": "Mensajes de texto para alertas criticas",
+        "premiumBadge": "Requiere plan Premium"
+      }
+    },
+    "dnd": {
+      "title": "Horario de No Molestar",
+      "subtitle": "Silenciar notificaciones durante cierto horario",
+      "from": "Desde",
+      "to": "Hasta",
+      "note": "Las alertas de panico siempre se mostraran, incluso en horario de no molestar."
+    },
+    "sound": {
+      "title": "Sonido de Notificaciones",
+      "description": "Reproducir sonido al recibir notificaciones"
+    },
+    "permissions": {
+      "disabled": {
+        "title": "Notificaciones del navegador desactivadas",
+        "description": "Para recibir notificaciones push, necesitas activar los permisos del navegador.",
+        "enable": "Activar permisos"
+      },
+      "granted": {
+        "title": "Notificaciones push activas",
+        "description": "Recibiras alertas incluso cuando no estes en la app"
+      }
+    },
+    "save": "Guardar cambios",
+    "saving": "Guardando...",
+    "toast": {
+      "saved": "Preferencias guardadas",
+      "saveError": "Error al guardar preferencias",
+      "permissionGranted": "Notificaciones activadas",
+      "permissionDenied": "Permisos denegados. Activalos desde la configuracion del navegador."
+    }
+  }
+}

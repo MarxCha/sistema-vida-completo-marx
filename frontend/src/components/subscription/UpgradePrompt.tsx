@@ -1,5 +1,7 @@
 // src/components/subscription/UpgradePrompt.tsx
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from '../../hooks/useLocale';
 import { usePremium } from '../../hooks/usePremium';
 
 interface UpgradePromptProps {
@@ -11,20 +13,25 @@ interface UpgradePromptProps {
 }
 
 export function UpgradePrompt({
-  title = 'Actualiza a Premium',
-  description = 'Desbloquea todas las funciones de Sistema VIDA',
-  features = [
-    'Directivas de voluntad anticipada',
-    'Preferencias de donación de órganos',
-    'Sello NOM-151 para documentos',
-    'Notificaciones SMS ilimitadas',
-    'Hasta 10 representantes',
-    'Soporte prioritario',
-  ],
+  title,
+  description,
+  features,
   compact = false,
   className = '',
 }: UpgradePromptProps) {
+  const { t } = useTranslation('subscription');
   const { isPremium, isInTrial, status } = usePremium();
+
+  const resolvedTitle = title ?? t('upgrade_prompt.default_title');
+  const resolvedDescription = description ?? t('upgrade_prompt.default_description');
+  const resolvedFeatures = features ?? [
+    t('upgrade_prompt.default_features.directives'),
+    t('upgrade_prompt.default_features.donor'),
+    t('upgrade_prompt.default_features.nom151'),
+    t('upgrade_prompt.default_features.sms'),
+    t('upgrade_prompt.default_features.representatives'),
+    t('upgrade_prompt.default_features.support'),
+  ];
 
   // No mostrar si ya es premium
   if (isPremium && !isInTrial) {
@@ -47,15 +54,15 @@ export function UpgradePrompt({
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
             <div>
-              <p className="font-semibold">{title}</p>
-              <p className="text-sm text-purple-200">{description}</p>
+              <p className="font-semibold">{resolvedTitle}</p>
+              <p className="text-sm text-purple-200">{resolvedDescription}</p>
             </div>
           </div>
           <Link
             to="/subscription/plans"
             className="px-4 py-2 bg-white text-purple-600 rounded-lg font-medium hover:bg-purple-50 transition-colors whitespace-nowrap"
           >
-            Ver planes
+            {t('upgrade_prompt.btn_see_plans')}
           </Link>
         </div>
       </div>
@@ -79,17 +86,17 @@ export function UpgradePrompt({
             </svg>
             Premium
           </div>
-          <h3 className="text-2xl font-bold mb-2">{title}</h3>
-          <p className="text-purple-200">{description}</p>
+          <h3 className="text-2xl font-bold mb-2">{resolvedTitle}</h3>
+          <p className="text-purple-200">{resolvedDescription}</p>
         </div>
         <div className="text-right">
-          <p className="text-3xl font-bold">$149</p>
-          <p className="text-purple-200 text-sm">MXN / mes</p>
+          <p className="text-3xl font-bold">{t('upgrade_prompt.price')}</p>
+          <p className="text-purple-200 text-sm">{t('upgrade_prompt.currency')}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-6">
-        {features.map((feature, index) => (
+        {resolvedFeatures.map((feature, index) => (
           <div key={index} className="flex items-center text-sm">
             <svg
               className="w-5 h-5 mr-2 text-green-400 flex-shrink-0"
@@ -112,19 +119,19 @@ export function UpgradePrompt({
           to="/subscription/plans"
           className="flex-1 px-6 py-3 bg-white text-purple-600 rounded-xl font-semibold text-center hover:bg-purple-50 transition-colors"
         >
-          Comenzar prueba gratis de 7 días
+          {t('upgrade_prompt.btn_trial')}
         </Link>
         <Link
           to="/subscription/plans"
           className="px-6 py-3 border border-white/30 rounded-xl font-medium hover:bg-white/10 transition-colors"
         >
-          Comparar planes
+          {t('upgrade_prompt.btn_compare')}
         </Link>
       </div>
 
       {isInTrial && status?.trialDaysLeft && (
         <p className="mt-4 text-center text-purple-200 text-sm">
-          Te quedan {status.trialDaysLeft} días de prueba
+          {t('upgrade_prompt.trial_days_left', { count: status.trialDaysLeft })}
         </p>
       )}
     </div>
@@ -133,6 +140,7 @@ export function UpgradePrompt({
 
 // Banner de trial que expira pronto
 export function TrialExpiringBanner() {
+  const { t } = useTranslation('subscription');
   const { isInTrial, status } = usePremium();
 
   if (!isInTrial || !status?.trialDaysLeft || status.trialDaysLeft > 3) {
@@ -162,8 +170,8 @@ export function TrialExpiringBanner() {
           </svg>
           <span className={`font-medium ${isLastDay ? 'text-red-800' : 'text-amber-800'}`}>
             {isLastDay
-              ? 'Tu prueba termina hoy'
-              : `Tu prueba termina en ${status.trialDaysLeft} días`}
+              ? t('trial_banner.expires_today')
+              : t('trial_banner.expires_in', { count: status.trialDaysLeft })}
           </span>
         </div>
         <Link
@@ -174,7 +182,7 @@ export function TrialExpiringBanner() {
               : 'bg-amber-600 hover:bg-amber-700'
           } text-white text-sm font-medium rounded-lg transition-colors`}
         >
-          Suscribirse ahora
+          {t('trial_banner.subscribe_now')}
         </Link>
       </div>
     </div>
@@ -183,18 +191,15 @@ export function TrialExpiringBanner() {
 
 // Banner para suscripción que se cancelará
 export function CancellingBanner() {
+  const { t } = useTranslation('subscription');
   const { status } = usePremium();
+  const { formatDate } = useLocale();
 
   if (!status?.cancelAtPeriodEnd || !status.expiresAt) {
     return null;
   }
 
-  const expiresDate = new Date(status.expiresAt);
-  const formattedDate = expiresDate.toLocaleDateString('es-MX', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
+  const formattedDate = formatDate(status.expiresAt);
 
   return (
     <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
@@ -212,14 +217,14 @@ export function CancellingBanner() {
             />
           </svg>
           <span className="text-gray-700">
-            Tu suscripción se cancelará el <strong>{formattedDate}</strong>
+            {t('cancelling_banner.message')} <strong>{formattedDate}</strong>
           </span>
         </div>
         <Link
           to="/subscription"
           className="px-4 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors"
         >
-          Reactivar
+          {t('cancelling_banner.reactivate')}
         </Link>
       </div>
     </div>

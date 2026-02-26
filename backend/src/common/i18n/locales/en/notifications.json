@@ -1,0 +1,16 @@
+{
+  "sms": {
+    "emergency": "EMERGENCY: {{patientName}} activated panic alert. {{mapsUrl}}",
+    "access": "VIDA: Medical access to {{patientName}} by {{accessorName}}. {{mapsUrl}}"
+  },
+  "whatsapp": {
+    "emergency": "🚨 VIDA EMERGENCY\n\n{{patientName}} activated a panic alert.\n\n📍 Location: {{mapsUrl}}",
+    "emergencyWithHospital": "🚨 VIDA EMERGENCY\n\n{{patientName}} activated a panic alert.\n\n📍 Location: {{mapsUrl}}\n\n🏥 Nearest hospital: {{hospital}}",
+    "access": "⚠️ VIDA ALERT\n\nMedical access to {{patientName}} by {{accessorName}}.\n\n📍 {{mapsUrl}}"
+  },
+  "defaults": {
+    "unknownHospital": "Not identified",
+    "medicalStaff": "medical staff"
+  },
+  "noRepresentatives": "No representatives configured for notification"
+}

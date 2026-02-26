@@ -1,0 +1,74 @@
+{
+  "appName": "VIDA System",
+  "nav": {
+    "home": "Home",
+    "profile": "My Profile",
+    "directives": "Advance Directive",
+    "representatives": "Representatives",
+    "documents": "My Documents",
+    "emergencyQR": "My QR Code",
+    "notifications": "Notifications",
+    "accessHistory": "Access History",
+    "subscription": "My Subscription"
+  },
+  "bottomNav": {
+    "home": "Home",
+    "profile": "Profile",
+    "qr": "QR",
+    "contacts": "Contacts",
+    "docs": "Docs"
+  },
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "retry": "Retry"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "pending": "Pending",
+    "verified": "Verified",
+    "notVerified": "Not verified"
+  },
+  "errors": {
+    "generic": "Internal server error",
+    "notFound": "Not found",
+    "unauthorized": "Unauthorized"
+  },
+  "footer": {
+    "encryption": "Protected with AES-256 encryption",
+    "copyright": "© {{year}} VIDA System. All rights reserved."
+  },
+  "logout": "Log out",
+  "logoutTitle": "Log out",
+  "time": {
+    "now": "Now",
+    "minutesAgo": "{{count}} min ago",
+    "hoursAgo": "{{count}}h ago",
+    "daysAgo": "{{count}}d ago",
+    "today": "Today",
+    "yesterday": "Yesterday"
+  },
+  "loading": "Loading VIDA...",
+  "notFound": {
+    "title": "404",
+    "message": "Page not found",
+    "backHome": "Back to home"
+  },
+  "panicAlert": {
+    "title": "Alert error"
+  },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "description": "An unexpected error has occurred. Please try reloading the page.",
+    "reload": "Reload page"
+  }
+}

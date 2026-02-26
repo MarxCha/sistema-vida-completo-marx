@@ -1,5 +1,6 @@
 // src/components/pages/WalletPass.tsx
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import api from '../../services/api';
 
 interface WalletStatus {
@@ -14,6 +15,7 @@ interface WalletStatus {
 }
 
 export default function WalletPass() {
+  const { t } = useTranslation('extras');
   const [status, setStatus] = useState<WalletStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
@@ -49,7 +51,7 @@ export default function WalletPass() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error?.message || 'Error generando pase');
+        throw new Error(data.error?.message || t('wallet.errors.generatePass'));
       }
 
       // Descargar el archivo .pkpass
@@ -63,7 +65,7 @@ export default function WalletPass() {
       window.URL.revokeObjectURL(url);
       a.remove();
     } catch (err: any) {
-      setError(err.message || 'Error descargando pase de Apple Wallet');
+      setError(err.message || t('wallet.errors.applePass'));
     } finally {
       setDownloading(false);
     }
@@ -78,10 +80,10 @@ export default function WalletPass() {
       if (response.data?.success && response.data?.data?.url) {
         window.open(response.data.data.url, '_blank');
       } else {
-        throw new Error('No se pudo obtener la URL del pase');
+        throw new Error(t('wallet.errors.googleUrl'));
       }
     } catch (err: any) {
-      setError(err.message || 'Error generando pase de Google Wallet');
+      setError(err.message || t('wallet.errors.googlePass'));
     } finally {
       setDownloading(false);
     }
@@ -108,9 +110,9 @@ export default function WalletPass() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">Tarjeta Digital</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('wallet.pageTitle')}</h1>
         <p className="text-gray-600 mt-2">
-          Agrega tu tarjeta de emergencia a Apple Wallet o Google Wallet
+          {t('wallet.pageDescription')}
         </p>
       </div>
 
@@ -120,13 +122,13 @@ export default function WalletPass() {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          ¿Por qué usar la tarjeta digital?
+          {t('wallet.whyUse.title')}
         </h3>
         <ul className="text-sm text-sky-700 space-y-1">
-          <li>• Acceso rápido desde la pantalla de bloqueo</li>
-          <li>• Los paramédicos pueden escanear tu teléfono</li>
-          <li>• No necesitas desbloquear el dispositivo</li>
-          <li>• Funciona con NFC en iPhones modernos</li>
+          <li>• {t('wallet.whyUse.reason1')}</li>
+          <li>• {t('wallet.whyUse.reason2')}</li>
+          <li>• {t('wallet.whyUse.reason3')}</li>
+          <li>• {t('wallet.whyUse.reason4')}</li>
         </ul>
       </div>
 
@@ -143,10 +145,9 @@ export default function WalletPass() {
           <svg className="w-12 h-12 text-amber-500 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
-          <h3 className="font-semibold text-amber-800 mb-2">No disponible aún</h3>
+          <h3 className="font-semibold text-amber-800 mb-2">{t('wallet.notAvailable.title')}</h3>
           <p className="text-sm text-amber-700">
-            Los pases de wallet aún no están configurados en este servidor.
-            Mientras tanto, puedes usar el código QR o tags NFC.
+            {t('wallet.notAvailable.description')}
           </p>
         </div>
       ) : (
@@ -160,9 +161,9 @@ export default function WalletPass() {
                 </svg>
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">Apple Wallet</h3>
+                <h3 className="font-semibold text-gray-900">{t('wallet.apple.title')}</h3>
                 <p className="text-sm text-gray-500">
-                  {appleConfigured ? 'Para iPhone y Apple Watch' : 'No configurado'}
+                  {appleConfigured ? t('wallet.apple.subtitle') : t('wallet.apple.notConfigured')}
                 </p>
               </div>
               {appleConfigured && (
@@ -171,7 +172,7 @@ export default function WalletPass() {
                   disabled={downloading}
                   className="px-4 py-2 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition disabled:opacity-50"
                 >
-                  {downloading ? 'Descargando...' : 'Agregar'}
+                  {downloading ? t('wallet.apple.downloading') : t('wallet.apple.add')}
                 </button>
               )}
             </div>
@@ -189,9 +190,9 @@ export default function WalletPass() {
                 </svg>
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">Google Wallet</h3>
+                <h3 className="font-semibold text-gray-900">{t('wallet.google.title')}</h3>
                 <p className="text-sm text-gray-500">
-                  {googleConfigured ? 'Para Android y Wear OS' : 'No configurado'}
+                  {googleConfigured ? t('wallet.google.subtitle') : t('wallet.google.notConfigured')}
                 </p>
               </div>
               {googleConfigured && (
@@ -200,7 +201,7 @@ export default function WalletPass() {
                   disabled={downloading}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50"
                 >
-                  {downloading ? 'Cargando...' : 'Agregar'}
+                  {downloading ? t('wallet.google.loading') : t('wallet.google.add')}
                 </button>
               )}
             </div>
@@ -210,30 +211,30 @@ export default function WalletPass() {
 
       {/* How it works */}
       <div className="bg-gray-50 rounded-xl p-4">
-        <h3 className="font-semibold text-gray-900 mb-3">¿Cómo funciona?</h3>
+        <h3 className="font-semibold text-gray-900 mb-3">{t('wallet.howItWorks.title')}</h3>
         <ol className="text-sm text-gray-600 space-y-3">
           <li className="flex items-start gap-3">
             <span className="w-6 h-6 bg-vida-100 text-vida-700 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">1</span>
-            <span>Agrega la tarjeta a tu wallet tocando el botón</span>
+            <span>{t('wallet.howItWorks.step1')}</span>
           </li>
           <li className="flex items-start gap-3">
             <span className="w-6 h-6 bg-vida-100 text-vida-700 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">2</span>
-            <span>La tarjeta aparecerá en tu app de Wallet</span>
+            <span>{t('wallet.howItWorks.step2')}</span>
           </li>
           <li className="flex items-start gap-3">
             <span className="w-6 h-6 bg-vida-100 text-vida-700 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">3</span>
-            <span>En emergencia, el personal médico puede escanear el código QR de la tarjeta</span>
+            <span>{t('wallet.howItWorks.step3')}</span>
           </li>
           <li className="flex items-start gap-3">
             <span className="w-6 h-6 bg-vida-100 text-vida-700 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0">4</span>
-            <span>En iPhones, también pueden usar NFC (sin desbloquear)</span>
+            <span>{t('wallet.howItWorks.step4')}</span>
           </li>
         </ol>
       </div>
 
       {/* Requirements */}
       <div className="text-center text-xs text-gray-400 pt-4">
-        <p>Apple Wallet requiere iOS 9+ • Google Wallet requiere Android 5+</p>
+        <p>{t('wallet.requirements')}</p>
       </div>
     </div>
   );

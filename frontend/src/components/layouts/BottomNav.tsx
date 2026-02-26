@@ -1,9 +1,10 @@
 // src/components/layouts/BottomNav.tsx
 import { NavLink, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface NavItem {
   path: string;
-  label: string;
+  labelKey: string;
   icon: React.ReactNode;
   activeIcon?: React.ReactNode;
 }
@@ -11,7 +12,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   {
     path: '/dashboard',
-    label: 'Inicio',
+    labelKey: 'bottomNav.home',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -26,7 +27,7 @@ const navItems: NavItem[] = [
   },
   {
     path: '/profile',
-    label: 'Perfil',
+    labelKey: 'bottomNav.profile',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -40,7 +41,7 @@ const navItems: NavItem[] = [
   },
   {
     path: '/emergency-qr',
-    label: 'QR',
+    labelKey: 'bottomNav.qr',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h2M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
@@ -54,7 +55,7 @@ const navItems: NavItem[] = [
   },
   {
     path: '/representatives',
-    label: 'Contactos',
+    labelKey: 'bottomNav.contacts',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -68,7 +69,7 @@ const navItems: NavItem[] = [
   },
   {
     path: '/documents',
-    label: 'Docs',
+    labelKey: 'bottomNav.docs',
     icon: (
       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -84,6 +85,7 @@ const navItems: NavItem[] = [
 ];
 
 export default function BottomNav() {
+  const { t } = useTranslation('common');
   const location = useLocation();
 
   return (
@@ -106,7 +108,7 @@ export default function BottomNav() {
                 )}
               </div>
               <span className={`text-[10px] mt-1 ${isActive ? 'font-semibold' : 'font-medium'}`}>
-                {item.label}
+                {t(item.labelKey)}
               </span>
             </NavLink>
           );

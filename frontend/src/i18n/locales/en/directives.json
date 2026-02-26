@@ -1,0 +1,97 @@
+{
+  "title": "Advance Directives",
+  "subtitle": "Manage your advance directive documents",
+  "createButton": "Create new",
+  "status": {
+    "DRAFT": "Draft",
+    "PENDING_VALIDATION": "Pending",
+    "ACTIVE": "Active",
+    "REVOKED": "Revoked",
+    "EXPIRED": "Expired"
+  },
+  "types": {
+    "DIGITAL_DRAFT": "Digital draft",
+    "NOTARIZED_DOCUMENT": "Notarized document",
+    "DIGITAL_WITNESSES": "With digital witnesses"
+  },
+  "activeBanner": {
+    "title": "Active Directive",
+    "description": "Your advance directive is in effect and will be respected in case of emergency.",
+    "validatedAt": "Validated on {{date}}"
+  },
+  "emptyState": {
+    "title": "No directives",
+    "description": "You have not created any advance directives yet",
+    "createFirst": "Create my first directive"
+  },
+  "directive": {
+    "createdAt": "Created on {{date}}",
+    "cpr": "CPR",
+    "intubation": "Intubation",
+    "palliativeOnly": "Palliative only"
+  },
+  "actions": {
+    "validate": "Validate",
+    "delete": "Delete",
+    "revoke": "Revoke"
+  },
+  "infoBox": {
+    "title": "What is an advance directive?",
+    "description": "It is a legal document where you express your decisions about medical treatments in case you cannot communicate. It includes preferences about resuscitation, mechanical ventilation, dialysis, transfusions and palliative care.",
+    "moreInfo": "More information →",
+    "legalFramework": "Legal framework in Mexico →"
+  },
+  "modal": {
+    "title": "New Advance Directive",
+    "medicalDecisionsTitle": "Medical decisions",
+    "medicalDecisionsDesc": "Indicate your preferences for each treatment. You may leave any preference unset.",
+    "decisions": {
+      "cpr": "Cardiopulmonary resuscitation (CPR)",
+      "intubation": "Intubation / mechanical ventilation",
+      "dialysis": "Dialysis",
+      "transfusion": "Blood transfusions",
+      "artificialNutrition": "Artificial nutrition"
+    },
+    "decisionValues": {
+      "yes": "Yes",
+      "no": "No",
+      "noPreference": "No preference"
+    },
+    "palliativeCareOnly": "I only wish to receive palliative care",
+    "stateLabel": "State of origin (for applicable legal framework)",
+    "statePlaceholder": "Select your state",
+    "states": {
+      "CDMX": "Mexico City",
+      "JAL": "Jalisco",
+      "NL": "Nuevo León",
+      "AGS": "Aguascalientes",
+      "COAH": "Coahuila",
+      "COL": "Colima",
+      "GTO": "Guanajuato",
+      "GRO": "Guerrero",
+      "HGO": "Hidalgo",
+      "MEX": "State of Mexico",
+      "MICH": "Michoacán",
+      "NAY": "Nayarit",
+      "OAX": "Oaxaca",
+      "SLP": "San Luis Potosí",
+      "YUC": "Yucatán"
+    },
+    "notesLabel": "Additional notes (optional)",
+    "notesPlaceholder": "You can add specific instructions or clarifications...",
+    "cancel": "Cancel",
+    "saveDraft": "Save draft",
+    "saving": "Saving..."
+  },
+  "confirm": {
+    "revoke": "Are you sure you want to revoke this directive? This action cannot be undone.",
+    "delete": "Are you sure you want to delete this draft?"
+  },
+  "errors": {
+    "loading": "Error loading directives",
+    "creating": "Error creating draft",
+    "validating": "Error validating directive",
+    "revoking": "Error revoking directive",
+    "deleting": "Error deleting draft"
+  }
+}

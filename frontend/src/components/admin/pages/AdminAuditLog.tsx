@@ -1,5 +1,7 @@
 // src/components/admin/pages/AdminAuditLog.tsx
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from '../../../hooks/useLocale';
 import {
   listAuditLogs,
   listEmergencyAccesses,
@@ -14,6 +16,8 @@ import { ADMIN_PERMISSIONS } from '../../../types/admin';
 type TabType = 'user' | 'emergency' | 'panic';
 
 const AdminAuditLog: React.FC = () => {
+  const { t } = useTranslation('admin');
+  const { formatDateTime } = useLocale();
   const { hasPermission } = useAdminAuth();
   const [activeTab, setActiveTab] = useState<TabType>('user');
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
@@ -108,18 +112,8 @@ const AdminAuditLog: React.FC = () => {
       URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Export error:', error);
-      alert('Error al exportar');
+      alert(t('audit.export_error'));
     }
-  };
-
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleString('es-MX', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
   };
 
   const getActionColor = (action: string) => {
@@ -145,8 +139,8 @@ const AdminAuditLog: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Pistas de Auditoria</h1>
-          <p className="text-gray-500">Registro de todas las acciones del sistema</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('audit.title')}</h1>
+          <p className="text-gray-500">{t('audit.subtitle')}</p>
         </div>
         {canExport && (
           <button
@@ -156,7 +150,7 @@ const AdminAuditLog: React.FC = () => {
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
-            Exportar CSV
+            {t('audit.btn_export')}
           </button>
         )}
       </div>
@@ -166,19 +160,19 @@ const AdminAuditLog: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-white rounded-xl p-4 border border-gray-100">
             <p className="text-2xl font-bold text-gray-900">{stats.totals.userLogs.toLocaleString()}</p>
-            <p className="text-sm text-gray-500">Logs de Usuario</p>
+            <p className="text-sm text-gray-500">{t('audit.stat_user_logs')}</p>
           </div>
           <div className="bg-white rounded-xl p-4 border border-gray-100">
             <p className="text-2xl font-bold text-gray-900">{stats.totals.adminLogs.toLocaleString()}</p>
-            <p className="text-sm text-gray-500">Logs de Admin</p>
+            <p className="text-sm text-gray-500">{t('audit.stat_admin_logs')}</p>
           </div>
           <div className="bg-white rounded-xl p-4 border border-gray-100">
             <p className="text-2xl font-bold text-sky-600">{stats.recent.last24h.toLocaleString()}</p>
-            <p className="text-sm text-gray-500">Ultimas 24h</p>
+            <p className="text-sm text-gray-500">{t('audit.stat_last_24h')}</p>
           </div>
           <div className="bg-white rounded-xl p-4 border border-gray-100">
             <p className="text-2xl font-bold text-purple-600">{stats.recent.last7d.toLocaleString()}</p>
-            <p className="text-sm text-gray-500">Ultimos 7 dias</p>
+            <p className="text-sm text-gray-500">{t('audit.stat_last_7d')}</p>
           </div>
         </div>
       )}
@@ -194,7 +188,7 @@ const AdminAuditLog: React.FC = () => {
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            Acciones de Usuario
+            {t('audit.tab_user')}
           </button>
           <button
             onClick={() => { setActiveTab('emergency'); setCurrentPage(1); }}
@@ -204,7 +198,7 @@ const AdminAuditLog: React.FC = () => {
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            Accesos de Emergencia
+            {t('audit.tab_emergency')}
           </button>
           <button
             onClick={() => { setActiveTab('panic'); setCurrentPage(1); }}
@@ -214,7 +208,7 @@ const AdminAuditLog: React.FC = () => {
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            Alertas de Panico
+            {t('audit.tab_panic')}
           </button>
         </div>
 
@@ -225,14 +219,14 @@ const AdminAuditLog: React.FC = () => {
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             className="px-3 py-2 border rounded-lg"
-            placeholder="Desde"
+            placeholder={t('audit.filter_from')}
           />
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
             className="px-3 py-2 border rounded-lg"
-            placeholder="Hasta"
+            placeholder={t('audit.filter_to')}
           />
 
           {activeTab === 'user' && (
@@ -241,14 +235,14 @@ const AdminAuditLog: React.FC = () => {
                 type="text"
                 value={action}
                 onChange={(e) => setAction(e.target.value)}
-                placeholder="Accion..."
+                placeholder={t('audit.filter_action')}
                 className="px-3 py-2 border rounded-lg"
               />
               <input
                 type="text"
                 value={resource}
                 onChange={(e) => setResource(e.target.value)}
-                placeholder="Recurso..."
+                placeholder={t('audit.filter_resource')}
                 className="px-3 py-2 border rounded-lg"
               />
             </>
@@ -260,11 +254,11 @@ const AdminAuditLog: React.FC = () => {
               onChange={(e) => setStatus(e.target.value)}
               className="px-3 py-2 border rounded-lg"
             >
-              <option value="">Todos los estados</option>
-              <option value="ACTIVE">Activas</option>
-              <option value="RESOLVED">Resueltas</option>
-              <option value="CANCELLED">Canceladas</option>
-              <option value="EXPIRED">Expiradas</option>
+              <option value="">{t('audit.filter_all_status')}</option>
+              <option value="ACTIVE">{t('audit.filter_active')}</option>
+              <option value="RESOLVED">{t('audit.filter_resolved')}</option>
+              <option value="CANCELLED">{t('audit.filter_cancelled')}</option>
+              <option value="EXPIRED">{t('audit.filter_expired')}</option>
             </select>
           )}
 
@@ -272,7 +266,7 @@ const AdminAuditLog: React.FC = () => {
             onClick={() => { setCurrentPage(1); loadData(); }}
             className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700"
           >
-            Filtrar
+            {t('audit.btn_filter')}
           </button>
         </div>
 
@@ -288,18 +282,18 @@ const AdminAuditLog: React.FC = () => {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usuario</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Accion</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Recurso</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">IP</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('audit.col_date')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('audit.col_user')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('audit.col_action')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('audit.col_resource')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('audit.col_ip')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {auditLogs.map((log) => (
                     <tr key={log.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                        {formatDate(log.createdAt)}
+                        {formatDateTime(log.createdAt)}
                       </td>
                       <td className="px-6 py-4">
                         <p className="font-medium text-gray-900">{log.user?.name || log.actorName || '-'}</p>
@@ -328,18 +322,18 @@ const AdminAuditLog: React.FC = () => {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Paciente</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Profesional</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Institucion</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Datos Accedidos</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('audit.col_date')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('audit.col_patient')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('audit.col_professional')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('audit.col_institution')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('audit.col_data_accessed')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {emergencyAccesses.map((access) => (
                     <tr key={access.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                        {formatDate(access.accessedAt)}
+                        {formatDateTime(access.accessedAt)}
                       </td>
                       <td className="px-6 py-4">
                         <p className="font-medium text-gray-900">{access.patient?.name || '-'}</p>
@@ -375,18 +369,18 @@ const AdminAuditLog: React.FC = () => {
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usuario</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ubicacion</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Resolucion</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('audit.col_date')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('audit.col_user')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('audit.col_status')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('audit.col_location')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('audit.col_resolution')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {panicAlerts.map((alert) => (
                     <tr key={alert.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                        {formatDate(alert.createdAt)}
+                        {formatDateTime(alert.createdAt)}
                       </td>
                       <td className="px-6 py-4">
                         <p className="font-medium text-gray-900">{alert.user?.name || '-'}</p>
@@ -401,8 +395,8 @@ const AdminAuditLog: React.FC = () => {
                         {alert.locationName || `${alert.latitude.toFixed(4)}, ${alert.longitude.toFixed(4)}`}
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
-                        {alert.resolvedAt ? formatDate(alert.resolvedAt) :
-                         alert.cancelledAt ? formatDate(alert.cancelledAt) : '-'}
+                        {alert.resolvedAt ? formatDateTime(alert.resolvedAt) :
+                         alert.cancelledAt ? formatDateTime(alert.cancelledAt) : '-'}
                       </td>
                     </tr>
                   ))}
@@ -415,7 +409,7 @@ const AdminAuditLog: React.FC = () => {
               (activeTab === 'emergency' && emergencyAccesses.length === 0) ||
               (activeTab === 'panic' && panicAlerts.length === 0)) && (
               <div className="p-8 text-center text-gray-500">
-                No se encontraron registros
+                {t('audit.no_records')}
               </div>
             )}
           </div>
@@ -425,7 +419,7 @@ const AdminAuditLog: React.FC = () => {
         {pagination && pagination.totalPages > 1 && (
           <div className="px-6 py-4 border-t bg-gray-50 flex items-center justify-between">
             <p className="text-sm text-gray-500">
-              Pagina {currentPage} de {pagination.totalPages}
+              {t('audit.pagination_page', { current: currentPage, total: pagination.totalPages })}
             </p>
             <div className="flex gap-2">
               <button
@@ -433,14 +427,14 @@ const AdminAuditLog: React.FC = () => {
                 disabled={currentPage === 1}
                 className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-100"
               >
-                Anterior
+                {t('audit.btn_previous')}
               </button>
               <button
                 onClick={() => setCurrentPage(currentPage + 1)}
                 disabled={currentPage === pagination.totalPages}
                 className="px-3 py-1 border rounded disabled:opacity-50 hover:bg-gray-100"
               >
-                Siguiente
+                {t('audit.btn_next')}
               </button>
             </div>
           </div>

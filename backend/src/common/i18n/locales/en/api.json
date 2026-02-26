@@ -1,0 +1,75 @@
+{
+  "auth": {
+    "registerSuccess": "User registered successfully. Please verify your email.",
+    "logoutSuccess": "Session closed successfully",
+    "allSessionsClosed": "All sessions have been closed",
+    "passwordResetSent": "If the email exists, you will receive password reset instructions",
+    "passwordResetSuccess": "Password reset successfully",
+    "emailVerified": "Email verified successfully",
+    "emailAlreadyRegistered": "This email is already registered",
+    "curpAlreadyRegistered": "This CURP is already registered",
+    "curpInvalid": "The CURP is invalid",
+    "invalidCredentials": "Invalid credentials",
+    "accountDisabled": "This account has been disabled",
+    "invalidRefreshToken": "Invalid refresh token",
+    "sessionExpired": "Session has expired",
+    "tokenRequired": "Token required",
+    "refreshTokenRequired": "Refresh token required"
+  },
+  "emergency": {
+    "invalidQR": "Invalid QR token",
+    "nameRequired": "Professional name is required",
+    "roleRequired": "Professional role is required",
+    "patientNotFound": "No patient found with this QR code",
+    "accessGranted": "Emergency access granted",
+    "invalidAccessToken": "Invalid or expired access token",
+    "tooManyAttempts": "Too many access attempts. Please wait a moment before trying again."
+  },
+  "panic": {
+    "locationRequired": "Location (latitude, longitude) is required to activate the alert",
+    "invalidCoordinates": "The provided coordinates are not valid",
+    "activated": "Panic alert activated. Your representatives have been notified.",
+    "cancelled": "Panic alert cancelled successfully",
+    "notFound": "Alert not found",
+    "notActive": "Alert not found or no longer active"
+  },
+  "representatives": {
+    "created": "Representative created successfully",
+    "updated": "Representative updated successfully",
+    "deleted": "Representative deleted successfully",
+    "prioritiesUpdated": "Priorities updated successfully",
+    "spokespersonSet": "Donation spokesperson set successfully",
+    "notFound": "Representative not found"
+  },
+  "directives": {
+    "draftCreated": "Advance directive draft created successfully",
+    "documentUploaded": "Advance directive document uploaded successfully",
+    "draftUpdated": "Draft updated successfully",
+    "validated": "Directive validated and activated successfully",
+    "revoked": "Directive revoked successfully",
+    "draftDeleted": "Draft deleted successfully",
+    "notFound": "Directive not found"
+  },
+  "documents": {
+    "uploaded": "Document uploaded successfully",
+    "updated": "Document updated successfully",
+    "deleted": "Document deleted successfully",
+    "notFound": "Document not found",
+    "invalidFileType": "File type not allowed. Use PDF, images (JPG, PNG) or Word documents."
+  },
+  "payments": {
+    "noActiveSubscription": "You don't have an active subscription",
+    "subscriptionCancelled": "Subscription cancelled",
+    "subscriptionReactivated": "Subscription reactivated",
+    "paymentMethodSaved": "Payment method saved",
+    "invoiceGenerated": "Invoice generated successfully"
+  },
+  "generic": {
+    "serverError": "Internal server error",
+    "tooManyRequests": "Too many requests. Please wait.",
+    "notAuthorized": "Not authorized",
+    "tokenNotProvided": "Authorization token not provided",
+    "invalidTokenFormat": "Invalid token format",
+    "premiumRequired": "This feature requires a Premium subscription"
+  }
+}

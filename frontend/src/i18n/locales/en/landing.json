@@ -1,0 +1,84 @@
+{
+  "nav": {
+    "signIn": "Sign In",
+    "register": "Register"
+  },
+  "demo": {
+    "title": "Quick Demo",
+    "userButton": "Demo User",
+    "userSubtitle": "See full dashboard",
+    "adminButton": "Admin Panel",
+    "adminSubtitle": "See metrics and management"
+  },
+  "hero": {
+    "badge": "Protected by Mexican law",
+    "title1": "Your will,",
+    "title2": "always respected",
+    "description": "VIDA ensures that your advance medical decisions are available at the critical moment, protecting your autonomy and dignity.",
+    "ctaPrimary": "Get Started",
+    "ctaSecondary": "Learn More",
+    "trustCount": "+10,000",
+    "trustText": "Mexicans trust VIDA",
+    "accessTitle": "Access in seconds",
+    "accessSubtitle": "Critical information available 24/7",
+    "legalTitle": "Legal Validity",
+    "legalSubtitle": "Compliant with your state's legislation",
+    "notificationTitle": "Instant Notification",
+    "notificationSubtitle": "Your representatives are alerted"
+  },
+  "features": {
+    "sectionTitle": "Everything you need to protect your decisions",
+    "sectionSubtitle": "A comprehensive platform designed specifically for the Mexican legal and medical context.",
+    "0": {
+      "title": "Digital Advance Directive",
+      "description": "Create and store your advance directive securely, with legal validity in accordance with Mexican legislation."
+    },
+    "1": {
+      "title": "Emergency Access",
+      "description": "A unique QR code allows healthcare professionals to access your critical information in seconds."
+    },
+    "2": {
+      "title": "Designated Representatives",
+      "description": "Automatic notification to your loved ones when your information is accessed in emergencies."
+    },
+    "3": {
+      "title": "Military-Grade Security",
+      "description": "AES-256 encryption and NOM-151 compliance to ensure the integrity of your documents."
+    }
+  },
+  "howItWorks": {
+    "sectionTitle": "How it works",
+    "sectionSubtitle": "In just 4 steps, protect your medical decisions for the future.",
+    "0": {
+      "title": "Register",
+      "description": "Create your account with your CURP and verify your identity."
+    },
+    "1": {
+      "title": "Complete Your Profile",
+      "description": "Add your medical information and treatment preferences."
+    },
+    "2": {
+      "title": "Generate Your QR",
+      "description": "Get your unique code for emergency access."
+    },
+    "3": {
+      "title": "Share with Confidence",
+      "description": "Your information will be available when you need it most."
+    }
+  },
+  "cta": {
+    "title": "Protect your will today",
+    "description": "Don't wait for an emergency. Register your medical decisions now and ensure they are respected when it matters most.",
+    "button": "Create my free account"
+  },
+  "footer": {
+    "terms": "Terms of Use",
+    "privacy": "Privacy Policy",
+    "contact": "Contact",
+    "copyright": "© 2024 VIDA System. All rights reserved."
+  },
+  "toast": {
+    "welcome": "Welcome {{name}}!",
+    "loginError": "Error signing in"
+  }
+}

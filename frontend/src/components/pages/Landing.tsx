@@ -17,6 +17,8 @@ import {
 import { authApi } from '../../services/api';
 import { adminLogin } from '../../services/adminApi';
 import toast, { Toaster } from 'react-hot-toast';
+import LanguageSwitcher from '../LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 // Verificar si el modo demo está habilitado (solo en desarrollo)
 const DEMO_ENABLED = import.meta.env.VITE_ENABLE_DEMO_MODE !== 'false';
@@ -39,55 +41,24 @@ const DEMO_ACCOUNTS = {
   },
 };
 
-const features = [
-  {
-    icon: FileText,
-    title: 'Voluntad Anticipada Digital',
-    description: 'Crea y almacena tu voluntad anticipada de forma segura, con validez legal conforme a la legislación mexicana.',
-  },
-  {
-    icon: QrCode,
-    title: 'Acceso de Emergencia',
-    description: 'Un código QR único permite a profesionales de salud acceder a tu información crítica en segundos.',
-  },
-  {
-    icon: Users,
-    title: 'Representantes Designados',
-    description: 'Notificación automática a tus seres queridos cuando se accede a tu información en emergencias.',
-  },
-  {
-    icon: Shield,
-    title: 'Seguridad de Grado Militar',
-    description: 'Cifrado AES-256 y cumplimiento con NOM-151 para garantizar la integridad de tus documentos.',
-  },
-];
-
-const steps = [
-  {
-    number: '01',
-    title: 'Regístrate',
-    description: 'Crea tu cuenta con tu CURP y verifica tu identidad.',
-  },
-  {
-    number: '02',
-    title: 'Completa tu Perfil',
-    description: 'Añade tu información médica y preferencias de tratamiento.',
-  },
-  {
-    number: '03',
-    title: 'Genera tu QR',
-    description: 'Obtén tu código único para acceso de emergencia.',
-  },
-  {
-    number: '04',
-    title: 'Comparte con Confianza',
-    description: 'Tu información estará disponible cuando más la necesites.',
-  },
-];
+const featureIcons = [FileText, QrCode, Users, Shield];
 
 export default function Landing() {
+  const { t } = useTranslation('landing');
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<'user' | 'admin' | null>(null);
+
+  const features = [0, 1, 2, 3].map((i) => ({
+    icon: featureIcons[i],
+    title: t(`features.${i}.title`),
+    description: t(`features.${i}.description`),
+  }));
+
+  const steps = [0, 1, 2, 3].map((i) => ({
+    number: String(i + 1).padStart(2, '0'),
+    title: t(`howItWorks.${i}.title`),
+    description: t(`howItWorks.${i}.description`),
+  }));
 
   const handleDemoLogin = async (type: 'user' | 'admin') => {
     setIsLoading(type);
@@ -99,16 +70,16 @@ export default function Landing() {
         if (response.success && response.data) {
           localStorage.setItem('accessToken', response.data.tokens.accessToken);
           localStorage.setItem('refreshToken', response.data.tokens.refreshToken);
-          toast.success(`¡Bienvenido ${account.name}!`);
+          toast.success(t('toast.welcome', { name: account.name }));
           navigate(account.redirect);
         }
       } else {
         await adminLogin(account.email, account.password);
-        toast.success(`¡Bienvenido ${account.name}!`);
+        toast.success(t('toast.welcome', { name: account.name }));
         navigate(account.redirect);
       }
     } catch (error: any) {
-      toast.error(error.message || 'Error al iniciar sesión');
+      toast.error(error.message || t('toast.loginError'));
     } finally {
       setIsLoading(null);
     }
@@ -126,11 +97,12 @@ export default function Landing() {
               <span className="text-xl font-bold text-vida-800">VIDA</span>
             </Link>
             <div className="flex items-center gap-4">
+              <LanguageSwitcher className="text-gray-600 border-gray-200" />
               <Link to="/login" className="text-gray-600 hover:text-vida-600 font-medium">
-                Iniciar Sesión
+                {t('nav.signIn')}
               </Link>
               <Link to="/register" className="btn-primary">
-                Registrarse
+                {t('nav.register')}
               </Link>
             </div>
           </div>
@@ -143,7 +115,7 @@ export default function Landing() {
           <div className="bg-white rounded-2xl shadow-2xl border border-violet-200 p-4 w-72">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles className="w-5 h-5 text-violet-600" />
-              <span className="font-bold text-violet-800">Demo Rápido</span>
+              <span className="font-bold text-violet-800">{t('demo.title')}</span>
             </div>
             <div className="space-y-2">
               <button
@@ -157,8 +129,8 @@ export default function Landing() {
                   <User className="w-5 h-5" />
                 )}
                 <div className="flex-1 text-left">
-                  <div className="font-medium text-sm">Usuario Demo</div>
-                  <div className="text-xs opacity-80">Ver dashboard completo</div>
+                  <div className="font-medium text-sm">{t('demo.userButton')}</div>
+                  <div className="text-xs opacity-80">{t('demo.userSubtitle')}</div>
                 </div>
               </button>
               <button
@@ -172,8 +144,8 @@ export default function Landing() {
                   <Settings className="w-5 h-5" />
                 )}
                 <div className="flex-1 text-left">
-                  <div className="font-medium text-sm">Panel Admin</div>
-                  <div className="text-xs opacity-80">Ver métricas y gestión</div>
+                  <div className="font-medium text-sm">{t('demo.adminButton')}</div>
+                  <div className="text-xs opacity-80">{t('demo.adminSubtitle')}</div>
                 </div>
               </button>
             </div>
@@ -188,23 +160,22 @@ export default function Landing() {
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-vida-100 rounded-full text-vida-700 text-sm font-medium">
                 <Shield className="w-4 h-4" />
-                Protegido por la ley mexicana
+                {t('hero.badge')}
               </div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                Tu voluntad,<br />
-                <span className="text-vida-600">siempre respetada</span>
+                {t('hero.title1')}<br />
+                <span className="text-vida-600">{t('hero.title2')}</span>
               </h1>
               <p className="text-xl text-gray-600 max-w-lg">
-                VIDA garantiza que tus decisiones médicas anticipadas estén disponibles 
-                en el momento crítico, protegiendo tu autonomía y dignidad.
+                {t('hero.description')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link to="/register" className="btn-primary text-lg px-8 py-3">
-                  Comenzar Ahora
+                  {t('hero.ctaPrimary')}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Link>
                 <Link to="#features" className="btn-outline text-lg px-8 py-3">
-                  Conocer Más
+                  {t('hero.ctaSecondary')}
                 </Link>
               </div>
               <div className="flex items-center gap-6 pt-4">
@@ -216,7 +187,7 @@ export default function Landing() {
                   ))}
                 </div>
                 <div className="text-sm text-gray-600">
-                  <span className="font-bold text-gray-900">+10,000</span> mexicanos confían en VIDA
+                  <span className="font-bold text-gray-900">{t('hero.trustCount')}</span> {t('hero.trustText')}
                 </div>
               </div>
             </div>
@@ -228,8 +199,8 @@ export default function Landing() {
                     <Clock className="w-6 h-6 text-salud-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">Acceso en segundos</p>
-                    <p className="text-sm text-gray-500">Información crítica disponible 24/7</p>
+                    <p className="font-semibold text-gray-900">{t('hero.accessTitle')}</p>
+                    <p className="text-sm text-gray-500">{t('hero.accessSubtitle')}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 p-4 bg-vida-50 rounded-xl">
@@ -237,8 +208,8 @@ export default function Landing() {
                     <FileText className="w-6 h-6 text-vida-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">Validez Legal</p>
-                    <p className="text-sm text-gray-500">Conforme a la legislación de tu estado</p>
+                    <p className="font-semibold text-gray-900">{t('hero.legalTitle')}</p>
+                    <p className="text-sm text-gray-500">{t('hero.legalSubtitle')}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 p-4 bg-coral-50 rounded-xl">
@@ -246,8 +217,8 @@ export default function Landing() {
                     <Phone className="w-6 h-6 text-coral-600" />
                   </div>
                   <div>
-                    <p className="font-semibold text-gray-900">Notificación Inmediata</p>
-                    <p className="text-sm text-gray-500">Tus representantes son alertados</p>
+                    <p className="font-semibold text-gray-900">{t('hero.notificationTitle')}</p>
+                    <p className="text-sm text-gray-500">{t('hero.notificationSubtitle')}</p>
                   </div>
                 </div>
               </div>
@@ -261,10 +232,10 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Todo lo que necesitas para proteger tus decisiones
+              {t('features.sectionTitle')}
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Una plataforma integral diseñada específicamente para el contexto legal y médico mexicano.
+              {t('features.sectionSubtitle')}
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -286,10 +257,10 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Cómo funciona
+              {t('howItWorks.sectionTitle')}
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              En solo 4 pasos, protege tus decisiones médicas para el futuro.
+              {t('howItWorks.sectionSubtitle')}
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -311,14 +282,13 @@ export default function Landing() {
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-vida-600 to-vida-800">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-            Protege tu voluntad hoy
+            {t('cta.title')}
           </h2>
           <p className="text-xl text-vida-100 mb-8 max-w-2xl mx-auto">
-            No esperes a una emergencia. Registra tus decisiones médicas ahora y 
-            garantiza que sean respetadas cuando más importa.
+            {t('cta.description')}
           </p>
           <Link to="/register" className="inline-flex items-center gap-2 bg-white text-vida-700 font-semibold px-8 py-4 rounded-lg hover:bg-vida-50 transition-colors text-lg">
-            Crear mi cuenta gratuita
+            {t('cta.button')}
             <ArrowRight className="w-5 h-5" />
           </Link>
         </div>
@@ -333,12 +303,12 @@ export default function Landing() {
               <span className="text-xl font-bold text-white">VIDA</span>
             </div>
             <div className="flex items-center gap-6 text-gray-400 text-sm">
-              <a href="#" className="hover:text-white">Términos de Uso</a>
-              <a href="#" className="hover:text-white">Política de Privacidad</a>
-              <a href="#" className="hover:text-white">Contacto</a>
+              <a href="#" className="hover:text-white">{t('footer.terms')}</a>
+              <a href="#" className="hover:text-white">{t('footer.privacy')}</a>
+              <a href="#" className="hover:text-white">{t('footer.contact')}</a>
             </div>
             <p className="text-gray-500 text-sm">
-              © 2024 Sistema VIDA. Todos los derechos reservados.
+              {t('footer.copyright')}
             </p>
           </div>
         </div>

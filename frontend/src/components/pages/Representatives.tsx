@@ -1,25 +1,27 @@
 // src/components/pages/Representatives.tsx
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { representativesApi } from '../../services/api';
 import type { Representative, CreateRepresentativeInput } from '../../types';
 
-const relationOptions = [
-  { value: 'Esposa', label: 'Esposa' },
-  { value: 'Esposo', label: 'Esposo' },
-  { value: 'Hijo', label: 'Hijo' },
-  { value: 'Hija', label: 'Hija' },
-  { value: 'Padre', label: 'Padre' },
-  { value: 'Madre', label: 'Madre' },
-  { value: 'Hermano', label: 'Hermano' },
-  { value: 'Hermana', label: 'Hermana' },
-  { value: 'Abuelo', label: 'Abuelo' },
-  { value: 'Abuela', label: 'Abuela' },
-  { value: 'Amigo', label: 'Amigo(a)' },
-  { value: 'Apoderado Legal', label: 'Apoderado Legal' },
-  { value: 'Otro', label: 'Otro' },
-];
+const RELATION_VALUES = [
+  'Esposa',
+  'Esposo',
+  'Hijo',
+  'Hija',
+  'Padre',
+  'Madre',
+  'Hermano',
+  'Hermana',
+  'Abuelo',
+  'Abuela',
+  'Amigo',
+  'Apoderado Legal',
+  'Otro',
+] as const;
 
 export default function Representatives() {
+  const { t } = useTranslation('representatives');
   const [representatives, setRepresentatives] = useState<Representative[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -51,7 +53,7 @@ export default function Representatives() {
         setRepresentatives(res.data.representatives);
       }
     } catch (err) {
-      setError('Error cargando representantes');
+      setError(t('errors.loading'));
     } finally {
       setLoading(false);
     }
@@ -91,20 +93,20 @@ export default function Representatives() {
       setShowModal(false);
       loadRepresentatives();
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Error guardando representante');
+      setError(err.response?.data?.error?.message || t('errors.saving'));
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('¿Está seguro de eliminar este representante?')) return;
+    if (!confirm(t('confirm.delete'))) return;
 
     try {
       await representativesApi.delete(id);
       loadRepresentatives();
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Error eliminando representante');
+      setError(err.response?.data?.error?.message || t('errors.deleting'));
     }
   };
 
@@ -113,7 +115,7 @@ export default function Representatives() {
       await representativesApi.setDonorSpokesperson(id);
       loadRepresentatives();
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Error actualizando vocero');
+      setError(err.response?.data?.error?.message || t('errors.updatingSpokesperson'));
     }
   };
 
@@ -131,9 +133,9 @@ export default function Representatives() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Representantes</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
             <p className="mt-2 text-gray-600">
-              Personas que pueden tomar decisiones médicas en tu nombre
+              {t('subtitle')}
             </p>
           </div>
           <button
@@ -144,7 +146,7 @@ export default function Representatives() {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            Agregar
+            {t('addButton')}
           </button>
         </div>
 
@@ -163,8 +165,7 @@ export default function Representatives() {
             </svg>
             <div>
               <p className="text-sm text-blue-800">
-                Los representantes serán notificados automáticamente cuando alguien acceda a tu 
-                información médica en una emergencia. Puedes designar hasta 5 representantes.
+                {t('infoBanner')}
               </p>
             </div>
           </div>
@@ -177,15 +178,15 @@ export default function Representatives() {
               <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Sin representantes</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">{t('emptyState.title')}</h3>
               <p className="text-gray-500 mb-6">
-                Agrega personas de confianza para emergencias
+                {t('emptyState.description')}
               </p>
               <button
                 onClick={handleOpenCreate}
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Agregar primer representante
+                {t('emptyState.addFirst')}
               </button>
             </div>
           ) : (
@@ -199,9 +200,9 @@ export default function Representatives() {
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900">{rep.name}</h3>
                       <p className="text-gray-500">
-                        {relationOptions.find(r => r.value === rep.relation)?.label || rep.relation}
+                        {t(`relations.${rep.relation}`, { defaultValue: rep.relation })}
                       </p>
-                      
+
                       <div className="mt-3 space-y-1">
                         <p className="text-sm text-gray-600 flex items-center gap-2">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -222,17 +223,17 @@ export default function Representatives() {
                       <div className="mt-3 flex flex-wrap gap-2">
                         {rep.notifyOnEmergency && (
                           <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
-                            Notificar en emergencia
+                            {t('badges.notifyOnEmergency')}
                           </span>
                         )}
                         {rep.canMakeMedicalDecisions && (
                           <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
-                            Decisiones médicas
+                            {t('badges.medicalDecisions')}
                           </span>
                         )}
                         {rep.isDonorSpokesperson && (
                           <span className="px-2 py-1 bg-teal-100 text-teal-700 text-xs rounded-full">
-                            Vocero de donación
+                            {t('badges.donorSpokesperson')}
                           </span>
                         )}
                       </div>
@@ -243,7 +244,7 @@ export default function Representatives() {
                     {!rep.isDonorSpokesperson && (
                       <button
                         onClick={() => handleSetDonorSpokesperson(rep.id)}
-                        title="Designar como vocero de donación"
+                        title={t('tooltips.setDonorSpokesperson')}
                         className="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
                       >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -278,8 +279,7 @@ export default function Representatives() {
         {representatives.length > 0 && (
           <div className="mt-6 text-sm text-gray-500">
             <p>
-              El orden de los representantes indica la prioridad de contacto en una emergencia.
-              El primer representante será contactado primero.
+              {t('priorityNote')}
             </p>
           </div>
         )}
@@ -292,7 +292,7 @@ export default function Representatives() {
             <div className="p-6 border-b border-gray-100">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-900">
-                  {editingId ? 'Editar representante' : 'Nuevo representante'}
+                  {editingId ? t('modal.titleEdit') : t('modal.titleCreate')}
                 </h2>
                 <button
                   onClick={() => setShowModal(false)}
@@ -308,7 +308,7 @@ export default function Representatives() {
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nombre completo *
+                  {t('modal.fields.name')}
                 </label>
                 <input
                   type="text"
@@ -321,21 +321,21 @@ export default function Representatives() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Teléfono *
+                  {t('modal.fields.phone')}
                 </label>
                 <input
                   type="tel"
                   required
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  placeholder="+52 55 1234 5678"
+                  placeholder={t('modal.phonePlaceholder')}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Correo electrónico
+                  {t('modal.fields.email')}
                 </label>
                 <input
                   type="email"
@@ -347,7 +347,7 @@ export default function Representatives() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Relación *
+                  {t('modal.fields.relation')}
                 </label>
                 <select
                   required
@@ -355,9 +355,9 @@ export default function Representatives() {
                   onChange={(e) => setForm({ ...form, relation: e.target.value })}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  {relationOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>
-                      {opt.label}
+                  {RELATION_VALUES.map((val) => (
+                    <option key={val} value={val}>
+                      {t(`relations.${val}`, { defaultValue: val })}
                     </option>
                   ))}
                 </select>
@@ -371,7 +371,7 @@ export default function Representatives() {
                     onChange={(e) => setForm({ ...form, notifyOnEmergency: e.target.checked })}
                     className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                   />
-                  <span className="text-gray-700">Notificar en caso de emergencia</span>
+                  <span className="text-gray-700">{t('modal.checkboxes.notifyOnEmergency')}</span>
                 </label>
 
                 <label className="flex items-center gap-3">
@@ -381,7 +381,7 @@ export default function Representatives() {
                     onChange={(e) => setForm({ ...form, canMakeMedicalDecisions: e.target.checked })}
                     className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                   />
-                  <span className="text-gray-700">Puede tomar decisiones médicas en mi nombre</span>
+                  <span className="text-gray-700">{t('modal.checkboxes.canMakeMedicalDecisions')}</span>
                 </label>
 
                 <label className="flex items-center gap-3">
@@ -391,7 +391,7 @@ export default function Representatives() {
                     onChange={(e) => setForm({ ...form, isDonorSpokesperson: e.target.checked })}
                     className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                   />
-                  <span className="text-gray-700">Es vocero de donación de órganos</span>
+                  <span className="text-gray-700">{t('modal.checkboxes.isDonorSpokesperson')}</span>
                 </label>
               </div>
 
@@ -401,14 +401,18 @@ export default function Representatives() {
                   onClick={() => setShowModal(false)}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
                 >
-                  Cancelar
+                  {t('modal.buttons.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                 >
-                  {saving ? 'Guardando...' : editingId ? 'Actualizar' : 'Agregar'}
+                  {saving
+                    ? t('modal.buttons.saving')
+                    : editingId
+                    ? t('modal.buttons.update')
+                    : t('modal.buttons.save')}
                 </button>
               </div>
             </form>

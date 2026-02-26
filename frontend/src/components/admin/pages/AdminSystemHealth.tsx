@@ -1,10 +1,14 @@
 // src/components/admin/pages/AdminSystemHealth.tsx
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from '../../../hooks/useLocale';
 import { getSystemHealth, getPerformanceMetrics, runSystemCleanup } from '../../../services/adminApi';
 import { SystemHealth, ServiceStatus } from '../../../types/admin';
 import { useAdminAuth } from '../../../context/AdminAuthContext';
 
 const AdminSystemHealth: React.FC = () => {
+  const { t } = useTranslation('admin');
+  const { formatDateTime } = useLocale();
   const { admin } = useAdminAuth();
   const [health, setHealth] = useState<SystemHealth | null>(null);
   const [performance, setPerformance] = useState<any>(null);
@@ -42,7 +46,7 @@ const AdminSystemHealth: React.FC = () => {
   };
 
   const handleCleanup = async (dryRun: boolean) => {
-    if (!dryRun && !window.confirm('Estas seguro de ejecutar la limpieza? Esto eliminara sesiones y datos expirados.')) {
+    if (!dryRun && !window.confirm(t('system.cleanup_confirm'))) {
       return;
     }
 
@@ -52,19 +56,15 @@ const AdminSystemHealth: React.FC = () => {
       setCleanupResult(result);
     } catch (error) {
       console.error('Cleanup error:', error);
-      alert('Error al ejecutar limpieza');
+      alert(t('system.cleanup_error'));
     } finally {
       setIsRunningCleanup(false);
     }
   };
 
   const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'healthy': return 'Saludable';
-      case 'degraded': return 'Degradado';
-      case 'down': return 'Caido';
-      default: return status;
-    }
+    const key = `system.status_${status}`;
+    return t(key, { defaultValue: status });
   };
 
   const formatUptime = (seconds: number) => {
@@ -87,7 +87,7 @@ const AdminSystemHealth: React.FC = () => {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Verificando estado del sistema...</p>
+          <p className="mt-4 text-gray-600">{t('system.loading')}</p>
         </div>
       </div>
     );
@@ -98,8 +98,8 @@ const AdminSystemHealth: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Estado del Sistema</h1>
-          <p className="text-gray-500">Monitoreo de salud y rendimiento</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('system.title')}</h1>
+          <p className="text-gray-500">{t('system.subtitle')}</p>
         </div>
         <button
           onClick={loadHealth}
@@ -108,7 +108,7 @@ const AdminSystemHealth: React.FC = () => {
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
-          Actualizar
+          {t('system.btn_refresh')}
         </button>
       </div>
 
@@ -133,15 +133,15 @@ const AdminSystemHealth: React.FC = () => {
                 )}
               </div>
               <div>
-                <h2 className="text-2xl font-bold">Sistema {getStatusLabel(health.status)}</h2>
+                <h2 className="text-2xl font-bold">{t('system.system_status', { status: getStatusLabel(health.status) })}</h2>
                 <p className="text-white/80">
-                  Ultima verificacion: {new Date(health.timestamp).toLocaleTimeString('es-MX')}
+                  {t('system.last_check')} {formatDateTime(health.timestamp)}
                 </p>
               </div>
             </div>
             <div className="text-right">
               <p className="text-3xl font-bold">{health.responseTime}ms</p>
-              <p className="text-white/80">Tiempo de respuesta</p>
+              <p className="text-white/80">{t('system.response_time')}</p>
             </div>
           </div>
         </div>
@@ -163,22 +163,22 @@ const AdminSystemHealth: React.FC = () => {
       {/* System Info */}
       {health?.system && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Informacion del Sistema</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('system.system_info')}</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <div>
-              <p className="text-sm text-gray-500">Entorno</p>
+              <p className="text-sm text-gray-500">{t('system.info_environment')}</p>
               <p className="text-lg font-semibold text-gray-900 capitalize">{health.system.environment}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Node.js</p>
+              <p className="text-sm text-gray-500">{t('system.info_nodejs')}</p>
               <p className="text-lg font-semibold text-gray-900">{health.system.nodeVersion}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Uptime</p>
+              <p className="text-sm text-gray-500">{t('system.info_uptime')}</p>
               <p className="text-lg font-semibold text-green-600">{formatUptime(health.system.uptime)}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Puerto</p>
+              <p className="text-sm text-gray-500">{t('system.info_port')}</p>
               <p className="text-lg font-semibold text-gray-900">{health.system.config.port}</p>
             </div>
           </div>
@@ -188,10 +188,10 @@ const AdminSystemHealth: React.FC = () => {
       {/* Memory Usage */}
       {health?.system?.memory && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Uso de Memoria</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('system.memory_usage')}</h3>
           <div className="grid grid-cols-3 gap-6">
             <div>
-              <p className="text-sm text-gray-500">Heap Usado</p>
+              <p className="text-sm text-gray-500">{t('system.memory_heap_used')}</p>
               <p className="text-2xl font-bold text-sky-600">{formatBytes(health.system.memory.heapUsed)}</p>
               <div className="mt-2 h-2 bg-gray-100 rounded-full">
                 <div
@@ -203,11 +203,11 @@ const AdminSystemHealth: React.FC = () => {
               </div>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Heap Total</p>
+              <p className="text-sm text-gray-500">{t('system.memory_heap_total')}</p>
               <p className="text-2xl font-bold text-gray-900">{formatBytes(health.system.memory.heapTotal)}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">RSS</p>
+              <p className="text-sm text-gray-500">{t('system.memory_rss')}</p>
               <p className="text-2xl font-bold text-gray-900">{formatBytes(health.system.memory.rss)}</p>
             </div>
           </div>
@@ -217,7 +217,7 @@ const AdminSystemHealth: React.FC = () => {
       {/* Database Stats */}
       {health?.database?.details?.tables && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Estadisticas de Base de Datos</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('system.db_stats')}</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
             {Object.entries(health.database.details.tables).map(([table, count]) => (
               <div key={table} className="bg-gray-50 rounded-lg p-4 text-center">
@@ -232,7 +232,7 @@ const AdminSystemHealth: React.FC = () => {
       {/* Activity by Hour */}
       {performance?.activityByHour && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Actividad por Hora (Ultimas 24h)</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('system.activity_chart')}</h3>
           <div className="flex items-end gap-1 h-32">
             {performance.activityByHour.map((item: { hour: number; count: number }) => {
               const maxCount = Math.max(...performance.activityByHour.map((i: any) => i.count), 1);
@@ -244,7 +244,7 @@ const AdminSystemHealth: React.FC = () => {
                       height: `${(item.count / maxCount) * 100}%`,
                       minHeight: item.count > 0 ? '4px' : '0'
                     }}
-                    title={`${item.count} acciones`}
+                    title={`${item.count}`}
                   />
                   <span className="text-xs text-gray-400 mt-1">
                     {item.hour.toString().padStart(2, '0')}
@@ -259,12 +259,12 @@ const AdminSystemHealth: React.FC = () => {
       {/* Cleanup Tool (Super Admin only) */}
       {isSuperAdmin && (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Herramientas de Mantenimiento</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('system.maintenance_title')}</h3>
 
           <div className="flex items-start gap-4">
             <div className="flex-1">
               <p className="text-gray-600 mb-4">
-                Ejecuta limpieza de sesiones expiradas y datos antiguos. Se recomienda ejecutar primero en modo "Vista previa" para ver que se eliminara.
+                {t('system.maintenance_desc')}
               </p>
 
               <div className="flex gap-3">
@@ -273,14 +273,14 @@ const AdminSystemHealth: React.FC = () => {
                   disabled={isRunningCleanup}
                   className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50"
                 >
-                  Vista Previa
+                  {t('system.btn_dry_run')}
                 </button>
                 <button
                   onClick={() => handleCleanup(false)}
                   disabled={isRunningCleanup}
                   className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
                 >
-                  {isRunningCleanup ? 'Ejecutando...' : 'Ejecutar Limpieza'}
+                  {isRunningCleanup ? t('system.btn_cleanup_running') : t('system.btn_cleanup')}
                 </button>
               </div>
             </div>
@@ -288,17 +288,17 @@ const AdminSystemHealth: React.FC = () => {
             {cleanupResult && (
               <div className="flex-1 bg-gray-50 rounded-lg p-4">
                 <p className="font-medium text-gray-900 mb-2">
-                  {cleanupResult.dryRun ? 'Vista Previa:' : 'Resultado:'}
+                  {cleanupResult.dryRun ? t('system.cleanup_preview') : t('system.cleanup_result')}
                 </p>
                 <div className="text-sm space-y-1">
-                  <p>Sesiones expiradas: <span className="font-medium">{cleanupResult.toDelete?.expiredSessions || 0}</span></p>
-                  <p>Sesiones admin expiradas: <span className="font-medium">{cleanupResult.toDelete?.expiredAdminSessions || 0}</span></p>
-                  <p>Accesos antiguos: <span className="font-medium">{cleanupResult.toDelete?.expiredEmergencyAccesses || 0}</span></p>
-                  <p>Alertas antiguas: <span className="font-medium">{cleanupResult.toDelete?.oldPanicAlerts || 0}</span></p>
+                  <p>{t('system.cleanup_expired_sessions')} <span className="font-medium">{cleanupResult.toDelete?.expiredSessions || 0}</span></p>
+                  <p>{t('system.cleanup_expired_admin')} <span className="font-medium">{cleanupResult.toDelete?.expiredAdminSessions || 0}</span></p>
+                  <p>{t('system.cleanup_old_accesses')} <span className="font-medium">{cleanupResult.toDelete?.expiredEmergencyAccesses || 0}</span></p>
+                  <p>{t('system.cleanup_old_alerts')} <span className="font-medium">{cleanupResult.toDelete?.oldPanicAlerts || 0}</span></p>
                 </div>
                 {!cleanupResult.dryRun && (
                   <p className="mt-2 text-green-600 font-medium">
-                    Eliminados: {cleanupResult.deleted?.sessions || 0} sesiones
+                    {t('system.cleanup_deleted', { count: cleanupResult.deleted?.sessions || 0 })}
                   </p>
                 )}
               </div>
@@ -312,6 +312,7 @@ const AdminSystemHealth: React.FC = () => {
 
 // Service Card Component
 const ServiceCard: React.FC<{ service: ServiceStatus }> = ({ service }) => {
+  const { t } = useTranslation('admin');
   // Si es opcional y no está configurado, mostramos como "info" en lugar de "warning"
   const isOptionalUnconfigured = service.optional && service.status === 'degraded' && !service.details?.configured;
 
@@ -364,13 +365,9 @@ const ServiceCard: React.FC<{ service: ServiceStatus }> = ({ service }) => {
   };
 
   const getStatusLabel = () => {
-    if (isOptionalUnconfigured) return 'Opcional';
-    switch (service.status) {
-      case 'healthy': return 'Healthy';
-      case 'degraded': return 'Degraded';
-      case 'down': return 'Down';
-      default: return service.status;
-    }
+    if (isOptionalUnconfigured) return t('system.service_optional');
+    const key = `system.status_${service.status}`;
+    return t(key, { defaultValue: service.status });
   };
 
   return (
@@ -390,7 +387,7 @@ const ServiceCard: React.FC<{ service: ServiceStatus }> = ({ service }) => {
       {service.details?.configured !== undefined && (
         <div className="mt-3 pt-3 border-t border-gray-200">
           <p className={`text-sm ${service.details.configured ? 'text-green-600' : isOptionalUnconfigured ? 'text-gray-500' : 'text-orange-600'}`}>
-            {service.details.configured ? 'Configurado' : isOptionalUnconfigured ? 'No requerido en desarrollo' : 'No configurado'}
+            {service.details.configured ? t('system.service_configured') : isOptionalUnconfigured ? t('system.service_not_required') : t('system.service_not_configured')}
           </p>
         </div>
       )}

@@ -23,18 +23,8 @@ import PanicButton from '../panic/PanicButton';
 import PanicAlertModal from '../panic/PanicAlertModal';
 import BottomNav from './BottomNav';
 import { panicApi } from '../../services/api';
-
-const navigation = [
-  { name: 'Inicio', href: '/dashboard', icon: Home },
-  { name: 'Mi Perfil', href: '/profile', icon: User },
-  { name: 'Voluntad Anticipada', href: '/directives', icon: FileText },
-  { name: 'Representantes', href: '/representatives', icon: Users },
-  { name: 'Mis Documentos', href: '/documents', icon: FolderOpen },
-  { name: 'Mi Código QR', href: '/emergency-qr', icon: QrCode },
-  { name: 'Notificaciones', href: '/notifications', icon: Bell },
-  { name: 'Historial de Accesos', href: '/access-history', icon: History },
-  { name: 'Mi Suscripción', href: '/subscription', icon: CreditCard },
-];
+import LanguageSwitcher from '../LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 
 interface PanicAlertResult {
   alertId: string;
@@ -51,6 +41,7 @@ interface PanicAlertResult {
 }
 
 export default function MainLayout() {
+  const { t } = useTranslation('common');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [panicResult, setPanicResult] = useState<PanicAlertResult | null>(null);
   const [panicLocation, setPanicLocation] = useState<{ lat: number; lng: number } | null>(null);
@@ -59,6 +50,18 @@ export default function MainLayout() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { unreadCount } = useNotifications();
+
+  const navigation = [
+    { name: t('nav.home'), href: '/dashboard', icon: Home },
+    { name: t('nav.profile'), href: '/profile', icon: User },
+    { name: t('nav.directives'), href: '/directives', icon: FileText },
+    { name: t('nav.representatives'), href: '/representatives', icon: Users },
+    { name: t('nav.documents'), href: '/documents', icon: FolderOpen },
+    { name: t('nav.emergencyQR'), href: '/emergency-qr', icon: QrCode },
+    { name: t('nav.notifications'), href: '/notifications', icon: Bell },
+    { name: t('nav.accessHistory'), href: '/access-history', icon: History },
+    { name: t('nav.subscription'), href: '/subscription', icon: CreditCard },
+  ];
 
   const handleLogout = async () => {
     await logout();
@@ -106,7 +109,7 @@ export default function MainLayout() {
               const isNotifications = item.href === '/notifications';
               return (
                 <Link
-                  key={item.name}
+                  key={item.href}
                   to={item.href}
                   onClick={() => setSidebarOpen(false)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
@@ -130,6 +133,9 @@ export default function MainLayout() {
           </nav>
           {/* Usuario móvil */}
           <div className="flex-shrink-0 p-4 border-t">
+            <div className="flex items-center justify-between mb-2">
+              <LanguageSwitcher compact />
+            </div>
             <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
               <div className="flex items-center justify-center w-10 h-10 rounded-full bg-vida-100">
                 <User className="w-5 h-5 text-vida-600" />
@@ -143,7 +149,7 @@ export default function MainLayout() {
               <button
                 onClick={() => { handleLogout(); setSidebarOpen(false); }}
                 className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                title="Cerrar sesión"
+                title={t('logoutTitle')}
               >
                 <LogOut className="w-5 h-5" />
               </button>
@@ -171,7 +177,7 @@ export default function MainLayout() {
               const isNotifications = item.href === '/notifications';
               return (
                 <Link
-                  key={item.name}
+                  key={item.href}
                   to={item.href}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                     isActive
@@ -195,6 +201,9 @@ export default function MainLayout() {
 
           {/* Usuario */}
           <div className="flex-shrink-0 p-4 border-t">
+            <div className="flex items-center justify-between mb-2">
+              <LanguageSwitcher compact />
+            </div>
             <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
               <div className="flex items-center justify-center w-10 h-10 rounded-full bg-vida-100">
                 <User className="w-5 h-5 text-vida-600" />
@@ -208,7 +217,7 @@ export default function MainLayout() {
               <button
                 onClick={handleLogout}
                 className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                title="Cerrar sesión"
+                title={t('logoutTitle')}
               >
                 <LogOut className="w-5 h-5" />
               </button>
@@ -231,6 +240,9 @@ export default function MainLayout() {
             <Heart className="w-6 h-6 text-vida-600" />
             <span className="text-lg font-bold text-vida-800">VIDA</span>
           </div>
+          <div className="ml-auto">
+            <LanguageSwitcher compact />
+          </div>
         </header>
 
         {/* Contenido de la página */}
@@ -243,9 +255,9 @@ export default function MainLayout() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500">
             <div className="flex items-center gap-2">
               <Shield className="w-4 h-4" />
-              <span>Protegido con cifrado AES-256</span>
+              <span>{t('footer.encryption')}</span>
             </div>
-            <p>© 2024 Sistema VIDA. Todos los derechos reservados.</p>
+            <p>{t('footer.copyright', { year: new Date().getFullYear() })}</p>
           </div>
         </footer>
       </div>
@@ -277,7 +289,7 @@ export default function MainLayout() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div>
-              <p className="font-medium">Error de alerta</p>
+              <p className="font-medium">{t('panicAlert.title')}</p>
               <p className="text-sm text-red-100">{panicError}</p>
             </div>
             <button

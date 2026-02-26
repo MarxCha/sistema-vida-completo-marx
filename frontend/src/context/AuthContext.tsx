@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { authApi } from '../services/api';
 import type { User, LoginForm, RegisterForm } from '../types';
+import i18n from '../i18n/config';
 
 interface AuthTokens {
   accessToken: string;
@@ -29,6 +30,15 @@ export const useAuth = () => {
   return context;
 };
 
+// Sync i18n language from user's stored preference
+const syncLanguageFromUser = (user: User) => {
+  if (user.preferredLanguage) {
+    i18n.changeLanguage(user.preferredLanguage);
+    localStorage.setItem('vida-lang', user.preferredLanguage);
+    document.documentElement.lang = user.preferredLanguage;
+  }
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -45,6 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await authApi.getMe();
       if (response.success && response.data) {
         setUser(response.data.user);
+        syncLanguageFromUser(response.data.user);
       } else {
         setUser(null);
         localStorage.removeItem('accessToken');
@@ -69,6 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('accessToken', response.data.tokens.accessToken);
       localStorage.setItem('refreshToken', response.data.tokens.refreshToken);
       setUser(response.data.user);
+      syncLanguageFromUser(response.data.user);
     } else {
       throw new Error(response.error?.message || 'Error al iniciar sesión');
     }
@@ -78,6 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('accessToken', tokens.accessToken);
     localStorage.setItem('refreshToken', tokens.refreshToken);
     setUser(user);
+    syncLanguageFromUser(user);
   };
 
   const register = async (data: Omit<RegisterForm, 'confirmPassword' | 'acceptTerms'>) => {

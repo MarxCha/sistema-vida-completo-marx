@@ -1,27 +1,31 @@
 // src/components/pages/Directives.tsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from '../../hooks/useLocale';
 import { directivesApi } from '../../services/api';
 import type { AdvanceDirective, DirectiveDraft } from '../../types';
 
 type DirectiveStatus = 'DRAFT' | 'PENDING_VALIDATION' | 'ACTIVE' | 'REVOKED' | 'EXPIRED';
 
-const statusConfig: Record<DirectiveStatus, { label: string; color: string; bg: string }> = {
-  DRAFT: { label: 'Borrador', color: 'text-gray-700', bg: 'bg-gray-100' },
-  PENDING_VALIDATION: { label: 'Pendiente', color: 'text-yellow-700', bg: 'bg-yellow-100' },
-  ACTIVE: { label: 'Activa', color: 'text-green-700', bg: 'bg-green-100' },
-  REVOKED: { label: 'Revocada', color: 'text-red-700', bg: 'bg-red-100' },
-  EXPIRED: { label: 'Expirada', color: 'text-gray-500', bg: 'bg-gray-50' },
+const STATUS_COLORS: Record<DirectiveStatus, { color: string; bg: string }> = {
+  DRAFT: { color: 'text-gray-700', bg: 'bg-gray-100' },
+  PENDING_VALIDATION: { color: 'text-yellow-700', bg: 'bg-yellow-100' },
+  ACTIVE: { color: 'text-green-700', bg: 'bg-green-100' },
+  REVOKED: { color: 'text-red-700', bg: 'bg-red-100' },
+  EXPIRED: { color: 'text-gray-500', bg: 'bg-gray-50' },
 };
 
 export default function Directives() {
+  const { t } = useTranslation('directives');
+  const { formatDate } = useLocale();
   const [directives, setDirectives] = useState<AdvanceDirective[]>([]);
   const [activeDirective, setActiveDirective] = useState<AdvanceDirective | null>(null);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState('');
-  
+
   const [draftForm, setDraftForm] = useState<DirectiveDraft>({
     acceptsCPR: null,
     acceptsIntubation: null,
@@ -44,7 +48,7 @@ export default function Directives() {
         directivesApi.list(),
         directivesApi.getActive(),
       ]);
-      
+
       if (listRes.success && listRes.data) {
         setDirectives(listRes.data.directives);
       }
@@ -52,7 +56,7 @@ export default function Directives() {
         setActiveDirective(activeRes.data.directive);
       }
     } catch (err) {
-      setError('Error cargando directivas');
+      setError(t('errors.loading'));
     } finally {
       setLoading(false);
     }
@@ -62,7 +66,7 @@ export default function Directives() {
     e.preventDefault();
     setCreating(true);
     setError('');
-    
+
     try {
       const res = await directivesApi.createDraft(draftForm);
       if (res.success) {
@@ -80,7 +84,7 @@ export default function Directives() {
         });
       }
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Error creando borrador');
+      setError(err.response?.data?.error?.message || t('errors.creating'));
     } finally {
       setCreating(false);
     }
@@ -91,33 +95,33 @@ export default function Directives() {
       await directivesApi.validate(id, 'EMAIL');
       loadDirectives();
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Error validando directiva');
+      setError(err.response?.data?.error?.message || t('errors.validating'));
     }
   };
 
   const handleRevoke = async (id: string) => {
-    if (!confirm('¿Está seguro de revocar esta directiva? Esta acción no se puede deshacer.')) {
+    if (!confirm(t('confirm.revoke'))) {
       return;
     }
-    
+
     try {
       await directivesApi.revoke(id);
       loadDirectives();
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Error revocando directiva');
+      setError(err.response?.data?.error?.message || t('errors.revoking'));
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('¿Está seguro de eliminar este borrador?')) {
+    if (!confirm(t('confirm.delete'))) {
       return;
     }
-    
+
     try {
       await directivesApi.delete(id);
       loadDirectives();
     } catch (err: any) {
-      setError(err.response?.data?.error?.message || 'Error eliminando borrador');
+      setError(err.response?.data?.error?.message || t('errors.deleting'));
     }
   };
 
@@ -137,34 +141,34 @@ export default function Directives() {
           type="button"
           onClick={() => onChange(true)}
           className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-            value === true 
-              ? 'bg-green-500 text-white' 
+            value === true
+              ? 'bg-green-500 text-white'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           }`}
         >
-          Sí
+          {t('modal.decisionValues.yes')}
         </button>
         <button
           type="button"
           onClick={() => onChange(false)}
           className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-            value === false 
-              ? 'bg-red-500 text-white' 
+            value === false
+              ? 'bg-red-500 text-white'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           }`}
         >
-          No
+          {t('modal.decisionValues.no')}
         </button>
         <button
           type="button"
           onClick={() => onChange(null)}
           className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-            value === null 
-              ? 'bg-blue-500 text-white' 
+            value === null
+              ? 'bg-blue-500 text-white'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           }`}
         >
-          Sin preferencia
+          {t('modal.decisionValues.noPreference')}
         </button>
       </div>
     </div>
@@ -184,9 +188,9 @@ export default function Directives() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Voluntades Anticipadas</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
             <p className="mt-2 text-gray-600">
-              Gestiona tus directivas de voluntad anticipada
+              {t('subtitle')}
             </p>
           </div>
           <button
@@ -196,7 +200,7 @@ export default function Directives() {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            Crear nueva
+            {t('createButton')}
           </button>
         </div>
 
@@ -219,16 +223,12 @@ export default function Directives() {
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-green-800">Directiva Activa</h3>
+                <h3 className="text-lg font-semibold text-green-800">{t('activeBanner.title')}</h3>
                 <p className="text-green-700 mt-1">
-                  Tu voluntad anticipada está vigente y será respetada en caso de emergencia.
+                  {t('activeBanner.description')}
                 </p>
                 <p className="text-sm text-green-600 mt-2">
-                  Validada el {new Date(activeDirective.validatedAt!).toLocaleDateString('es-MX', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
+                  {t('activeBanner.validatedAt', { date: formatDate(activeDirective.validatedAt!) })}
                 </p>
               </div>
             </div>
@@ -242,41 +242,37 @@ export default function Directives() {
               <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Sin directivas</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">{t('emptyState.title')}</h3>
               <p className="text-gray-500 mb-6">
-                Aún no has creado ninguna voluntad anticipada
+                {t('emptyState.description')}
               </p>
               <button
                 onClick={() => setShowCreateModal(true)}
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Crear mi primera directiva
+                {t('emptyState.createFirst')}
               </button>
             </div>
           ) : (
             directives.map((directive) => {
-              const status = statusConfig[directive.status as DirectiveStatus];
+              const statusColors = STATUS_COLORS[directive.status as DirectiveStatus];
               return (
                 <div key={directive.id} className="bg-white rounded-xl shadow-sm p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${status.color} ${status.bg}`}>
-                          {status.label}
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors.color} ${statusColors.bg}`}>
+                          {t(`status.${directive.status}`)}
                         </span>
                         <span className="text-sm text-gray-500">
-                          {directive.type === 'DIGITAL_DRAFT' ? 'Borrador digital' : 
-                           directive.type === 'NOTARIZED_DOCUMENT' ? 'Documento notariado' : 
-                           'Con testigos digitales'}
+                          {directive.type === 'DIGITAL_DRAFT' ? t('types.DIGITAL_DRAFT') :
+                           directive.type === 'NOTARIZED_DOCUMENT' ? t('types.NOTARIZED_DOCUMENT') :
+                           t('types.DIGITAL_WITNESSES')}
                         </span>
                       </div>
-                      
+
                       <p className="text-sm text-gray-600 mb-4">
-                        Creado el {new Date(directive.createdAt).toLocaleDateString('es-MX', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
+                        {t('directive.createdAt', { date: formatDate(directive.createdAt) })}
                       </p>
 
                       {/* Medical Decisions Summary */}
@@ -285,19 +281,19 @@ export default function Directives() {
                           <span className={directive.acceptsCPR ? 'text-green-600' : directive.acceptsCPR === false ? 'text-red-600' : 'text-gray-400'}>
                             {directive.acceptsCPR ? '✓' : directive.acceptsCPR === false ? '✗' : '—'}
                           </span>
-                          <span className="text-gray-600">RCP</span>
+                          <span className="text-gray-600">{t('directive.cpr')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className={directive.acceptsIntubation ? 'text-green-600' : directive.acceptsIntubation === false ? 'text-red-600' : 'text-gray-400'}>
                             {directive.acceptsIntubation ? '✓' : directive.acceptsIntubation === false ? '✗' : '—'}
                           </span>
-                          <span className="text-gray-600">Intubación</span>
+                          <span className="text-gray-600">{t('directive.intubation')}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className={directive.palliativeCareOnly ? 'text-blue-600' : 'text-gray-400'}>
                             {directive.palliativeCareOnly ? '✓' : '—'}
                           </span>
-                          <span className="text-gray-600">Solo paliativo</span>
+                          <span className="text-gray-600">{t('directive.palliativeOnly')}</span>
                         </div>
                       </div>
                     </div>
@@ -310,13 +306,13 @@ export default function Directives() {
                             onClick={() => handleValidate(directive.id)}
                             className="px-3 py-1.5 bg-green-100 text-green-700 rounded-lg text-sm hover:bg-green-200 transition-colors"
                           >
-                            Validar
+                            {t('actions.validate')}
                           </button>
                           <button
                             onClick={() => handleDelete(directive.id)}
                             className="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg text-sm hover:bg-red-200 transition-colors"
                           >
-                            Eliminar
+                            {t('actions.delete')}
                           </button>
                         </>
                       )}
@@ -325,7 +321,7 @@ export default function Directives() {
                           onClick={() => handleRevoke(directive.id)}
                           className="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg text-sm hover:bg-red-200 transition-colors"
                         >
-                          Revocar
+                          {t('actions.revoke')}
                         </button>
                       )}
                     </div>
@@ -339,19 +335,17 @@ export default function Directives() {
         {/* Info Box */}
         <div className="mt-8 bg-blue-50 rounded-xl p-6">
           <h3 className="text-lg font-semibold text-blue-900 mb-2">
-            ¿Qué es una voluntad anticipada?
+            {t('infoBox.title')}
           </h3>
           <p className="text-blue-800 text-sm leading-relaxed">
-            Es un documento legal donde expresas tus decisiones sobre tratamientos médicos 
-            en caso de que no puedas comunicarte. Incluye preferencias sobre reanimación, 
-            ventilación mecánica, diálisis, transfusiones y cuidados paliativos.
+            {t('infoBox.description')}
           </p>
           <div className="mt-4 flex gap-4">
             <Link to="/info/directivas" className="text-sm text-blue-600 hover:underline">
-              Más información →
+              {t('infoBox.moreInfo')}
             </Link>
             <Link to="/info/marco-legal" className="text-sm text-blue-600 hover:underline">
-              Marco legal en México →
+              {t('infoBox.legalFramework')}
             </Link>
           </div>
         </div>
@@ -364,7 +358,7 @@ export default function Directives() {
             <div className="p-6 border-b border-gray-100">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-900">
-                  Nueva Voluntad Anticipada
+                  {t('modal.title')}
                 </h2>
                 <button
                   onClick={() => setShowCreateModal(false)}
@@ -379,35 +373,35 @@ export default function Directives() {
 
             <form onSubmit={handleCreateDraft} className="p-6">
               <div className="space-y-2 mb-6">
-                <h3 className="font-medium text-gray-900">Decisiones médicas</h3>
+                <h3 className="font-medium text-gray-900">{t('modal.medicalDecisionsTitle')}</h3>
                 <p className="text-sm text-gray-500">
-                  Indica tus preferencias para cada tratamiento. Puedes dejar sin preferencia los que desees.
+                  {t('modal.medicalDecisionsDesc')}
                 </p>
               </div>
 
               <div className="space-y-1">
                 <DecisionToggle
-                  label="Reanimación cardiopulmonar (RCP)"
+                  label={t('modal.decisions.cpr')}
                   value={draftForm.acceptsCPR}
                   onChange={(val) => setDraftForm({ ...draftForm, acceptsCPR: val })}
                 />
                 <DecisionToggle
-                  label="Intubación / ventilación mecánica"
+                  label={t('modal.decisions.intubation')}
                   value={draftForm.acceptsIntubation}
                   onChange={(val) => setDraftForm({ ...draftForm, acceptsIntubation: val })}
                 />
                 <DecisionToggle
-                  label="Diálisis"
+                  label={t('modal.decisions.dialysis')}
                   value={draftForm.acceptsDialysis}
                   onChange={(val) => setDraftForm({ ...draftForm, acceptsDialysis: val })}
                 />
                 <DecisionToggle
-                  label="Transfusiones sanguíneas"
+                  label={t('modal.decisions.transfusion')}
                   value={draftForm.acceptsTransfusion}
                   onChange={(val) => setDraftForm({ ...draftForm, acceptsTransfusion: val })}
                 />
                 <DecisionToggle
-                  label="Nutrición artificial"
+                  label={t('modal.decisions.artificialNutrition')}
                   value={draftForm.acceptsArtificialNutrition}
                   onChange={(val) => setDraftForm({ ...draftForm, acceptsArtificialNutrition: val })}
                 />
@@ -422,48 +416,48 @@ export default function Directives() {
                   className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                 />
                 <label htmlFor="palliativeCareOnly" className="text-gray-700">
-                  Solo deseo recibir cuidados paliativos
+                  {t('modal.palliativeCareOnly')}
                 </label>
               </div>
 
               <div className="mt-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Estado de origen (para marco legal aplicable)
+                  {t('modal.stateLabel')}
                 </label>
                 <select
                   value={draftForm.originState}
                   onChange={(e) => setDraftForm({ ...draftForm, originState: e.target.value })}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="">Selecciona tu estado</option>
-                  <option value="CDMX">Ciudad de México</option>
-                  <option value="JAL">Jalisco</option>
-                  <option value="NL">Nuevo León</option>
-                  <option value="AGS">Aguascalientes</option>
-                  <option value="COAH">Coahuila</option>
-                  <option value="COL">Colima</option>
-                  <option value="GTO">Guanajuato</option>
-                  <option value="GRO">Guerrero</option>
-                  <option value="HGO">Hidalgo</option>
-                  <option value="MEX">Estado de México</option>
-                  <option value="MICH">Michoacán</option>
-                  <option value="NAY">Nayarit</option>
-                  <option value="OAX">Oaxaca</option>
-                  <option value="SLP">San Luis Potosí</option>
-                  <option value="YUC">Yucatán</option>
+                  <option value="">{t('modal.statePlaceholder')}</option>
+                  <option value="CDMX">{t('modal.states.CDMX')}</option>
+                  <option value="JAL">{t('modal.states.JAL')}</option>
+                  <option value="NL">{t('modal.states.NL')}</option>
+                  <option value="AGS">{t('modal.states.AGS')}</option>
+                  <option value="COAH">{t('modal.states.COAH')}</option>
+                  <option value="COL">{t('modal.states.COL')}</option>
+                  <option value="GTO">{t('modal.states.GTO')}</option>
+                  <option value="GRO">{t('modal.states.GRO')}</option>
+                  <option value="HGO">{t('modal.states.HGO')}</option>
+                  <option value="MEX">{t('modal.states.MEX')}</option>
+                  <option value="MICH">{t('modal.states.MICH')}</option>
+                  <option value="NAY">{t('modal.states.NAY')}</option>
+                  <option value="OAX">{t('modal.states.OAX')}</option>
+                  <option value="SLP">{t('modal.states.SLP')}</option>
+                  <option value="YUC">{t('modal.states.YUC')}</option>
                 </select>
               </div>
 
               <div className="mt-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Notas adicionales (opcional)
+                  {t('modal.notesLabel')}
                 </label>
                 <textarea
                   value={draftForm.additionalNotes}
                   onChange={(e) => setDraftForm({ ...draftForm, additionalNotes: e.target.value })}
                   rows={4}
                   maxLength={5000}
-                  placeholder="Puedes agregar instrucciones específicas o aclaraciones..."
+                  placeholder={t('modal.notesPlaceholder')}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 />
               </div>
@@ -474,14 +468,14 @@ export default function Directives() {
                   onClick={() => setShowCreateModal(false)}
                   className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
                 >
-                  Cancelar
+                  {t('modal.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={creating}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {creating ? 'Guardando...' : 'Guardar borrador'}
+                  {creating ? t('modal.saving') : t('modal.saveDraft')}
                 </button>
               </div>
             </form>

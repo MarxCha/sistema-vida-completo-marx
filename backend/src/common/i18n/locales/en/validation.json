@@ -1,0 +1,14 @@
+{
+  "emailInvalid": "Invalid email",
+  "passwordMinLength": "Password must be at least 8 characters",
+  "passwordComplexity": "Password must contain uppercase, lowercase and numbers",
+  "curpLength": "CURP must be 18 characters",
+  "nameRequired": "Name is required",
+  "phoneInvalid": "Invalid phone. Must be a valid Mexican number",
+  "emailRequired": "Email is required",
+  "relationRequired": "Relationship is required",
+  "titleRequired": "Title is required",
+  "categoryInvalid": "Invalid category",
+  "fileRequired": "File is required",
+  "arrayRequired": "An array of IDs is required"
+}

@@ -142,10 +142,23 @@ const BASE_STYLES = `
 // TEMPLATE BASE
 // ═══════════════════════════════════════════════════════════════════════════
 
-function wrapTemplate(content: string, preheader: string = ''): string {
+function wrapTemplate(content: string, preheader: string = '', locale: string = 'es'): string {
+  const isEn = locale === 'en';
+  const subtitle = isEn
+    ? 'Information Will for Advance Decisions'
+    : 'Voluntad de Información para Decisiones Anticipadas';
+  const autoEmail = isEn
+    ? 'This is an automated email, please do not reply directly.'
+    : 'Este es un correo automático, por favor no responda directamente.';
+  const rights = isEn
+    ? `&copy; ${new Date().getFullYear()} VIDA System. All rights reserved.`
+    : `&copy; ${new Date().getFullYear()} Sistema VIDA. Todos los derechos reservados.`;
+  const privacyLabel = isEn ? 'Privacy' : 'Privacidad';
+  const termsLabel = isEn ? 'Terms' : 'Términos';
+
   return `
 <!DOCTYPE html>
-<html lang="es">
+<html lang="${locale}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -162,17 +175,17 @@ function wrapTemplate(content: string, preheader: string = ''): string {
     <div class="container">
       <div class="header">
         <h1>Sistema VIDA</h1>
-        <div class="subtitle">Voluntad de Información para Decisiones Anticipadas</div>
+        <div class="subtitle">${subtitle}</div>
       </div>
 
       ${content}
 
       <div class="footer">
-        <p>Este es un correo automático, por favor no responda directamente.</p>
-        <p>&copy; ${new Date().getFullYear()} Sistema VIDA. Todos los derechos reservados.</p>
+        <p>${autoEmail}</p>
+        <p>${rights}</p>
         <p>
-          <a href="${config.frontendUrl}/privacy">Privacidad</a> |
-          <a href="${config.frontendUrl}/terms">Términos</a>
+          <a href="${config.frontendUrl}/privacy">${privacyLabel}</a> |
+          <a href="${config.frontendUrl}/terms">${termsLabel}</a>
         </p>
       </div>
     </div>
@@ -193,31 +206,49 @@ export function emailVerificationTemplate(params: {
   name: string;
   verificationUrl: string;
   expiresIn: string;
+  locale?: string;
 }): { subject: string; html: string } {
-  const { name, verificationUrl, expiresIn } = params;
+  const { name, verificationUrl, expiresIn, locale = 'es' } = params;
+  const isEn = locale === 'en';
+
+  const heading = isEn ? `Welcome to VIDA System, ${name}!` : `¡Bienvenido a Sistema VIDA, ${name}!`;
+  const intro = isEn
+    ? 'Thank you for signing up. To complete your registration and activate your account, please verify your email address.'
+    : 'Gracias por registrarte. Para completar tu registro y activar tu cuenta, por favor verifica tu dirección de correo electrónico.';
+  const btnLabel = isEn ? 'Verify my email' : 'Verificar mi correo';
+  const expiryLabel = isEn ? `⏱️ This link expires in ${expiresIn}` : `⏱️ Este enlace expira en ${expiresIn}`;
+  const ignoreNote = isEn
+    ? 'If you did not request this verification, you can ignore this email.'
+    : 'Si no solicitaste esta verificación, puedes ignorar este correo.';
+  const fallbackNote = isEn
+    ? 'If the button does not work, copy and paste the following link into your browser:'
+    : 'Si el botón no funciona, copia y pega el siguiente enlace en tu navegador:';
+  const preheader = isEn
+    ? `${name}, verify your email to activate your VIDA System account`
+    : `${name}, verifica tu correo para activar tu cuenta de Sistema VIDA`;
+  const subject = isEn ? 'Verify your account - VIDA System' : 'Verifica tu cuenta - Sistema VIDA';
 
   const content = `
     <div class="content">
-      <h2>¡Bienvenido a Sistema VIDA, ${name}!</h2>
+      <h2>${heading}</h2>
 
-      <p>Gracias por registrarte. Para completar tu registro y activar tu cuenta,
-         por favor verifica tu dirección de correo electrónico.</p>
+      <p>${intro}</p>
 
       <div class="button-container">
-        <a href="${verificationUrl}" class="button">Verificar mi correo</a>
+        <a href="${verificationUrl}" class="button">${btnLabel}</a>
       </div>
 
       <div class="info-box">
-        <strong>⏱️ Este enlace expira en ${expiresIn}</strong>
+        <strong>${expiryLabel}</strong>
         <p style="margin: 5px 0 0 0; font-size: 13px;">
-          Si no solicitaste esta verificación, puedes ignorar este correo.
+          ${ignoreNote}
         </p>
       </div>
 
       <hr class="divider">
 
       <p class="small-text">
-        Si el botón no funciona, copia y pega el siguiente enlace en tu navegador:
+        ${fallbackNote}
       </p>
       <p class="small-text" style="word-break: break-all;">
         <a href="${verificationUrl}">${verificationUrl}</a>
@@ -226,8 +257,8 @@ export function emailVerificationTemplate(params: {
   `;
 
   return {
-    subject: 'Verifica tu cuenta - Sistema VIDA',
-    html: wrapTemplate(content, `${name}, verifica tu correo para activar tu cuenta de Sistema VIDA`),
+    subject,
+    html: wrapTemplate(content, preheader, locale),
   };
 }
 
@@ -239,40 +270,61 @@ export function passwordResetTemplate(params: {
   resetUrl: string;
   expiresIn: string;
   ipAddress?: string;
+  locale?: string;
 }): { subject: string; html: string } {
-  const { name, resetUrl, expiresIn, ipAddress } = params;
+  const { name, resetUrl, expiresIn, ipAddress, locale = 'es' } = params;
+  const isEn = locale === 'en';
+
+  const heading = isEn ? 'Password Recovery' : 'Recuperación de contraseña';
+  const greeting = isEn ? `Hello ${name},` : `Hola ${name},`;
+  const intro = isEn
+    ? 'We received a request to reset the password for your VIDA System account.'
+    : 'Recibimos una solicitud para restablecer la contraseña de tu cuenta en Sistema VIDA.';
+  const btnLabel = isEn ? 'Reset Password' : 'Restablecer contraseña';
+  const importantLabel = isEn ? '⚠️ Important:' : '⚠️ Importante:';
+  const expiryItem = isEn ? `This link expires in ${expiresIn}` : `Este enlace expira en ${expiresIn}`;
+  const onceItem = isEn ? 'Can only be used once' : 'Solo puede usarse una vez';
+  const ignoreItem = isEn ? 'If you did not request this, ignore this email' : 'Si no solicitaste esto, ignora este correo';
+  const ipNote = isEn ? `This request was made from IP: ${ipAddress}` : `Esta solicitud fue realizada desde la IP: ${ipAddress}`;
+  const fallbackNote = isEn
+    ? 'If the button does not work, copy and paste the following link into your browser:'
+    : 'Si el botón no funciona, copia y pega el siguiente enlace en tu navegador:';
+  const preheader = isEn
+    ? 'Request to reset your VIDA System password'
+    : 'Solicitud para restablecer tu contraseña de Sistema VIDA';
+  const subject = isEn ? 'Reset your password - VIDA System' : 'Recupera tu contraseña - Sistema VIDA';
 
   const content = `
     <div class="content">
-      <h2>Recuperación de contraseña</h2>
+      <h2>${heading}</h2>
 
-      <p>Hola ${name},</p>
+      <p>${greeting}</p>
 
-      <p>Recibimos una solicitud para restablecer la contraseña de tu cuenta en Sistema VIDA.</p>
+      <p>${intro}</p>
 
       <div class="button-container">
-        <a href="${resetUrl}" class="button">Restablecer contraseña</a>
+        <a href="${resetUrl}" class="button">${btnLabel}</a>
       </div>
 
       <div class="warning-box">
-        <strong>⚠️ Importante:</strong>
+        <strong>${importantLabel}</strong>
         <ul style="margin: 10px 0 0 0; padding-left: 20px;">
-          <li>Este enlace expira en ${expiresIn}</li>
-          <li>Solo puede usarse una vez</li>
-          <li>Si no solicitaste esto, ignora este correo</li>
+          <li>${expiryItem}</li>
+          <li>${onceItem}</li>
+          <li>${ignoreItem}</li>
         </ul>
       </div>
 
       ${ipAddress ? `
       <p class="small-text">
-        Esta solicitud fue realizada desde la IP: ${ipAddress}
+        ${ipNote}
       </p>
       ` : ''}
 
       <hr class="divider">
 
       <p class="small-text">
-        Si el botón no funciona, copia y pega el siguiente enlace en tu navegador:
+        ${fallbackNote}
       </p>
       <p class="small-text" style="word-break: break-all;">
         <a href="${resetUrl}">${resetUrl}</a>
@@ -281,8 +333,8 @@ export function passwordResetTemplate(params: {
   `;
 
   return {
-    subject: 'Recupera tu contraseña - Sistema VIDA',
-    html: wrapTemplate(content, 'Solicitud para restablecer tu contraseña de Sistema VIDA'),
+    subject,
+    html: wrapTemplate(content, preheader, locale),
   };
 }
 
@@ -293,10 +345,13 @@ export function passwordChangedTemplate(params: {
   name: string;
   changedAt: Date;
   ipAddress?: string;
+  locale?: string;
 }): { subject: string; html: string } {
-  const { name, changedAt, ipAddress } = params;
+  const { name, changedAt, ipAddress, locale = 'es' } = params;
+  const isEn = locale === 'en';
 
-  const formattedDate = changedAt.toLocaleDateString('es-MX', {
+  const dateLocale = isEn ? 'en-US' : 'es-MX';
+  const formattedDate = changedAt.toLocaleDateString(dateLocale, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -305,35 +360,52 @@ export function passwordChangedTemplate(params: {
     minute: '2-digit',
   });
 
+  const heading = isEn ? 'Your password has been changed' : 'Tu contraseña ha sido cambiada';
+  const greeting = isEn ? `Hello ${name},` : `Hola ${name},`;
+  const successLabel = isEn ? '✅ Password updated successfully' : '✅ Contraseña actualizada exitosamente';
+  const dateLabel = isEn ? 'Date' : 'Fecha';
+  const ifYouLabel = isEn
+    ? 'If you made this change, you do not need to do anything else.'
+    : 'Si tú realizaste este cambio, no necesitas hacer nada más.';
+  const unrecognizedTitle = isEn ? 'Do you not recognize this activity?' : '¿No reconoces esta actividad?';
+  const unrecognizedBody = isEn
+    ? 'If you did not make this change, your account may be compromised. Please contact support immediately.'
+    : 'Si no realizaste este cambio, tu cuenta puede estar comprometida. Por favor contacta a soporte inmediatamente.';
+  const preheader = isEn
+    ? 'Your VIDA System password has been changed'
+    : 'Tu contraseña de Sistema VIDA ha sido cambiada';
+  const subject = isEn
+    ? '⚠️ Your password was changed - VIDA System'
+    : '⚠️ Tu contraseña fue cambiada - Sistema VIDA';
+
   const content = `
     <div class="content">
-      <h2>Tu contraseña ha sido cambiada</h2>
+      <h2>${heading}</h2>
 
-      <p>Hola ${name},</p>
+      <p>${greeting}</p>
 
       <div class="success-box">
-        <strong>✅ Contraseña actualizada exitosamente</strong>
+        <strong>${successLabel}</strong>
         <p style="margin: 10px 0 0 0;">
-          Fecha: ${formattedDate}
+          ${dateLabel}: ${formattedDate}
           ${ipAddress ? `<br>IP: ${ipAddress}` : ''}
         </p>
       </div>
 
-      <p>Si tú realizaste este cambio, no necesitas hacer nada más.</p>
+      <p>${ifYouLabel}</p>
 
       <div class="warning-box">
-        <strong>¿No reconoces esta actividad?</strong>
+        <strong>${unrecognizedTitle}</strong>
         <p style="margin: 10px 0 0 0;">
-          Si no realizaste este cambio, tu cuenta puede estar comprometida.
-          Por favor contacta a soporte inmediatamente.
+          ${unrecognizedBody}
         </p>
       </div>
     </div>
   `;
 
   return {
-    subject: '⚠️ Tu contraseña fue cambiada - Sistema VIDA',
-    html: wrapTemplate(content, 'Tu contraseña de Sistema VIDA ha sido cambiada'),
+    subject,
+    html: wrapTemplate(content, preheader, locale),
   };
 }
 
@@ -342,47 +414,76 @@ export function passwordChangedTemplate(params: {
  */
 export function welcomeTemplate(params: {
   name: string;
+  locale?: string;
 }): { subject: string; html: string } {
-  const { name } = params;
+  const { name, locale = 'es' } = params;
+  const isEn = locale === 'en';
+
+  const heading = isEn ? 'Your account is verified!' : '¡Tu cuenta está verificada!';
+  const greeting = isEn ? `Hello ${name},` : `Hola ${name},`;
+  const accountReady = isEn ? '✅ Your VIDA System account is ready' : '✅ Tu cuenta de Sistema VIDA está lista';
+  const featuresIntro = isEn ? 'You can now access all the features:' : 'Ahora puedes acceder a todas las funcionalidades:';
+  const features = isEn
+    ? [
+        '📋 Create and manage your advance directives',
+        '📱 Generate your emergency QR code',
+        '👥 Designate trusted representatives',
+        '📄 Upload important medical documents',
+      ]
+    : [
+        '📋 Crear y gestionar tus directivas anticipadas',
+        '📱 Generar tu código QR de emergencia',
+        '👥 Designar representantes de confianza',
+        '📄 Subir documentos médicos importantes',
+      ];
+  const btnLabel = isEn ? 'Go to my profile' : 'Ir a mi perfil';
+  const tipTitle = isEn ? '💡 Security tip' : '💡 Tip de seguridad';
+  const tipBody = isEn
+    ? 'Remember to keep your medical information up to date and periodically review your advance directives.'
+    : 'Recuerda mantener actualizada tu información médica y revisar periódicamente tus directivas anticipadas.';
+  const preheader = isEn
+    ? `${name}, your VIDA System account is verified and ready to use`
+    : `${name}, tu cuenta de Sistema VIDA está verificada y lista para usar`;
+  const subject = isEn
+    ? 'Welcome to VIDA System! Your account is ready'
+    : '¡Bienvenido a Sistema VIDA! Tu cuenta está lista';
+
+  const featuresHtml = features.map(f => `<li>${f}</li>`).join('');
 
   const content = `
     <div class="content">
-      <h2>¡Tu cuenta está verificada!</h2>
+      <h2>${heading}</h2>
 
-      <p>Hola ${name},</p>
+      <p>${greeting}</p>
 
       <div class="success-box">
-        <strong>✅ Tu cuenta de Sistema VIDA está lista</strong>
+        <strong>${accountReady}</strong>
       </div>
 
-      <p>Ahora puedes acceder a todas las funcionalidades:</p>
+      <p>${featuresIntro}</p>
 
       <ul style="color: #4a4a4a;">
-        <li>📋 Crear y gestionar tus directivas anticipadas</li>
-        <li>📱 Generar tu código QR de emergencia</li>
-        <li>👥 Designar representantes de confianza</li>
-        <li>📄 Subir documentos médicos importantes</li>
+        ${featuresHtml}
       </ul>
 
       <div class="button-container">
-        <a href="${config.frontendUrl}/dashboard" class="button">Ir a mi perfil</a>
+        <a href="${config.frontendUrl}/dashboard" class="button">${btnLabel}</a>
       </div>
 
       <hr class="divider">
 
       <div class="info-box">
-        <strong>💡 Tip de seguridad</strong>
+        <strong>${tipTitle}</strong>
         <p style="margin: 10px 0 0 0;">
-          Recuerda mantener actualizada tu información médica y revisar
-          periódicamente tus directivas anticipadas.
+          ${tipBody}
         </p>
       </div>
     </div>
   `;
 
   return {
-    subject: '¡Bienvenido a Sistema VIDA! Tu cuenta está lista',
-    html: wrapTemplate(content, `${name}, tu cuenta de Sistema VIDA está verificada y lista para usar`),
+    subject,
+    html: wrapTemplate(content, preheader, locale),
   };
 }
 
@@ -395,36 +496,53 @@ export function subscriptionCreatedTemplate(params: {
   price: string;
   features: string[];
   nextBillingDate?: Date;
+  locale?: string;
 }): { subject: string; html: string } {
-  const { name, planName, price, features, nextBillingDate } = params;
+  const { name, planName, price, features, nextBillingDate, locale = 'es' } = params;
+  const isEn = locale === 'en';
 
+  const heading = isEn ? 'Subscription activated!' : '¡Suscripción activada!';
+  const greeting = isEn ? `Hello ${name},` : `Hola ${name},`;
+  const planActive = isEn ? `🎉 Your ${planName} plan is active` : `🎉 Tu plan ${planName} está activo`;
+  const priceLabel = isEn ? `${price}/month` : `${price}/mes`;
+  const accessLabel = isEn ? 'You now have access to:' : 'Ahora tienes acceso a:';
+  const nextBillingLabel = isEn ? '📅 Next billing date:' : '📅 Próxima facturación:';
+  const btnLabel = isEn ? 'View my subscription' : 'Ver mi suscripción';
+  const preheader = isEn
+    ? `${name}, your ${planName} subscription has been activated`
+    : `${name}, tu suscripción ${planName} ha sido activada`;
+  const subject = isEn
+    ? `Your ${planName} plan is active! - VIDA System`
+    : `¡Tu plan ${planName} está activo! - Sistema VIDA`;
+
+  const dateLocale = isEn ? 'en-US' : 'es-MX';
   const featuresHtml = features
     .map(f => `<li style="margin: 5px 0;">✓ ${f}</li>`)
     .join('');
 
   const content = `
     <div class="content">
-      <h2>¡Suscripción activada!</h2>
+      <h2>${heading}</h2>
 
-      <p>Hola ${name},</p>
+      <p>${greeting}</p>
 
       <div class="success-box">
-        <strong>🎉 Tu plan ${planName} está activo</strong>
+        <strong>${planActive}</strong>
         <p style="margin: 10px 0 0 0; font-size: 24px; font-weight: bold;">
-          ${price}/mes
+          ${priceLabel}
         </p>
       </div>
 
-      <p>Ahora tienes acceso a:</p>
+      <p>${accessLabel}</p>
       <ul style="color: #4a4a4a; padding-left: 20px;">
         ${featuresHtml}
       </ul>
 
       ${nextBillingDate ? `
       <div class="info-box">
-        <strong>📅 Próxima facturación:</strong>
+        <strong>${nextBillingLabel}</strong>
         <p style="margin: 5px 0 0 0;">
-          ${nextBillingDate.toLocaleDateString('es-MX', {
+          ${nextBillingDate.toLocaleDateString(dateLocale, {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
@@ -434,14 +552,14 @@ export function subscriptionCreatedTemplate(params: {
       ` : ''}
 
       <div class="button-container">
-        <a href="${config.frontendUrl}/subscription" class="button">Ver mi suscripción</a>
+        <a href="${config.frontendUrl}/subscription" class="button">${btnLabel}</a>
       </div>
     </div>
   `;
 
   return {
-    subject: `¡Tu plan ${planName} está activo! - Sistema VIDA`,
-    html: wrapTemplate(content, `${name}, tu suscripción ${planName} ha sido activada`),
+    subject,
+    html: wrapTemplate(content, preheader, locale),
   };
 }
 
@@ -452,46 +570,68 @@ export function subscriptionCancelledTemplate(params: {
   name: string;
   planName: string;
   endDate: Date;
+  locale?: string;
 }): { subject: string; html: string } {
-  const { name, planName, endDate } = params;
+  const { name, planName, endDate, locale = 'es' } = params;
+  const isEn = locale === 'en';
 
-  const formattedEndDate = endDate.toLocaleDateString('es-MX', {
+  const dateLocale = isEn ? 'en-US' : 'es-MX';
+  const formattedEndDate = endDate.toLocaleDateString(dateLocale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
 
+  const heading = isEn ? 'Subscription cancelled' : 'Suscripción cancelada';
+  const greeting = isEn ? `Hello ${name},` : `Hola ${name},`;
+  const cancelledMsg = isEn
+    ? `Your subscription to the <strong>${planName}</strong> plan has been cancelled.`
+    : `Tu suscripción al plan <strong>${planName}</strong> ha sido cancelada.`;
+  const accessUntilLabel = isEn ? '📅 Your Premium access continues until:' : '📅 Tu acceso Premium continúa hasta:';
+  const afterDateMsg = isEn
+    ? 'After this date, your account will revert to the free plan and some features may not be available.'
+    : 'Después de esta fecha, tu cuenta volverá al plan gratuito y algunas funcionalidades pueden no estar disponibles.';
+  const changeOfMindMsg = isEn
+    ? 'Changed your mind? You can always reactivate your subscription.'
+    : '¿Cambiaste de opinión? Siempre puedes reactivar tu suscripción.';
+  const btnLabel = isEn ? 'View available plans' : 'Ver planes disponibles';
+  const preheader = isEn
+    ? `${name}, your ${planName} subscription has been cancelled`
+    : `${name}, tu suscripción ${planName} ha sido cancelada`;
+  const subject = isEn
+    ? 'Your subscription has been cancelled - VIDA System'
+    : 'Tu suscripción ha sido cancelada - Sistema VIDA';
+
   const content = `
     <div class="content">
-      <h2>Suscripción cancelada</h2>
+      <h2>${heading}</h2>
 
-      <p>Hola ${name},</p>
+      <p>${greeting}</p>
 
-      <p>Tu suscripción al plan <strong>${planName}</strong> ha sido cancelada.</p>
+      <p>${cancelledMsg}</p>
 
       <div class="info-box">
-        <strong>📅 Tu acceso Premium continúa hasta:</strong>
+        <strong>${accessUntilLabel}</strong>
         <p style="margin: 10px 0 0 0; font-size: 18px; font-weight: bold;">
           ${formattedEndDate}
         </p>
       </div>
 
-      <p>Después de esta fecha, tu cuenta volverá al plan gratuito y algunas
-         funcionalidades pueden no estar disponibles.</p>
+      <p>${afterDateMsg}</p>
 
       <hr class="divider">
 
-      <p>¿Cambiaste de opinión? Siempre puedes reactivar tu suscripción.</p>
+      <p>${changeOfMindMsg}</p>
 
       <div class="button-container">
-        <a href="${config.frontendUrl}/subscription/plans" class="button">Ver planes disponibles</a>
+        <a href="${config.frontendUrl}/subscription/plans" class="button">${btnLabel}</a>
       </div>
     </div>
   `;
 
   return {
-    subject: 'Tu suscripción ha sido cancelada - Sistema VIDA',
-    html: wrapTemplate(content, `${name}, tu suscripción ${planName} ha sido cancelada`),
+    subject,
+    html: wrapTemplate(content, preheader, locale),
   };
 }
 
@@ -507,29 +647,38 @@ export function securityAlertTemplate(params: {
     location?: string;
     time: Date;
   };
+  locale?: string;
 }): { subject: string; html: string } {
-  const { name, alertType, details } = params;
+  const { name, alertType, details, locale = 'es' } = params;
+  const isEn = locale === 'en';
 
   const alertMessages = {
     new_device: {
-      title: 'Nuevo inicio de sesión detectado',
+      title: isEn ? 'New login detected' : 'Nuevo inicio de sesión detectado',
       icon: '🔐',
-      description: 'Se detectó un inicio de sesión desde un dispositivo o ubicación nueva.',
+      description: isEn
+        ? 'A login from a new device or location was detected.'
+        : 'Se detectó un inicio de sesión desde un dispositivo o ubicación nueva.',
     },
     password_attempt: {
-      title: 'Intentos de acceso fallidos',
+      title: isEn ? 'Failed access attempts' : 'Intentos de acceso fallidos',
       icon: '⚠️',
-      description: 'Se detectaron múltiples intentos fallidos de acceso a tu cuenta.',
+      description: isEn
+        ? 'Multiple failed access attempts to your account were detected.'
+        : 'Se detectaron múltiples intentos fallidos de acceso a tu cuenta.',
     },
     suspicious_activity: {
-      title: 'Actividad sospechosa detectada',
+      title: isEn ? 'Suspicious activity detected' : 'Actividad sospechosa detectada',
       icon: '🚨',
-      description: 'Se detectó actividad inusual en tu cuenta.',
+      description: isEn
+        ? 'Unusual activity was detected on your account.'
+        : 'Se detectó actividad inusual en tu cuenta.',
     },
   };
 
   const alert = alertMessages[alertType];
-  const formattedTime = details.time.toLocaleDateString('es-MX', {
+  const dateLocale = isEn ? 'en-US' : 'es-MX';
+  const formattedTime = details.time.toLocaleDateString(dateLocale, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -538,42 +687,56 @@ export function securityAlertTemplate(params: {
     minute: '2-digit',
   });
 
+  const greeting = isEn ? `Hello ${name},` : `Hola ${name},`;
+  const eventDetailsLabel = isEn ? 'Event details:' : 'Detalles del evento:';
+  const dateLabel = isEn ? 'Date' : 'Fecha';
+  const locationLabel = isEn ? 'Location' : 'Ubicación';
+  const deviceLabel = isEn ? 'Device' : 'Dispositivo';
+  const ifYouLabel = isEn ? 'If it was you:' : 'Si fuiste tú:';
+  const ifYouNote = isEn ? 'You do not need to do anything.' : 'No necesitas hacer nada.';
+  const ifNotLabel = isEn ? 'If you do not recognize this activity:' : 'Si no reconoces esta actividad:';
+  const actions = isEn
+    ? ['Change your password immediately', 'Review your active sessions', 'Enable two-factor authentication']
+    : ['Cambia tu contraseña inmediatamente', 'Revisa tus sesiones activas', 'Habilita la autenticación de dos factores'];
+  const btnLabel = isEn ? 'Review my account security' : 'Revisar seguridad de mi cuenta';
+  const subject = isEn ? `${alert.icon} Security alert - VIDA System` : `${alert.icon} Alerta de seguridad - Sistema VIDA`;
+
+  const actionsHtml = actions.map(a => `<li>${a}</li>`).join('');
+
   const content = `
     <div class="content">
       <h2>${alert.icon} ${alert.title}</h2>
 
-      <p>Hola ${name},</p>
+      <p>${greeting}</p>
 
       <p>${alert.description}</p>
 
       <div class="warning-box">
-        <strong>Detalles del evento:</strong>
+        <strong>${eventDetailsLabel}</strong>
         <ul style="margin: 10px 0 0 0; padding-left: 20px; list-style: none;">
-          <li>📅 Fecha: ${formattedTime}</li>
+          <li>📅 ${dateLabel}: ${formattedTime}</li>
           ${details.ipAddress ? `<li>🌐 IP: ${details.ipAddress}</li>` : ''}
-          ${details.location ? `<li>📍 Ubicación: ${details.location}</li>` : ''}
-          ${details.userAgent ? `<li>💻 Dispositivo: ${details.userAgent}</li>` : ''}
+          ${details.location ? `<li>📍 ${locationLabel}: ${details.location}</li>` : ''}
+          ${details.userAgent ? `<li>💻 ${deviceLabel}: ${details.userAgent}</li>` : ''}
         </ul>
       </div>
 
-      <p><strong>Si fuiste tú:</strong> No necesitas hacer nada.</p>
+      <p><strong>${ifYouLabel}</strong> ${ifYouNote}</p>
 
-      <p><strong>Si no reconoces esta actividad:</strong></p>
+      <p><strong>${ifNotLabel}</strong></p>
       <ul style="color: #4a4a4a;">
-        <li>Cambia tu contraseña inmediatamente</li>
-        <li>Revisa tus sesiones activas</li>
-        <li>Habilita la autenticación de dos factores</li>
+        ${actionsHtml}
       </ul>
 
       <div class="button-container">
-        <a href="${config.frontendUrl}/settings/security" class="button">Revisar seguridad de mi cuenta</a>
+        <a href="${config.frontendUrl}/settings/security" class="button">${btnLabel}</a>
       </div>
     </div>
   `;
 
   return {
-    subject: `${alert.icon} Alerta de seguridad - Sistema VIDA`,
-    html: wrapTemplate(content, `${name}, ${alert.description.toLowerCase()}`),
+    subject,
+    html: wrapTemplate(content, `${name}, ${alert.description.toLowerCase()}`, locale),
   };
 }
 
@@ -587,51 +750,77 @@ export function paymentFailedTemplate(params: {
   amount: string;
   failureReason?: string;
   retryUrl: string;
+  locale?: string;
 }): { subject: string; html: string } {
-  const { name, planName, amount, failureReason, retryUrl } = params;
+  const { name, planName, amount, failureReason, retryUrl, locale = 'es' } = params;
+  const isEn = locale === 'en';
+
+  const heading = isEn ? '⚠️ Problem with your payment' : '⚠️ Problema con tu pago';
+  const greeting = isEn ? `Hello ${name},` : `Hola ${name},`;
+  const intro = isEn
+    ? `We couldn't process your <strong>${planName}</strong> subscription payment.`
+    : `No pudimos procesar el pago de tu suscripción <strong>${planName}</strong>.`;
+  const paymentDetailsLabel = isEn ? 'Payment details:' : 'Detalles del pago:';
+  const planLabel = isEn ? 'Plan' : 'Plan';
+  const amountLabel = isEn ? 'Amount' : 'Monto';
+  const reasonLabel = isEn ? 'Reason' : 'Motivo';
+  const updateMsg = isEn
+    ? 'To maintain your access to Premium features, please update your payment method:'
+    : 'Para mantener tu acceso a las funciones Premium, por favor actualiza tu método de pago:';
+  const btnLabel = isEn ? 'Update payment method' : 'Actualizar método de pago';
+  const whatHappenedLabel = isEn ? '💡 What may have happened?' : '💡 ¿Qué puede haber pasado?';
+  const reasons = isEn
+    ? ['Your card may have expired', 'Insufficient funds', 'The bank rejected the transaction']
+    : ['Tu tarjeta puede haber expirado', 'Fondos insuficientes', 'El banco rechazó la transacción'];
+  const warningNote = isEn
+    ? 'If you do not update your payment method, your subscription will be automatically cancelled and you will lose access to Premium features.'
+    : 'Si no actualizas tu método de pago, tu suscripción se cancelará automáticamente y perderás acceso a las funciones Premium.';
+  const preheader = isEn
+    ? `${name}, there was a problem processing your VIDA System payment`
+    : `${name}, hubo un problema procesando tu pago de Sistema VIDA`;
+  const subject = isEn ? '⚠️ Problem with your payment - VIDA System' : '⚠️ Problema con tu pago - Sistema VIDA';
+
+  const reasonsHtml = reasons.map(r => `<li>${r}</li>`).join('');
 
   const content = `
     <div class="content">
-      <h2>⚠️ Problema con tu pago</h2>
+      <h2>${heading}</h2>
 
-      <p>Hola ${name},</p>
+      <p>${greeting}</p>
 
-      <p>No pudimos procesar el pago de tu suscripción <strong>${planName}</strong>.</p>
+      <p>${intro}</p>
 
       <div class="warning-box">
-        <strong>Detalles del pago:</strong>
+        <strong>${paymentDetailsLabel}</strong>
         <ul style="margin: 10px 0 0 0; padding-left: 20px;">
-          <li>Plan: ${planName}</li>
-          <li>Monto: ${amount}</li>
-          ${failureReason ? `<li>Motivo: ${failureReason}</li>` : ''}
+          <li>${planLabel}: ${planName}</li>
+          <li>${amountLabel}: ${amount}</li>
+          ${failureReason ? `<li>${reasonLabel}: ${failureReason}</li>` : ''}
         </ul>
       </div>
 
-      <p>Para mantener tu acceso a las funciones Premium, por favor actualiza tu método de pago:</p>
+      <p>${updateMsg}</p>
 
       <div class="button-container">
-        <a href="${retryUrl}" class="button">Actualizar método de pago</a>
+        <a href="${retryUrl}" class="button">${btnLabel}</a>
       </div>
 
       <div class="info-box">
-        <strong>💡 ¿Qué puede haber pasado?</strong>
+        <strong>${whatHappenedLabel}</strong>
         <ul style="margin: 10px 0 0 0; padding-left: 20px;">
-          <li>Tu tarjeta puede haber expirado</li>
-          <li>Fondos insuficientes</li>
-          <li>El banco rechazó la transacción</li>
+          ${reasonsHtml}
         </ul>
       </div>
 
       <p class="small-text">
-        Si no actualizas tu método de pago, tu suscripción se cancelará automáticamente
-        y perderás acceso a las funciones Premium.
+        ${warningNote}
       </p>
     </div>
   `;
 
   return {
-    subject: '⚠️ Problema con tu pago - Sistema VIDA',
-    html: wrapTemplate(content, `${name}, hubo un problema procesando tu pago de Sistema VIDA`),
+    subject,
+    html: wrapTemplate(content, preheader, locale),
   };
 }
 
@@ -648,10 +837,13 @@ export function emergencyAccessNotificationTemplate(params: {
   };
   documentsAccessed: number;
   viewHistoryUrl: string;
+  locale?: string;
 }): { subject: string; html: string } {
-  const { name, accessTime, accessorInfo, documentsAccessed, viewHistoryUrl } = params;
+  const { name, accessTime, accessorInfo, documentsAccessed, viewHistoryUrl, locale = 'es' } = params;
+  const isEn = locale === 'en';
 
-  const formattedTime = accessTime.toLocaleDateString('es-MX', {
+  const dateLocale = isEn ? 'en-US' : 'es-MX';
+  const formattedTime = accessTime.toLocaleDateString(dateLocale, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
@@ -660,35 +852,65 @@ export function emergencyAccessNotificationTemplate(params: {
     minute: '2-digit',
   });
 
+  const heading = isEn ? '🚨 Emergency Access to your Information' : '🚨 Acceso de Emergencia a tu Información';
+  const greeting = isEn ? `Hello ${name},` : `Hola ${name},`;
+  const intro = isEn
+    ? 'An <strong>emergency access</strong> to your medical information in VIDA System has been made.'
+    : 'Se ha realizado un <strong>acceso de emergencia</strong> a tu información médica en Sistema VIDA.';
+  const accessDetailsLabel = isEn ? 'Access details:' : 'Detalles del acceso:';
+  const dateTimeLabel = isEn ? 'Date and time' : 'Fecha y hora';
+  const docsViewedLabel = isEn ? 'Documents viewed' : 'Documentos vistos';
+  const docsCount = isEn
+    ? `${documentsAccessed} document(s)`
+    : `${documentsAccessed} documento(s)`;
+  const ipLabel = isEn ? 'Access IP' : 'IP del acceso';
+  const locationLabel = isEn ? 'Location' : 'Ubicación';
+  const whatIsLabel = isEn ? 'ℹ️ What is emergency access?' : 'ℹ️ ¿Qué es un acceso de emergencia?';
+  const whatIsBody = isEn
+    ? 'Emergency access allows medical or emergency personnel to view your vital information when they scan your emergency QR code. This can save your life in critical situations.'
+    : 'El acceso de emergencia permite que personal médico o de emergencias pueda ver tu información vital cuando escanean tu código QR de emergencia. Esto puede salvar tu vida en situaciones críticas.';
+  const historyMsg = isEn
+    ? 'You can review the complete access history to your information:'
+    : 'Puedes revisar el historial completo de accesos a tu información:';
+  const btnLabel = isEn ? 'View access history' : 'Ver historial de accesos';
+  const footerNote = isEn
+    ? 'If you believe this access was not legitimate, please contact support immediately. We keep a detailed record of all accesses for your security.'
+    : 'Si crees que este acceso no fue legítimo, por favor contacta a soporte inmediatamente. Guardamos un registro detallado de todos los accesos para tu seguridad.';
+  const preheader = isEn
+    ? `${name}, someone accessed your emergency medical information`
+    : `${name}, alguien accedió a tu información médica de emergencia`;
+  const subject = isEn
+    ? '🚨 Emergency access to your information - VIDA System'
+    : '🚨 Acceso de emergencia a tu información - Sistema VIDA';
+
   const content = `
     <div class="content">
-      <h2>🚨 Acceso de Emergencia a tu Información</h2>
+      <h2>${heading}</h2>
 
-      <p>Hola ${name},</p>
+      <p>${greeting}</p>
 
-      <p>Se ha realizado un <strong>acceso de emergencia</strong> a tu información médica
-         en Sistema VIDA.</p>
+      <p>${intro}</p>
 
       <div class="warning-box">
-        <strong>Detalles del acceso:</strong>
+        <strong>${accessDetailsLabel}</strong>
         <table style="width: 100%; margin-top: 10px;">
           <tr>
-            <td style="padding: 5px 0;"><strong>Fecha y hora:</strong></td>
+            <td style="padding: 5px 0;"><strong>${dateTimeLabel}:</strong></td>
             <td>${formattedTime}</td>
           </tr>
           <tr>
-            <td style="padding: 5px 0;"><strong>Documentos vistos:</strong></td>
-            <td>${documentsAccessed} documento(s)</td>
+            <td style="padding: 5px 0;"><strong>${docsViewedLabel}:</strong></td>
+            <td>${docsCount}</td>
           </tr>
           ${accessorInfo.ip ? `
           <tr>
-            <td style="padding: 5px 0;"><strong>IP del acceso:</strong></td>
+            <td style="padding: 5px 0;"><strong>${ipLabel}:</strong></td>
             <td>${accessorInfo.ip}</td>
           </tr>
           ` : ''}
           ${accessorInfo.location ? `
           <tr>
-            <td style="padding: 5px 0;"><strong>Ubicación:</strong></td>
+            <td style="padding: 5px 0;"><strong>${locationLabel}:</strong></td>
             <td>${accessorInfo.location}</td>
           </tr>
           ` : ''}
@@ -696,32 +918,29 @@ export function emergencyAccessNotificationTemplate(params: {
       </div>
 
       <div class="info-box">
-        <strong>ℹ️ ¿Qué es un acceso de emergencia?</strong>
+        <strong>${whatIsLabel}</strong>
         <p style="margin: 10px 0 0 0;">
-          El acceso de emergencia permite que personal médico o de emergencias
-          pueda ver tu información vital cuando escanean tu código QR de emergencia.
-          Esto puede salvar tu vida en situaciones críticas.
+          ${whatIsBody}
         </p>
       </div>
 
-      <p>Puedes revisar el historial completo de accesos a tu información:</p>
+      <p>${historyMsg}</p>
 
       <div class="button-container">
-        <a href="${viewHistoryUrl}" class="button">Ver historial de accesos</a>
+        <a href="${viewHistoryUrl}" class="button">${btnLabel}</a>
       </div>
 
       <hr class="divider">
 
       <p class="small-text">
-        Si crees que este acceso no fue legítimo, por favor contacta a soporte inmediatamente.
-        Guardamos un registro detallado de todos los accesos para tu seguridad.
+        ${footerNote}
       </p>
     </div>
   `;
 
   return {
-    subject: '🚨 Acceso de emergencia a tu información - Sistema VIDA',
-    html: wrapTemplate(content, `${name}, alguien accedió a tu información médica de emergencia`),
+    subject,
+    html: wrapTemplate(content, preheader, locale),
   };
 }
 

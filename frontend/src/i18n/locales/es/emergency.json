@@ -1,0 +1,252 @@
+{
+  "view": {
+    "title": "Sistema VIDA",
+    "subtitle": "Acceso de Emergencia",
+    "loading": "Verificando acceso...",
+    "warning": {
+      "label": "Aviso:",
+      "text": "Este acceso quedará registrado con sus datos, ubicación y hora. Solo personal médico autorizado debe usar este sistema.",
+      "note_label": "Nota:",
+      "note_text": "Médicos y enfermeros deben proporcionar su cédula profesional. Las credenciales serán verificadas y registradas."
+    },
+    "form": {
+      "full_name": "Nombre completo",
+      "role": "Rol / Especialidad",
+      "license": "Cédula profesional",
+      "license_recommended": "(recomendada)",
+      "institution": "Institución",
+      "location_detected": "Ubicación detectada:",
+      "roles": {
+        "DOCTOR": "Médico",
+        "PARAMEDIC": "Paramédico",
+        "NURSE": "Enfermero(a)",
+        "EMERGENCY_TECH": "Técnico en urgencias",
+        "OTHER": "Otro personal de salud"
+      },
+      "placeholders": {
+        "full_name": "Dr. Juan Pérez García",
+        "license": "1234567",
+        "institution": "Hospital General de México"
+      },
+      "license_validation": {
+        "invalid_format": "Formato inválido (debe ser 7-8 dígitos)",
+        "required_for_role": "La cédula profesional es requerida para este rol",
+        "invalid_format_submit": "Formato de cédula inválido (debe ser 7-8 dígitos)",
+        "valid": "Formato de cédula válido",
+        "recommended_hint": "Se recomienda proporcionar cédula para mayor seguridad"
+      },
+      "submit": {
+        "enter_license": "Ingrese cédula profesional para continuar",
+        "access": "Acceder a datos de emergencia"
+      }
+    },
+    "error": {
+      "title": "Error de acceso",
+      "retry": "Reintentar",
+      "invalid_token": "Token QR inválido",
+      "session_expired": "La sesión de acceso ha expirado",
+      "access_failed": "No se pudo acceder a los datos del paciente",
+      "access_error": "Error al acceder"
+    },
+    "header": {
+      "title": "ACCESO DE EMERGENCIA",
+      "session_expires": "Sesión expira en:",
+      "expired": "Expirado"
+    },
+    "patient": {
+      "section_title": "Información del Paciente",
+      "photo_alt": "Foto del paciente",
+      "name": "Nombre",
+      "date_of_birth": "Fecha de nacimiento",
+      "sex": "Sexo",
+      "blood_type": "Tipo de sangre",
+      "sex_values": {
+        "M": "Masculino",
+        "F": "Femenino",
+        "other": "No especificado"
+      },
+      "not_available": "No disponible",
+      "not_registered": "No registrado"
+    },
+    "medical": {
+      "allergies": "ALERGIAS",
+      "conditions": "CONDICIONES",
+      "medications": "MEDICAMENTOS",
+      "no_allergies": "Sin alergias registradas",
+      "no_conditions": "Sin condiciones registradas",
+      "no_medications": "Sin medicamentos registrados"
+    },
+    "directive": {
+      "section_title": "VOLUNTAD ANTICIPADA",
+      "active_label": "Directiva Activa",
+      "validated_on": "Validada el",
+      "cpr": "RCP",
+      "intubation": "Intubación",
+      "palliative_only": "Solo Paliativo",
+      "document": "Documento",
+      "view_pdf": "Ver PDF",
+      "digital": "Digital",
+      "additional_notes": "Notas adicionales:",
+      "yes": "SÍ",
+      "no": "NO",
+      "no_directive": "El paciente no tiene voluntad anticipada registrada"
+    },
+    "donation": {
+      "section_title": "Donación de Órganos",
+      "is_donor": "El paciente es donador registrado",
+      "not_donor": "No es donador registrado"
+    },
+    "documents": {
+      "section_title": "Documentos Médicos",
+      "view": "Ver",
+      "categories": {
+        "CLINICAL_HISTORY": "Historial Clínico",
+        "LAB_RESULTS": "Laboratorio",
+        "IMAGING": "Imagen",
+        "PRESCRIPTIONS": "Receta",
+        "DISCHARGE_SUMMARY": "Alta",
+        "SURGICAL_REPORT": "Cirugía",
+        "VACCINATION": "Vacunación",
+        "INSURANCE": "Seguro",
+        "IDENTIFICATION": "ID",
+        "OTHER": "Otro"
+      }
+    },
+    "contacts": {
+      "section_title": "Contactos de Emergencia",
+      "no_contacts": "No hay contactos de emergencia registrados"
+    },
+    "footer": {
+      "access_registered": "Este acceso ha sido registrado y los representantes del paciente han sido notificados.",
+      "consulted_at": "Sistema VIDA - Información consultada el"
+    }
+  },
+  "qr": {
+    "title": "Mi Código QR de Emergencia",
+    "subtitle": "Este código permite a personal médico acceder a tu información en caso de emergencia",
+    "card": {
+      "header_title": "Sistema VIDA",
+      "header_subtitle": "Código de Acceso de Emergencia",
+      "token_label": "Token:",
+      "generated_label": "Generado:"
+    },
+    "buttons": {
+      "regenerate": "Regenerar QR",
+      "regenerating": "Regenerando...",
+      "download": "Descargar",
+      "retry": "Reintentar"
+    },
+    "loading": "Cargando código QR...",
+    "error_load": "Error al cargar el código QR",
+    "error_regenerate": "Error al regenerar el código QR",
+    "confirm_regenerate": "¿Estás seguro de regenerar el código QR? El código anterior dejará de funcionar.",
+    "instructions": {
+      "title": "Instrucciones de uso",
+      "step_1": "Imprime este código o guárdalo en tu celular",
+      "step_2": "Llévalo contigo en tu cartera, como fondo de pantalla, o en una pulsera médica",
+      "step_3": "En caso de emergencia, el personal médico puede escanear el código para acceder a tu información vital",
+      "step_4": "Cada acceso queda registrado y tus representantes son notificados"
+    },
+    "security": {
+      "title": "Seguridad",
+      "text": "Si crees que tu código ha sido comprometido, puedes regenerarlo en cualquier momento. El código anterior dejará de funcionar inmediatamente."
+    },
+    "nfc": {
+      "title": "Grabar en Tag NFC",
+      "badge": "Nuevo",
+      "description": "Graba tu información en brazaletes, tarjetas o stickers NFC para acceso aún más rápido"
+    }
+  },
+  "accessHistory": {
+    "title": "Historial de Accesos de Emergencia",
+    "subtitle": "Registro de todas las veces que personal médico ha accedido a tu información",
+    "totalAccesses": "Accesos totales registrados",
+    "dataAccessed": "Datos consultados:",
+    "loading": "Cargando historial...",
+    "roles": {
+      "DOCTOR": "Médico",
+      "PARAMEDIC": "Paramédico",
+      "NURSE": "Enfermero(a)",
+      "EMERGENCY_TECH": "Técnico en urgencias",
+      "OTHER": "Otro personal de salud"
+    },
+    "emptyState": {
+      "title": "Sin accesos registrados",
+      "description": "Aún no se ha accedido a tu información de emergencia. Esto es bueno - significa que no has tenido emergencias."
+    },
+    "infoBox": {
+      "title": "Sobre este historial",
+      "description": "Cada vez que alguien escanea tu código QR y accede a tu información de emergencia, el acceso queda registrado aquí. Tus representantes también son notificados automáticamente. Si ves un acceso que no reconoces, contacta a soporte."
+    },
+    "errors": {
+      "loading": "Error al cargar el historial"
+    }
+  },
+  "map": {
+    "yourLocation": "Tu ubicación",
+    "hospitalTypes": {
+      "HOSPITAL_PUBLIC": "Hospital Público",
+      "HOSPITAL_PRIVATE": "Hospital Privado",
+      "CLINIC": "Clínica",
+      "AMBULANCE_SERVICE": "Servicio de Ambulancias",
+      "IMSS": "IMSS",
+      "ISSSTE": "ISSSTE",
+      "OTHER": "Otro"
+    },
+    "attentionLevels": {
+      "FIRST": "1er Nivel",
+      "SECOND": "2do Nivel",
+      "THIRD": "3er Nivel"
+    },
+    "capabilities": {
+      "emergency": "Urgencias",
+      "icu": "UCI",
+      "trauma": "Trauma"
+    },
+    "relevantSpecialties": "Especialidades relevantes:",
+    "distanceAway": "A {{distance}} km",
+    "callEmergency": "Llamar Urgencias"
+  },
+  "panic": {
+    "button": {
+      "hold_to_activate": "Mantén presionado para activar",
+      "holding": "Mantener presionado...",
+      "close": "Cerrar",
+      "cancel": "Cancelar",
+      "errors": {
+        "no_session": "No hay sesión activa",
+        "activation_failed": "Error al activar alerta de pánico",
+        "server_error": "Error del servidor",
+        "no_data": "El servidor no devolvió datos",
+        "invalid_response": "Respuesta inválida del servidor",
+        "could_not_activate": "No se pudo activar la alerta de pánico"
+      }
+    },
+    "modal": {
+      "header": {
+        "title": "Alerta Activada",
+        "subtitle": "Tus representantes han sido notificados"
+      },
+      "confirming": {
+        "title": "Activando Alerta",
+        "description": "Se notificará a tus representantes con tu ubicación actual",
+        "cancel": "Cancelar"
+      },
+      "notifications": {
+        "title": "Notificaciones",
+        "no_reps_title": "Sin representantes configurados",
+        "no_reps_description": "No tienes representantes con notificaciones de emergencia activadas. Ve a <strong>Menú → Representantes</strong> para agregar contactos de emergencia y activa la opción \"Notificar en emergencias\"."
+      },
+      "hospitals": {
+        "title": "Hospitales Cercanos",
+        "distance_unit": "km",
+        "call": "Llamar"
+      },
+      "buttons": {
+        "cancel_alert": "Cancelar Alerta",
+        "cancelling": "Cancelando...",
+        "close": "Cerrar"
+      }
+    }
+  }
+}

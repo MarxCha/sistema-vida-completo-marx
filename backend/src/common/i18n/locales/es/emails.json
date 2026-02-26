@@ -1,0 +1,19 @@
+{
+  "subjects": {
+    "emailVerification": "Verifica tu cuenta - Sistema VIDA",
+    "passwordReset": "Recupera tu contraseña - Sistema VIDA",
+    "passwordChanged": "⚠️ Tu contraseña fue cambiada - Sistema VIDA",
+    "welcome": "¡Bienvenido a Sistema VIDA! Tu cuenta está lista",
+    "subscriptionCreated": "¡Tu plan {{planName}} está activo!",
+    "subscriptionCancelled": "Tu suscripción ha sido cancelada",
+    "securityAlert": "Alerta de seguridad - Sistema VIDA",
+    "paymentFailed": "⚠️ Problema con tu pago",
+    "emergencyAccess": "🚨 Acceso de emergencia a tu información"
+  },
+  "common": {
+    "greeting": "Hola, {{name}}",
+    "autoEmail": "Este es un correo automático, por favor no responda directamente.",
+    "copyright": "© {{year}} Sistema VIDA. Todos los derechos reservados.",
+    "subtitle": "Voluntad de Información para Decisiones Anticipadas"
+  }
+}

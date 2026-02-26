@@ -1,10 +1,12 @@
 // src/components/admin/layouts/AdminLayout.tsx
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAdminAuth } from '../../../context/AdminAuthContext';
 import { ADMIN_ROLE_LABELS, ADMIN_ROLE_COLORS, ADMIN_PERMISSIONS } from '../../../types/admin';
 
 const AdminLayout: React.FC = () => {
+  const { t } = useTranslation('admin');
   const { admin, logout, hasPermission } = useAdminAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -18,7 +20,7 @@ const AdminLayout: React.FC = () => {
 
   const navItems = [
     {
-      name: 'Dashboard',
+      name: t('nav.dashboard'),
       path: '/admin/dashboard',
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -28,7 +30,7 @@ const AdminLayout: React.FC = () => {
       permission: ADMIN_PERMISSIONS.METRICS_READ,
     },
     {
-      name: 'Usuarios',
+      name: t('nav.users'),
       path: '/admin/users',
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -38,7 +40,7 @@ const AdminLayout: React.FC = () => {
       permission: ADMIN_PERMISSIONS.USERS_READ,
     },
     {
-      name: 'Instituciones',
+      name: t('nav.institutions'),
       path: '/admin/institutions',
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -48,7 +50,7 @@ const AdminLayout: React.FC = () => {
       permission: ADMIN_PERMISSIONS.INSTITUTIONS_READ,
     },
     {
-      name: 'Auditoria',
+      name: t('nav.audit'),
       path: '/admin/audit',
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -58,7 +60,7 @@ const AdminLayout: React.FC = () => {
       permission: ADMIN_PERMISSIONS.AUDIT_READ,
     },
     {
-      name: 'Ingresos',
+      name: t('nav.revenue'),
       path: '/admin/subscriptions',
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -68,7 +70,7 @@ const AdminLayout: React.FC = () => {
       permission: ADMIN_PERMISSIONS.METRICS_READ,
     },
     {
-      name: 'Sistema',
+      name: t('nav.system'),
       path: '/admin/health',
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -98,7 +100,7 @@ const AdminLayout: React.FC = () => {
               </div>
               <div>
                 <h1 className="font-bold text-lg leading-tight">VIDA</h1>
-                <p className="text-xs text-slate-400">Admin Panel</p>
+                <p className="text-xs text-slate-400">{t('nav.admin_panel')}</p>
               </div>
             </div>
           ) : (
@@ -224,7 +226,7 @@ const AdminLayout: React.FC = () => {
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                       </svg>
-                      Cerrar Sesion
+                      {t('user_menu.sign_out')}
                     </button>
                   </div>
                 </>

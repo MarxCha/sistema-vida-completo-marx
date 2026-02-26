@@ -6,6 +6,7 @@ import { formatPhoneForWhatsApp } from '../phone-utils';
 import { getGoogleMapsUrl } from '../../../../common/utils/geolocation';
 import { logger } from '../../../../common/services/logger.service';
 import config from '../../../../config';
+import i18next from '../../../../common/i18n/config';
 
 /**
  * Proveedor de WhatsApp via Twilio (legacy).
@@ -39,7 +40,8 @@ export class TwilioWhatsAppProvider implements IWhatsAppProvider {
       return { success: false, error: 'Twilio WhatsApp no disponible', provider: this.getName() };
     }
 
-    const { to, patientName, location, type, accessorName, nearestHospital } = params;
+    const { to, patientName, location, type, accessorName, nearestHospital, locale } = params;
+    const t = i18next.getFixedT(locale || 'es');
 
     const lat = Number(location.lat);
     const lng = Number(location.lng);
@@ -48,9 +50,13 @@ export class TwilioWhatsAppProvider implements IWhatsAppProvider {
 
     let message: string;
     if (type === 'PANIC') {
-      message = `🚨 *EMERGENCIA VIDA*\n\n${patientName} activó alerta de pánico.\n\n📍 Ubicación: ${mapsUrl}${nearestHospital ? `\n\n🏥 Hospital cercano: ${nearestHospital}` : ''}`;
+      if (nearestHospital) {
+        message = t('notifications:whatsapp.emergencyWithHospital', { patientName, mapsUrl, hospital: nearestHospital });
+      } else {
+        message = t('notifications:whatsapp.emergency', { patientName, mapsUrl });
+      }
     } else {
-      message = `⚠️ *ALERTA VIDA*\n\nAcceso médico a ${patientName} por ${accessorName || 'personal médico'}.\n\n📍 ${mapsUrl}`;
+      message = t('notifications:whatsapp.access', { patientName, accessorName: accessorName || t('notifications:defaults.medicalStaff'), mapsUrl });
     }
 
     try {
@@ -66,7 +72,7 @@ export class TwilioWhatsAppProvider implements IWhatsAppProvider {
         msgOptions.contentVariables = JSON.stringify({
           1: patientName,
           2: mapsUrl,
-          3: nearestHospital || 'No identificado',
+          3: nearestHospital || t('notifications:defaults.unknownHospital'),
         });
       } else {
         msgOptions.body = message;

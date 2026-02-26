@@ -1,0 +1,162 @@
+{
+  "title": "Funciones Adicionales",
+  "nfc": {
+    "pageTitle": "NFC de Emergencia",
+    "pageDescription": "Graba tu informacion medica en tags NFC para brazaletes, tarjetas o stickers",
+    "notSupported": {
+      "title": "NFC no disponible",
+      "description": "Tu navegador no soporta Web NFC. Para grabar tags NFC necesitas:",
+      "requirements": {
+        "android": "Dispositivo Android con NFC",
+        "chrome": "Google Chrome version 89 o superior",
+        "https": "Conexion HTTPS"
+      },
+      "alternative": "Alternativa: Usa una app de escritura NFC como \"NFC Tools\" y copia la URL de emergencia."
+    },
+    "emergencyUrl": {
+      "label": "Tu URL de Emergencia",
+      "copySuccess": "URL copiada al portapapeles"
+    },
+    "writeMode": {
+      "label": "Tipo de grabacion",
+      "urlOnly": {
+        "title": "Solo URL",
+        "description": "Graba solo el enlace. Al escanear, abre el perfil completo en el navegador."
+      },
+      "fullData": {
+        "title": "Datos completos",
+        "description": "Incluye nombre, tipo de sangre, alergias y contacto de emergencia. Util sin internet."
+      }
+    },
+    "dataPreview": {
+      "title": "Datos a grabar:",
+      "bloodType": "Tipo de sangre",
+      "allergies": "Alergias",
+      "conditions": "Condiciones"
+    },
+    "buttons": {
+      "write": "Grabar Tag NFC",
+      "writing": "Acerca el tag NFC...",
+      "cancel": "Cancelar"
+    },
+    "errors": {
+      "noEmergencyId": "No tienes un ID de emergencia configurado",
+      "writeError": "Error grabando tag"
+    },
+    "status": {
+      "approaching": "Acerca el tag NFC al telefono...",
+      "success": "Tag NFC grabado exitosamente!"
+    },
+    "instructions": {
+      "title": "Instrucciones",
+      "step1": "Consigue un tag NFC (brazalete, tarjeta o sticker)",
+      "step2": "Selecciona el tipo de grabacion",
+      "step3": "Presiona \"Grabar Tag NFC\"",
+      "step4": "Acerca el tag a la parte trasera de tu telefono",
+      "step5": "Espera la confirmacion"
+    },
+    "products": {
+      "title": "Tags NFC Recomendados",
+      "bracelet": {
+        "name": "Brazalete NFC",
+        "description": "Ideal para uso diario, resistente al agua"
+      },
+      "card": {
+        "name": "Tarjeta NFC",
+        "description": "Para llevar en la cartera"
+      },
+      "sticker": {
+        "name": "Sticker NFC",
+        "description": "Para pegar en casco, telefono o equipo medico"
+      }
+    },
+    "walletPromo": {
+      "title": "Tarjeta Digital",
+      "proBadge": "Pro",
+      "description": "Agrega tu tarjeta de emergencia a Apple Wallet o Google Wallet"
+    }
+  },
+  "wallet": {
+    "pageTitle": "Tarjeta Digital",
+    "pageDescription": "Agrega tu tarjeta de emergencia a Apple Wallet o Google Wallet",
+    "whyUse": {
+      "title": "Por que usar la tarjeta digital?",
+      "reason1": "Acceso rapido desde la pantalla de bloqueo",
+      "reason2": "Los paramedicos pueden escanear tu telefono",
+      "reason3": "No necesitas desbloquear el dispositivo",
+      "reason4": "Funciona con NFC en iPhones modernos"
+    },
+    "notAvailable": {
+      "title": "No disponible aun",
+      "description": "Los pases de wallet aun no estan configurados en este servidor. Mientras tanto, puedes usar el codigo QR o tags NFC."
+    },
+    "apple": {
+      "title": "Apple Wallet",
+      "subtitle": "Para iPhone y Apple Watch",
+      "notConfigured": "No configurado",
+      "add": "Agregar",
+      "downloading": "Descargando..."
+    },
+    "google": {
+      "title": "Google Wallet",
+      "subtitle": "Para Android y Wear OS",
+      "notConfigured": "No configurado",
+      "add": "Agregar",
+      "loading": "Cargando..."
+    },
+    "howItWorks": {
+      "title": "Como funciona?",
+      "step1": "Agrega la tarjeta a tu wallet tocando el boton",
+      "step2": "La tarjeta aparecera en tu app de Wallet",
+      "step3": "En emergencia, el personal medico puede escanear el codigo QR de la tarjeta",
+      "step4": "En iPhones, tambien pueden usar NFC (sin desbloquear)"
+    },
+    "requirements": "Apple Wallet requiere iOS 9+ • Google Wallet requiere Android 5+",
+    "errors": {
+      "generatePass": "Error generando pase",
+      "applePass": "Error descargando pase de Apple Wallet",
+      "googlePass": "Error generando pase de Google Wallet",
+      "googleUrl": "No se pudo obtener la URL del pase"
+    }
+  },
+  "biometric": {
+    "sectionTitle": "Autenticacion Biometrica",
+    "sectionSubtitle": "Face ID, Touch ID o Windows Hello",
+    "description": "Configura tu huella digital o reconocimiento facial para acceder de forma rapida y segura. Puedes registrar multiples dispositivos.",
+    "addDevice": "Agregar dispositivo",
+    "configuring": "Configurando...",
+    "emptyState": {
+      "title": "No tienes dispositivos biometricos configurados",
+      "hint": "Haz clic en \"Agregar dispositivo\" para configurar Face ID o Touch ID"
+    },
+    "credential": {
+      "defaultName": "Dispositivo biometrico",
+      "registered": "Registrado",
+      "lastUsed": "Ultimo uso",
+      "never": "Nunca",
+      "deleteTitle": "Eliminar dispositivo"
+    },
+    "notSupported": {
+      "title": "Autenticacion biometrica no disponible",
+      "description": "Tu navegador o dispositivo no soporta autenticacion biometrica (WebAuthn). Intenta usar Chrome, Safari, Firefox o Edge en un dispositivo con Face ID, Touch ID o Windows Hello."
+    },
+    "security": {
+      "title": "Tu seguridad es nuestra prioridad.",
+      "description": "Los datos biometricos nunca salen de tu dispositivo. Solo se almacena una clave criptografica que verifica tu identidad."
+    },
+    "confirmDelete": "Estas seguro de eliminar esta credencial biometrica?",
+    "errors": {
+      "getOptions": "No se pudieron obtener las opciones de registro",
+      "verify": "No se pudo verificar la credencial",
+      "cancelled": "El registro fue cancelado o no se permitio el acceso",
+      "notSupported": "Este dispositivo no soporta autenticacion biometrica",
+      "alreadyRegistered": "Esta credencial ya esta registrada",
+      "configure": "Error al configurar la autenticacion biometrica",
+      "delete": "Error al eliminar la credencial"
+    },
+    "toast": {
+      "success": "Autenticacion biometrica configurada exitosamente",
+      "deleted": "Credencial eliminada exitosamente"
+    }
+  }
+}

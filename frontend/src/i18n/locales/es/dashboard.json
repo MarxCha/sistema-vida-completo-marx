@@ -1,0 +1,71 @@
+{
+  "welcome": "¡Hola, {{name}}!",
+  "subtitle": "Bienvenido a tu panel de control VIDA",
+  "alerts": {
+    "incompleteProfile": "Tu perfil está incompleto ({{percent}}%)",
+    "completeInfo": "Completa tu información médica para que esté disponible en emergencias.",
+    "complete": "Completar",
+    "noDirective": "No tienes una voluntad anticipada activa",
+    "createDirectiveInfo": "Crea tu voluntad anticipada para garantizar que tus decisiones sean respetadas.",
+    "createNow": "Crear ahora"
+  },
+  "cards": {
+    "medicalProfile": "Perfil Médico",
+    "complete": "Completo",
+    "percentComplete": "{{percent}}% completado",
+    "directive": "Voluntad Anticipada",
+    "active": "Activa",
+    "notRegistered": "Sin registrar",
+    "directiveProtected": "Tu voluntad anticipada está protegida",
+    "directiveRegister": "Registra tus preferencias médicas",
+    "representatives": "Representantes",
+    "representativesCount": "{{count}} registrado",
+    "representativesCount_plural": "{{count}} registrados",
+    "representativesPrimary": "(primario)",
+    "representativesDesignate": "Designa a tus representantes",
+    "documents": "Mis Documentos",
+    "documentsCount": "{{count}} documento",
+    "documentsCount_plural": "{{count}} documentos",
+    "noDocuments": "Sin documentos",
+    "documentsVisible": "{{count}} visible en emergencias",
+    "documentsVisible_plural": "{{count}} visibles en emergencias",
+    "documentsUpload": "Sube tu historial clínico y estudios"
+  },
+  "criticalInfo": {
+    "title": "Información Crítica",
+    "bloodType": "Tipo de sangre",
+    "allergies": "Alergias",
+    "donor": "Donador de órganos",
+    "noneRegistered": "Ninguna registrada",
+    "notSpecified": "No especificado",
+    "yes": "Sí",
+    "no": "No",
+    "loadInfo": "Carga tu información médica para verla aquí"
+  },
+  "recentAccesses": {
+    "title": "Accesos Recientes",
+    "viewAll": "Ver todo",
+    "unknownInstitution": "Institución no especificada",
+    "noAccesses": "Aún no hay accesos registrados"
+  },
+  "recentDocuments": {
+    "title": "Documentos Recientes",
+    "viewAll": "Ver todos",
+    "uploadFirst": "Subir primer documento",
+    "noDocuments": "No tienes documentos cargados",
+    "visible": "Visible",
+    "categories": {
+      "CLINICAL_HISTORY": "Historial",
+      "LAB_RESULTS": "Lab",
+      "IMAGING": "Imagen",
+      "PRESCRIPTIONS": "Receta",
+      "DISCHARGE_SUMMARY": "Alta",
+      "SURGICAL_REPORT": "Cirugía",
+      "VACCINATION": "Vacuna",
+      "INSURANCE": "Seguro",
+      "IDENTIFICATION": "ID",
+      "OTHER": "Otro"
+    }
+  },
+  "viewEmergencyQR": "Ver mi QR de emergencia"
+}

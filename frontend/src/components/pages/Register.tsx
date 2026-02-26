@@ -1,5 +1,5 @@
 // src/components/pages/Register.tsx
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -7,40 +7,53 @@ import { z } from 'zod';
 import { Eye, EyeOff, Mail, Lock, User, Phone, AlertCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
+import { TFunction } from 'i18next';
 
-const registerSchema = z.object({
-  name: z.string().min(2, 'El nombre debe tener al menos 2 caracteres'),
-  email: z.string().email('Correo electrónico inválido'),
+const getRegisterSchema = (t: TFunction) => z.object({
+  name: z.string().min(2, t('validation.nameMinLength')),
+  email: z.string().email(t('validation.invalidEmail')),
   curp: z.string()
-    .length(18, 'El CURP debe tener 18 caracteres')
-    .regex(/^[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[0-9A-Z][0-9]$/, 'Formato de CURP inválido'),
+    .length(18, t('validation.curpLength'))
+    .regex(/^[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[0-9A-Z][0-9]$/, t('validation.curpInvalid')),
   phone: z.string().optional(),
   password: z.string()
-    .min(8, 'La contraseña debe tener al menos 8 caracteres')
-    .regex(/[A-Z]/, 'Debe contener al menos una mayúscula')
-    .regex(/[a-z]/, 'Debe contener al menos una minúscula')
-    .regex(/[0-9]/, 'Debe contener al menos un número'),
+    .min(8, t('validation.passwordMinLength'))
+    .regex(/[A-Z]/, t('validation.passwordUppercase'))
+    .regex(/[a-z]/, t('validation.passwordLowercase'))
+    .regex(/[0-9]/, t('validation.passwordNumber')),
   confirmPassword: z.string(),
-  acceptTerms: z.boolean().refine(val => val === true, 'Debes aceptar los términos'),
+  acceptTerms: z.boolean().refine(val => val === true, t('validation.termsRequired')),
 }).refine(data => data.password === data.confirmPassword, {
-  message: 'Las contraseñas no coinciden',
+  message: t('validation.passwordMismatch'),
   path: ['confirmPassword'],
 });
 
-type RegisterFormData = z.infer<typeof registerSchema>;
-
-const passwordRequirements = [
-  { regex: /.{8,}/, text: 'Al menos 8 caracteres' },
-  { regex: /[A-Z]/, text: 'Una letra mayúscula' },
-  { regex: /[a-z]/, text: 'Una letra minúscula' },
-  { regex: /[0-9]/, text: 'Un número' },
-];
+type RegisterFormData = {
+  name: string;
+  email: string;
+  curp: string;
+  phone?: string;
+  password: string;
+  confirmPassword: string;
+  acceptTerms: boolean;
+};
 
 export default function Register() {
+  const { t } = useTranslation('auth');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
+
+  const registerSchema = useMemo(() => getRegisterSchema(t), [t]);
+
+  const passwordRequirements = useMemo(() => [
+    { regex: /.{8,}/, text: t('passwordStrength.minChars') },
+    { regex: /[A-Z]/, text: t('passwordStrength.uppercase') },
+    { regex: /[a-z]/, text: t('passwordStrength.lowercase') },
+    { regex: /[0-9]/, text: t('passwordStrength.number') },
+  ], [t]);
 
   const {
     register,
@@ -63,10 +76,10 @@ export default function Register() {
         curp: data.curp.toUpperCase(),
         phone: data.phone,
       });
-      toast.success('¡Cuenta creada exitosamente!');
+      toast.success(t('register.accountCreated'));
       navigate('/dashboard');
     } catch (error: any) {
-      toast.error(error.message || 'Error al crear la cuenta');
+      toast.error(error.message || t('toast.registerError'));
     } finally {
       setIsLoading(false);
     }
@@ -75,9 +88,9 @@ export default function Register() {
   return (
     <div className="animate-fade-in">
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Crear Cuenta</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('register.title')}</h1>
         <p className="text-gray-600">
-          Únete a VIDA y protege tus decisiones médicas
+          {t('register.subtitle')}
         </p>
       </div>
 
@@ -85,7 +98,7 @@ export default function Register() {
         {/* Nombre */}
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-            Nombre Completo
+            {t('register.name')}
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -96,7 +109,7 @@ export default function Register() {
               type="text"
               {...register('name')}
               className={`input pl-10 ${errors.name ? 'input-error' : ''}`}
-              placeholder="Juan Pérez García"
+              placeholder={t('register.namePlaceholder')}
             />
           </div>
           {errors.name && (
@@ -110,7 +123,7 @@ export default function Register() {
         {/* Email */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            Correo Electrónico
+            {t('register.email')}
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -121,7 +134,7 @@ export default function Register() {
               type="email"
               {...register('email')}
               className={`input pl-10 ${errors.email ? 'input-error' : ''}`}
-              placeholder="tu@email.com"
+              placeholder={t('register.emailPlaceholder')}
             />
           </div>
           {errors.email && (
@@ -135,7 +148,7 @@ export default function Register() {
         {/* CURP */}
         <div>
           <label htmlFor="curp" className="block text-sm font-medium text-gray-700 mb-1">
-            CURP
+            {t('register.curp')}
           </label>
           <input
             id="curp"
@@ -143,7 +156,7 @@ export default function Register() {
             maxLength={18}
             {...register('curp')}
             className={`input uppercase ${errors.curp ? 'input-error' : ''}`}
-            placeholder="AAAA000000HAAAAA00"
+            placeholder={t('register.curpPlaceholder')}
           />
           {errors.curp && (
             <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
@@ -156,7 +169,7 @@ export default function Register() {
         {/* Teléfono (opcional) */}
         <div>
           <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-            Teléfono <span className="text-gray-400">(opcional)</span>
+            {t('register.phone')} <span className="text-gray-400">{t('register.phoneOptional')}</span>
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -167,7 +180,7 @@ export default function Register() {
               type="tel"
               {...register('phone')}
               className="input pl-10"
-              placeholder="+52 55 1234 5678"
+              placeholder={t('register.phonePlaceholder')}
             />
           </div>
         </div>
@@ -175,7 +188,7 @@ export default function Register() {
         {/* Password */}
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-            Contraseña
+            {t('register.password')}
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -186,7 +199,7 @@ export default function Register() {
               type={showPassword ? 'text' : 'password'}
               {...register('password')}
               className={`input pl-10 pr-10 ${errors.password ? 'input-error' : ''}`}
-              placeholder="••••••••"
+              placeholder={t('register.passwordPlaceholder')}
             />
             <button
               type="button"
@@ -219,7 +232,7 @@ export default function Register() {
         {/* Confirm Password */}
         <div>
           <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-            Confirmar Contraseña
+            {t('register.confirmPassword')}
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -230,7 +243,7 @@ export default function Register() {
               type={showPassword ? 'text' : 'password'}
               {...register('confirmPassword')}
               className={`input pl-10 ${errors.confirmPassword ? 'input-error' : ''}`}
-              placeholder="••••••••"
+              placeholder={t('register.passwordPlaceholder')}
             />
           </div>
           {errors.confirmPassword && (
@@ -250,13 +263,13 @@ export default function Register() {
             className="mt-1 h-4 w-4 text-vida-600 focus:ring-vida-500 border-gray-300 rounded"
           />
           <label htmlFor="acceptTerms" className="text-sm text-gray-600">
-            Acepto los{' '}
+            {t('register.termsAccept')}{' '}
             <a href="#" className="text-vida-600 hover:underline">
-              Términos de Servicio
+              {t('register.termsLink')}
             </a>{' '}
-            y la{' '}
+            {t('register.termsAnd')}{' '}
             <a href="#" className="text-vida-600 hover:underline">
-              Política de Privacidad
+              {t('register.privacyLink')}
             </a>
           </label>
         </div>
@@ -276,19 +289,19 @@ export default function Register() {
           {isLoading ? (
             <div className="flex items-center justify-center gap-2">
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              Creando cuenta...
+              {t('register.submitting')}
             </div>
           ) : (
-            'Crear Cuenta'
+            t('register.submit')
           )}
         </button>
       </form>
 
       {/* Login link */}
       <p className="mt-6 text-center text-gray-600">
-        ¿Ya tienes cuenta?{' '}
+        {t('register.hasAccount')}{' '}
         <Link to="/login" className="text-vida-600 hover:text-vida-700 font-medium">
-          Inicia sesión
+          {t('register.loginLink')}
         </Link>
       </p>
     </div>

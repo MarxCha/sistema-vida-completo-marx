@@ -4,6 +4,38 @@
 const CACHE_NAME = 'vida-cache-v2';
 const NOTIFICATION_BADGE = '/favicon.svg';
 
+// Minimal translations for the service worker context (no React available here)
+const translations = {
+  es: {
+    newNotification: 'Nueva notificacion',
+    viewDetails: 'Ver detalles',
+    call: 'Llamar',
+    viewAccess: 'Ver acceso',
+    dismiss: 'Cerrar',
+    view: 'Ver',
+    appName: 'Sistema VIDA'
+  },
+  en: {
+    newNotification: 'New notification',
+    viewDetails: 'View details',
+    call: 'Call',
+    viewAccess: 'View access',
+    dismiss: 'Dismiss',
+    view: 'View',
+    appName: 'VIDA System'
+  }
+};
+
+function getLang(payload) {
+  // Use language from notification payload if available, default to 'es'
+  const lang = payload && payload.lang;
+  return (lang && translations[lang]) ? lang : 'es';
+}
+
+function sw_t(lang, key) {
+  return translations[lang][key] || translations['es'][key] || key;
+}
+
 // Archivos a cachear para offline
 const urlsToCache = [
   '/',
@@ -49,9 +81,20 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('push', (event) => {
   console.log('[SW] Push recibido:', event);
 
+  let payload = {};
+  if (event.data) {
+    try {
+      payload = event.data.json();
+    } catch (e) {
+      payload = { body: event.data.text() };
+    }
+  }
+
+  const lang = getLang(payload);
+
   let data = {
-    title: 'Sistema VIDA',
-    body: 'Nueva notificación',
+    title: sw_t(lang, 'appName'),
+    body: sw_t(lang, 'newNotification'),
     icon: NOTIFICATION_BADGE,
     badge: NOTIFICATION_BADGE,
     tag: 'vida-notification',
@@ -59,14 +102,7 @@ self.addEventListener('push', (event) => {
     data: {}
   };
 
-  if (event.data) {
-    try {
-      const payload = event.data.json();
-      data = { ...data, ...payload };
-    } catch (e) {
-      data.body = event.data.text();
-    }
-  }
+  data = { ...data, ...payload };
 
   // Configurar opciones según tipo de notificación
   const options = {
@@ -77,7 +113,7 @@ self.addEventListener('push', (event) => {
     requireInteraction: data.type === 'PANIC_ALERT' || data.type === 'QR_ACCESS',
     vibrate: data.type === 'PANIC_ALERT' ? [200, 100, 200, 100, 200] : [200, 100, 200],
     data: data.data || {},
-    actions: getActionsForType(data.type)
+    actions: getActionsForType(data.type, lang)
   };
 
   event.waitUntil(
@@ -86,21 +122,22 @@ self.addEventListener('push', (event) => {
 });
 
 // Obtener acciones según tipo de notificación
-function getActionsForType(type) {
+function getActionsForType(type, lang) {
+  const l = lang || 'es';
   switch (type) {
     case 'PANIC_ALERT':
       return [
-        { action: 'view', title: 'Ver detalles', icon: '/icons/view.png' },
-        { action: 'call', title: 'Llamar', icon: '/icons/call.png' }
+        { action: 'view', title: sw_t(l, 'viewDetails'), icon: '/icons/view.png' },
+        { action: 'call', title: sw_t(l, 'call'), icon: '/icons/call.png' }
       ];
     case 'QR_ACCESS':
       return [
-        { action: 'view', title: 'Ver acceso', icon: '/icons/view.png' },
-        { action: 'dismiss', title: 'Cerrar', icon: '/icons/close.png' }
+        { action: 'view', title: sw_t(l, 'viewAccess'), icon: '/icons/view.png' },
+        { action: 'dismiss', title: sw_t(l, 'dismiss'), icon: '/icons/close.png' }
       ];
     default:
       return [
-        { action: 'view', title: 'Ver', icon: '/icons/view.png' }
+        { action: 'view', title: sw_t(l, 'view'), icon: '/icons/view.png' }
       ];
   }
 }

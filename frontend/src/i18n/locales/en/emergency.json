@@ -1,0 +1,252 @@
+{
+  "view": {
+    "title": "Sistema VIDA",
+    "subtitle": "Emergency Access",
+    "loading": "Verifying access...",
+    "warning": {
+      "label": "Notice:",
+      "text": "This access will be logged with your information, location, and time. Only authorized medical personnel should use this system.",
+      "note_label": "Note:",
+      "note_text": "Physicians and nurses must provide their professional license. Credentials will be verified and recorded."
+    },
+    "form": {
+      "full_name": "Full name",
+      "role": "Role / Specialty",
+      "license": "Professional License",
+      "license_recommended": "(recommended)",
+      "institution": "Institution",
+      "location_detected": "Location detected:",
+      "roles": {
+        "DOCTOR": "Physician",
+        "PARAMEDIC": "Paramedic",
+        "NURSE": "Nurse",
+        "EMERGENCY_TECH": "Emergency Technician",
+        "OTHER": "Other health personnel"
+      },
+      "placeholders": {
+        "full_name": "Dr. John Smith",
+        "license": "1234567",
+        "institution": "General Hospital"
+      },
+      "license_validation": {
+        "invalid_format": "Invalid format (must be 7-8 digits)",
+        "required_for_role": "Professional license is required for this role",
+        "invalid_format_submit": "Invalid license format (must be 7-8 digits)",
+        "valid": "Valid license format",
+        "recommended_hint": "Providing a license number is recommended for added security"
+      },
+      "submit": {
+        "enter_license": "Enter professional license to continue",
+        "access": "Access emergency data"
+      }
+    },
+    "error": {
+      "title": "Access Error",
+      "retry": "Retry",
+      "invalid_token": "Invalid QR token",
+      "session_expired": "The access session has expired",
+      "access_failed": "Could not access patient data",
+      "access_error": "Access error"
+    },
+    "header": {
+      "title": "EMERGENCY ACCESS",
+      "session_expires": "Session expires in:",
+      "expired": "Expired"
+    },
+    "patient": {
+      "section_title": "Patient Information",
+      "photo_alt": "Patient photo",
+      "name": "Name",
+      "date_of_birth": "Date of birth",
+      "sex": "Sex",
+      "blood_type": "Blood type",
+      "sex_values": {
+        "M": "Male",
+        "F": "Female",
+        "other": "Not specified"
+      },
+      "not_available": "Not available",
+      "not_registered": "Not registered"
+    },
+    "medical": {
+      "allergies": "ALLERGIES",
+      "conditions": "CONDITIONS",
+      "medications": "MEDICATIONS",
+      "no_allergies": "No allergies on record",
+      "no_conditions": "No conditions on record",
+      "no_medications": "No medications on record"
+    },
+    "directive": {
+      "section_title": "ADVANCE DIRECTIVE",
+      "active_label": "Active Directive",
+      "validated_on": "Validated on",
+      "cpr": "CPR",
+      "intubation": "Intubation",
+      "palliative_only": "Palliative Only",
+      "document": "Document",
+      "view_pdf": "View PDF",
+      "digital": "Digital",
+      "additional_notes": "Additional notes:",
+      "yes": "YES",
+      "no": "NO",
+      "no_directive": "Patient has no advance directive on record"
+    },
+    "donation": {
+      "section_title": "Organ Donation",
+      "is_donor": "Patient is a registered organ donor",
+      "not_donor": "Not a registered donor"
+    },
+    "documents": {
+      "section_title": "Medical Documents",
+      "view": "View",
+      "categories": {
+        "CLINICAL_HISTORY": "Clinical History",
+        "LAB_RESULTS": "Lab Results",
+        "IMAGING": "Imaging",
+        "PRESCRIPTIONS": "Prescription",
+        "DISCHARGE_SUMMARY": "Discharge Summary",
+        "SURGICAL_REPORT": "Surgical Report",
+        "VACCINATION": "Vaccination",
+        "INSURANCE": "Insurance",
+        "IDENTIFICATION": "ID",
+        "OTHER": "Other"
+      }
+    },
+    "contacts": {
+      "section_title": "Emergency Contacts",
+      "no_contacts": "No emergency contacts on record"
+    },
+    "footer": {
+      "access_registered": "This access has been logged and the patient's representatives have been notified.",
+      "consulted_at": "Sistema VIDA - Information accessed on"
+    }
+  },
+  "qr": {
+    "title": "My Emergency QR Code",
+    "subtitle": "This code allows medical personnel to access your information in case of emergency",
+    "card": {
+      "header_title": "Sistema VIDA",
+      "header_subtitle": "Emergency Access Code",
+      "token_label": "Token:",
+      "generated_label": "Generated:"
+    },
+    "buttons": {
+      "regenerate": "Regenerate QR",
+      "regenerating": "Regenerating...",
+      "download": "Download",
+      "retry": "Retry"
+    },
+    "loading": "Loading QR code...",
+    "error_load": "Error loading QR code",
+    "error_regenerate": "Error regenerating QR code",
+    "confirm_regenerate": "Are you sure you want to regenerate the QR code? The previous code will stop working.",
+    "instructions": {
+      "title": "How to use",
+      "step_1": "Print this code or save it on your phone",
+      "step_2": "Carry it in your wallet, as a wallpaper, or on a medical bracelet",
+      "step_3": "In an emergency, medical personnel can scan the code to access your vital information",
+      "step_4": "Every access is logged and your representatives are notified"
+    },
+    "security": {
+      "title": "Security",
+      "text": "If you believe your code has been compromised, you can regenerate it at any time. The previous code will stop working immediately."
+    },
+    "nfc": {
+      "title": "Write to NFC Tag",
+      "badge": "New",
+      "description": "Write your information to NFC bracelets, cards, or stickers for even faster access"
+    }
+  },
+  "accessHistory": {
+    "title": "Emergency Access History",
+    "subtitle": "Record of all times medical personnel have accessed your information",
+    "totalAccesses": "Total accesses recorded",
+    "dataAccessed": "Data accessed:",
+    "loading": "Loading history...",
+    "roles": {
+      "DOCTOR": "Physician",
+      "PARAMEDIC": "Paramedic",
+      "NURSE": "Nurse",
+      "EMERGENCY_TECH": "Emergency Technician",
+      "OTHER": "Other health personnel"
+    },
+    "emptyState": {
+      "title": "No accesses recorded",
+      "description": "Your emergency information has not been accessed yet. This is good - it means you have not had any emergencies."
+    },
+    "infoBox": {
+      "title": "About this history",
+      "description": "Every time someone scans your QR code and accesses your emergency information, the access is logged here. Your representatives are also automatically notified. If you see an access you do not recognize, contact support."
+    },
+    "errors": {
+      "loading": "Error loading access history"
+    }
+  },
+  "map": {
+    "yourLocation": "Your location",
+    "hospitalTypes": {
+      "HOSPITAL_PUBLIC": "Public Hospital",
+      "HOSPITAL_PRIVATE": "Private Hospital",
+      "CLINIC": "Clinic",
+      "AMBULANCE_SERVICE": "Ambulance Service",
+      "IMSS": "IMSS",
+      "ISSSTE": "ISSSTE",
+      "OTHER": "Other"
+    },
+    "attentionLevels": {
+      "FIRST": "1st Level",
+      "SECOND": "2nd Level",
+      "THIRD": "3rd Level"
+    },
+    "capabilities": {
+      "emergency": "Emergency",
+      "icu": "ICU",
+      "trauma": "Trauma"
+    },
+    "relevantSpecialties": "Relevant specialties:",
+    "distanceAway": "{{distance}} km away",
+    "callEmergency": "Call Emergency"
+  },
+  "panic": {
+    "button": {
+      "hold_to_activate": "Hold to activate",
+      "holding": "Keep holding...",
+      "close": "Close",
+      "cancel": "Cancel",
+      "errors": {
+        "no_session": "No active session",
+        "activation_failed": "Error activating panic alert",
+        "server_error": "Server error",
+        "no_data": "Server returned no data",
+        "invalid_response": "Invalid server response",
+        "could_not_activate": "Could not activate panic alert"
+      }
+    },
+    "modal": {
+      "header": {
+        "title": "Alert Activated",
+        "subtitle": "Your representatives have been notified"
+      },
+      "confirming": {
+        "title": "Activating Alert",
+        "description": "Your representatives will be notified with your current location",
+        "cancel": "Cancel"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "no_reps_title": "No representatives configured",
+        "no_reps_description": "You have no representatives with emergency notifications enabled. Go to <strong>Menu → Representatives</strong> to add emergency contacts and enable the \"Notify in emergencies\" option."
+      },
+      "hospitals": {
+        "title": "Nearby Hospitals",
+        "distance_unit": "km",
+        "call": "Call"
+      },
+      "buttons": {
+        "cancel_alert": "Cancel Alert",
+        "cancelling": "Cancelling...",
+        "close": "Close"
+      }
+    }
+  }
+}

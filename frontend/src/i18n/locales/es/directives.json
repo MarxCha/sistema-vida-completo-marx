@@ -1,0 +1,97 @@
+{
+  "title": "Voluntades Anticipadas",
+  "subtitle": "Gestiona tus directivas de voluntad anticipada",
+  "createButton": "Crear nueva",
+  "status": {
+    "DRAFT": "Borrador",
+    "PENDING_VALIDATION": "Pendiente",
+    "ACTIVE": "Activa",
+    "REVOKED": "Revocada",
+    "EXPIRED": "Expirada"
+  },
+  "types": {
+    "DIGITAL_DRAFT": "Borrador digital",
+    "NOTARIZED_DOCUMENT": "Documento notariado",
+    "DIGITAL_WITNESSES": "Con testigos digitales"
+  },
+  "activeBanner": {
+    "title": "Directiva Activa",
+    "description": "Tu voluntad anticipada está vigente y será respetada en caso de emergencia.",
+    "validatedAt": "Validada el {{date}}"
+  },
+  "emptyState": {
+    "title": "Sin directivas",
+    "description": "Aún no has creado ninguna voluntad anticipada",
+    "createFirst": "Crear mi primera directiva"
+  },
+  "directive": {
+    "createdAt": "Creado el {{date}}",
+    "cpr": "RCP",
+    "intubation": "Intubación",
+    "palliativeOnly": "Solo paliativo"
+  },
+  "actions": {
+    "validate": "Validar",
+    "delete": "Eliminar",
+    "revoke": "Revocar"
+  },
+  "infoBox": {
+    "title": "¿Qué es una voluntad anticipada?",
+    "description": "Es un documento legal donde expresas tus decisiones sobre tratamientos médicos en caso de que no puedas comunicarte. Incluye preferencias sobre reanimación, ventilación mecánica, diálisis, transfusiones y cuidados paliativos.",
+    "moreInfo": "Más información →",
+    "legalFramework": "Marco legal en México →"
+  },
+  "modal": {
+    "title": "Nueva Voluntad Anticipada",
+    "medicalDecisionsTitle": "Decisiones médicas",
+    "medicalDecisionsDesc": "Indica tus preferencias para cada tratamiento. Puedes dejar sin preferencia los que desees.",
+    "decisions": {
+      "cpr": "Reanimación cardiopulmonar (RCP)",
+      "intubation": "Intubación / ventilación mecánica",
+      "dialysis": "Diálisis",
+      "transfusion": "Transfusiones sanguíneas",
+      "artificialNutrition": "Nutrición artificial"
+    },
+    "decisionValues": {
+      "yes": "Sí",
+      "no": "No",
+      "noPreference": "Sin preferencia"
+    },
+    "palliativeCareOnly": "Solo deseo recibir cuidados paliativos",
+    "stateLabel": "Estado de origen (para marco legal aplicable)",
+    "statePlaceholder": "Selecciona tu estado",
+    "states": {
+      "CDMX": "Ciudad de México",
+      "JAL": "Jalisco",
+      "NL": "Nuevo León",
+      "AGS": "Aguascalientes",
+      "COAH": "Coahuila",
+      "COL": "Colima",
+      "GTO": "Guanajuato",
+      "GRO": "Guerrero",
+      "HGO": "Hidalgo",
+      "MEX": "Estado de México",
+      "MICH": "Michoacán",
+      "NAY": "Nayarit",
+      "OAX": "Oaxaca",
+      "SLP": "San Luis Potosí",
+      "YUC": "Yucatán"
+    },
+    "notesLabel": "Notas adicionales (opcional)",
+    "notesPlaceholder": "Puedes agregar instrucciones específicas o aclaraciones...",
+    "cancel": "Cancelar",
+    "saveDraft": "Guardar borrador",
+    "saving": "Guardando..."
+  },
+  "confirm": {
+    "revoke": "¿Está seguro de revocar esta directiva? Esta acción no se puede deshacer.",
+    "delete": "¿Está seguro de eliminar este borrador?"
+  },
+  "errors": {
+    "loading": "Error cargando directivas",
+    "creating": "Error creando borrador",
+    "validating": "Error validando directiva",
+    "revoking": "Error revocando directiva",
+    "deleting": "Error eliminando borrador"
+  }
+}

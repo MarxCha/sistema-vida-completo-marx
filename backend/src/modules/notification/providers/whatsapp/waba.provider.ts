@@ -6,6 +6,7 @@ import { formatPhoneForWABA } from '../phone-utils';
 import { getGoogleMapsUrl } from '../../../../common/utils/geolocation';
 import { logger } from '../../../../common/services/logger.service';
 import config from '../../../../config';
+import i18next from '../../../../common/i18n/config';
 
 /**
  * Proveedor de WhatsApp via WABA (WhatsApp Business API - Meta Cloud API).
@@ -45,7 +46,7 @@ export class WABAProvider implements IWhatsAppProvider {
   }
 
   async send(params: NotificationParams): Promise<SendResult> {
-    const { to, patientName, location, type, accessorName, nearestHospital } = params;
+    const { to, patientName, location, type, accessorName, nearestHospital, locale } = params;
 
     if (!this.available) {
       return { success: false, error: 'WABA no configurado', provider: this.getName() };
@@ -68,6 +69,7 @@ export class WABAProvider implements IWhatsAppProvider {
         mapsUrl,
         accessorName,
         nearestHospital,
+        locale,
       });
 
       if (templateResult.success) {
@@ -88,6 +90,7 @@ export class WABAProvider implements IWhatsAppProvider {
       mapsUrl,
       accessorName,
       nearestHospital,
+      locale,
     });
   }
 
@@ -99,8 +102,10 @@ export class WABAProvider implements IWhatsAppProvider {
     mapsUrl: string;
     accessorName?: string;
     nearestHospital?: string;
+    locale?: string;
   }): Promise<SendResult> {
-    const { to, templateName, type, patientName, mapsUrl, accessorName, nearestHospital } = params;
+    const { to, templateName, type, patientName, mapsUrl, accessorName, nearestHospital, locale } = params;
+    const t = i18next.getFixedT(locale || 'es');
 
     const components = type === 'PANIC'
       ? [
@@ -109,7 +114,7 @@ export class WABAProvider implements IWhatsAppProvider {
             parameters: [
               { type: 'text', text: patientName },
               { type: 'text', text: mapsUrl },
-              { type: 'text', text: nearestHospital || 'No identificado' },
+              { type: 'text', text: nearestHospital || t('notifications:defaults.unknownHospital') },
             ],
           },
         ]
@@ -118,11 +123,13 @@ export class WABAProvider implements IWhatsAppProvider {
             type: 'body',
             parameters: [
               { type: 'text', text: patientName },
-              { type: 'text', text: accessorName || 'personal médico' },
+              { type: 'text', text: accessorName || t('notifications:defaults.medicalStaff') },
               { type: 'text', text: mapsUrl },
             ],
           },
         ];
+
+    const languageCode = locale === 'en' ? 'en_US' : 'es_MX';
 
     try {
       const response = await this.httpClient.post(
@@ -134,7 +141,7 @@ export class WABAProvider implements IWhatsAppProvider {
           type: 'template',
           template: {
             name: templateName,
-            language: { code: 'es_MX' },
+            language: { code: languageCode },
             components,
           },
         },
@@ -158,14 +165,20 @@ export class WABAProvider implements IWhatsAppProvider {
     mapsUrl: string;
     accessorName?: string;
     nearestHospital?: string;
+    locale?: string;
   }): Promise<SendResult> {
-    const { to, type, patientName, mapsUrl, accessorName, nearestHospital } = params;
+    const { to, type, patientName, mapsUrl, accessorName, nearestHospital, locale } = params;
+    const t = i18next.getFixedT(locale || 'es');
 
     let body: string;
     if (type === 'PANIC') {
-      body = `🚨 EMERGENCIA VIDA\n\n${patientName} activó alerta de pánico.\n\n📍 Ubicación: ${mapsUrl}${nearestHospital ? `\n\n🏥 Hospital cercano: ${nearestHospital}` : ''}`;
+      if (nearestHospital) {
+        body = t('notifications:whatsapp.emergencyWithHospital', { patientName, mapsUrl, hospital: nearestHospital });
+      } else {
+        body = t('notifications:whatsapp.emergency', { patientName, mapsUrl });
+      }
     } else {
-      body = `⚠️ ALERTA VIDA\n\nAcceso médico a ${patientName} por ${accessorName || 'personal médico'}.\n\n📍 ${mapsUrl}`;
+      body = t('notifications:whatsapp.access', { patientName, accessorName: accessorName || t('notifications:defaults.medicalStaff'), mapsUrl });
     }
 
     try {

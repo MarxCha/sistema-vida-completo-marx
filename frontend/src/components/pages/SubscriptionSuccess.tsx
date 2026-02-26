@@ -1,9 +1,11 @@
 // src/components/pages/SubscriptionSuccess.tsx
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { usePremium } from '../../hooks/usePremium';
 
 export default function SubscriptionSuccess() {
+  const { t } = useTranslation('subscription');
   const { refresh, status } = usePremium();
 
   useEffect(() => {
@@ -39,54 +41,53 @@ export default function SubscriptionSuccess() {
 
         {/* Title */}
         <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          ¡Bienvenido a Premium!
+          {t('success.title')}
         </h1>
 
         {/* Message */}
         <p className="text-gray-600 mb-8">
-          Tu suscripción ha sido activada exitosamente. Ahora tienes acceso a todas
-          las funciones de Sistema VIDA.
+          {t('success.message')}
         </p>
 
         {/* Features unlocked */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8 text-left">
-          <h3 className="font-semibold text-gray-900 mb-4">Funciones desbloqueadas:</h3>
+          <h3 className="font-semibold text-gray-900 mb-4">{t('success.unlocked_title')}</h3>
           <ul className="space-y-3">
             <li className="flex items-center text-sm text-gray-600">
               <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
-              Directivas de Voluntad Anticipada
+              {t('success.feature_directives')}
             </li>
             <li className="flex items-center text-sm text-gray-600">
               <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
-              Preferencias de Donación de Órganos
+              {t('success.feature_donor')}
             </li>
             <li className="flex items-center text-sm text-gray-600">
               <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
-              Sello NOM-151 para documentos
+              {t('success.feature_nom151')}
             </li>
             <li className="flex items-center text-sm text-gray-600">
               <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
-              Notificaciones SMS ilimitadas
+              {t('success.feature_sms')}
             </li>
             <li className="flex items-center text-sm text-gray-600">
               <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
-              Hasta 10 representantes
+              {t('success.feature_representatives')}
             </li>
             <li className="flex items-center text-sm text-gray-600">
               <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
               </svg>
-              Soporte prioritario
+              {t('success.feature_support')}
             </li>
           </ul>
         </div>
@@ -94,8 +95,7 @@ export default function SubscriptionSuccess() {
         {/* Trial info */}
         {status?.inTrial && status.trialDaysLeft > 0 && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 text-sm text-blue-800">
-            Tu período de prueba de {status.trialDaysLeft} días ha comenzado.
-            No se realizará ningún cargo hasta que termine.
+            {t('success.trial_info', { count: status.trialDaysLeft })}
           </div>
         )}
 
@@ -105,19 +105,19 @@ export default function SubscriptionSuccess() {
             to="/dashboard"
             className="block w-full px-6 py-3 bg-purple-600 text-white rounded-xl font-semibold hover:bg-purple-700 transition-colors"
           >
-            Ir al Dashboard
+            {t('success.btn_dashboard')}
           </Link>
           <Link
             to="/directives"
             className="block w-full px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors"
           >
-            Crear mi primera directiva
+            {t('success.btn_directive')}
           </Link>
         </div>
 
         {/* Receipt info */}
         <p className="text-sm text-gray-500 mt-6">
-          Recibirás un correo de confirmación con los detalles de tu suscripción.
+          {t('success.receipt_info')}
         </p>
       </div>
     </div>

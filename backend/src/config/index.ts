@@ -65,7 +65,7 @@ export const config = {
     accessToken: process.env.WABA_ACCESS_TOKEN || '',
     businessAccountId: process.env.WABA_BUSINESS_ACCOUNT_ID || '',
     webhookVerifyToken: process.env.WABA_WEBHOOK_VERIFY_TOKEN || '',
-    apiVersion: process.env.WABA_API_VERSION || 'v18.0',
+    apiVersion: process.env.WABA_API_VERSION || 'v22.0',
     fallbackToTwilio: process.env.WABA_FALLBACK_TO_TWILIO === 'true',
     templateEmergency: process.env.WABA_TEMPLATE_EMERGENCY || '',
     templateAccess: process.env.WABA_TEMPLATE_ACCESS || '',

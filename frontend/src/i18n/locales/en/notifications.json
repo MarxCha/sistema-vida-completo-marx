@@ -1,0 +1,126 @@
+{
+  "title": "Notifications",
+  "unreadCount_one": "{{count}} unread notification",
+  "unreadCount_other": "{{count}} unread notifications",
+  "allRead": "All notifications read",
+  "configure": "Settings",
+  "markAllRead": "Mark all as read",
+  "types": {
+    "PANIC_ALERT": "Panic Alert",
+    "QR_ACCESS": "QR Access",
+    "SYSTEM": "System",
+    "REPRESENTATIVE": "Representative",
+    "DOCUMENT": "Document"
+  },
+  "filters": {
+    "all": "All",
+    "unread": "Unread",
+    "alerts": "Alerts",
+    "access": "Access",
+    "system": "System"
+  },
+  "groups": {
+    "today": "Today",
+    "yesterday": "Yesterday"
+  },
+  "permissionBanner": {
+    "title": "Notifications disabled",
+    "description": "Enable notifications to receive important alerts about access to your information and emergency alerts, even when you are not using the app.",
+    "enable": "Enable notifications"
+  },
+  "empty": {
+    "all": "You have no notifications",
+    "unread": "You have no unread notifications",
+    "filtered": "No notifications of this type",
+    "description": "Notifications will appear here when you receive alerts or someone accesses your information."
+  },
+  "actions": {
+    "markRead": "Mark as read",
+    "delete": "Delete",
+    "deleteAll": "Delete all notifications"
+  },
+  "data": {
+    "role": "Role",
+    "location": "Location"
+  },
+  "confirmClear": {
+    "question": "Delete all?",
+    "confirm": "Yes, delete",
+    "cancel": "Cancel"
+  },
+  "settings": {
+    "title": "Notification Settings",
+    "subtitle": "Customize how and when to receive alerts",
+    "types": {
+      "sectionTitle": "Notification Types",
+      "sectionSubtitle": "Choose which notifications you want to receive",
+      "panicAlerts": {
+        "title": "Panic Alerts",
+        "description": "Notifications when an emergency alert is triggered"
+      },
+      "qrAccess": {
+        "title": "Access to Your Information",
+        "description": "When someone scans your emergency QR code"
+      },
+      "representatives": {
+        "title": "Representative Updates",
+        "description": "Changes to your legal representatives"
+      },
+      "documents": {
+        "title": "Documents",
+        "description": "Updates to your directives and documents"
+      },
+      "system": {
+        "title": "System Notifications",
+        "description": "Updates, maintenance and news"
+      }
+    },
+    "channels": {
+      "sectionTitle": "Notification Channels",
+      "sectionSubtitle": "How you want to receive notifications",
+      "push": {
+        "title": "Push Notifications",
+        "description": "Instant alerts on your device"
+      },
+      "email": {
+        "title": "Email",
+        "description": "Activity summary and important alerts"
+      },
+      "sms": {
+        "title": "SMS",
+        "description": "Text messages for critical alerts",
+        "premiumBadge": "Requires Premium plan"
+      }
+    },
+    "dnd": {
+      "title": "Do Not Disturb",
+      "subtitle": "Silence notifications during certain hours",
+      "from": "From",
+      "to": "Until",
+      "note": "Panic alerts will always be shown, even during do not disturb hours."
+    },
+    "sound": {
+      "title": "Notification Sound",
+      "description": "Play sound when receiving notifications"
+    },
+    "permissions": {
+      "disabled": {
+        "title": "Browser notifications disabled",
+        "description": "To receive push notifications, you need to enable browser permissions.",
+        "enable": "Enable permissions"
+      },
+      "granted": {
+        "title": "Push notifications active",
+        "description": "You will receive alerts even when you are not in the app"
+      }
+    },
+    "save": "Save changes",
+    "saving": "Saving...",
+    "toast": {
+      "saved": "Preferences saved",
+      "saveError": "Error saving preferences",
+      "permissionGranted": "Notifications enabled",
+      "permissionDenied": "Permissions denied. Enable them from your browser settings."
+    }
+  }
+}

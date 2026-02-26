@@ -1,0 +1,16 @@
+{
+  "sms": {
+    "emergency": "EMERGENCIA: {{patientName}} activó alerta de pánico. {{mapsUrl}}",
+    "access": "VIDA: Acceso medico a {{patientName}} por {{accessorName}}. {{mapsUrl}}"
+  },
+  "whatsapp": {
+    "emergency": "🚨 EMERGENCIA VIDA\n\n{{patientName}} activó alerta de pánico.\n\n📍 Ubicación: {{mapsUrl}}",
+    "emergencyWithHospital": "🚨 EMERGENCIA VIDA\n\n{{patientName}} activó alerta de pánico.\n\n📍 Ubicación: {{mapsUrl}}\n\n🏥 Hospital cercano: {{hospital}}",
+    "access": "⚠️ ALERTA VIDA\n\nAcceso médico a {{patientName}} por {{accessorName}}.\n\n📍 {{mapsUrl}}"
+  },
+  "defaults": {
+    "unknownHospital": "No identificado",
+    "medicalStaff": "personal médico"
+  },
+  "noRepresentatives": "No hay representantes configurados para notificar"
+}

@@ -1,5 +1,6 @@
 // src/components/admin/pages/AdminInstitutions.tsx
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   listInstitutions,
   listInsurance,
@@ -22,15 +23,7 @@ import {
 type TabType = 'hospitals' | 'insurance';
 type ViewMode = 'table' | 'cards';
 
-const INSTITUTION_TYPE_LABELS: Record<string, string> = {
-  HOSPITAL_PUBLIC: 'Hospital Publico',
-  HOSPITAL_PRIVATE: 'Hospital Privado',
-  CLINIC: 'Clinica',
-  AMBULANCE_SERVICE: 'Ambulancias',
-  IMSS: 'IMSS',
-  ISSSTE: 'ISSSTE',
-  OTHER: 'Otro',
-};
+// Institution type labels are now handled via i18n (institutions.institution_types.*)
 
 const INSTITUTION_TYPE_COLORS: Record<string, string> = {
   HOSPITAL_PUBLIC: 'bg-blue-100 text-blue-700',
@@ -43,6 +36,7 @@ const INSTITUTION_TYPE_COLORS: Record<string, string> = {
 };
 
 const AdminInstitutions: React.FC = () => {
+  const { t } = useTranslation('admin');
   const [activeTab, setActiveTab] = useState<TabType>('hospitals');
   const [hospitalViewMode, setHospitalViewMode] = useState<ViewMode>('table');
   const [insuranceViewMode, setInsuranceViewMode] = useState<ViewMode>('table');
@@ -176,7 +170,7 @@ const AdminInstitutions: React.FC = () => {
             ? 'bg-white text-sky-600 shadow-sm'
             : 'text-gray-500 hover:text-gray-700'
         }`}
-        title="Vista de tabla"
+        title={t('users.view_list')}
       >
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
@@ -189,7 +183,7 @@ const AdminInstitutions: React.FC = () => {
             ? 'bg-white text-sky-600 shadow-sm'
             : 'text-gray-500 hover:text-gray-700'
         }`}
-        title="Vista de tarjetas"
+        title={t('users.view_cards')}
       >
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
@@ -199,7 +193,9 @@ const AdminInstitutions: React.FC = () => {
   );
 
   // Hospital Card Component
-  const HospitalCard: React.FC<{ hospital: MedicalInstitution }> = ({ hospital }) => (
+  const HospitalCard: React.FC<{ hospital: MedicalInstitution }> = ({ hospital }) => {
+    const { t: tI } = useTranslation('admin');
+    return (
     <div className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg transition-shadow">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
@@ -209,16 +205,16 @@ const AdminInstitutions: React.FC = () => {
           )}
         </div>
         {hospital.isVerified ? (
-          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">Verificado</span>
+          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">{tI('institutions.badge_verified')}</span>
         ) : (
-          <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-medium">Pendiente</span>
+          <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-medium">{tI('institutions.badge_pending')}</span>
         )}
       </div>
 
       <div className="space-y-3">
         <div>
           <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${INSTITUTION_TYPE_COLORS[hospital.type] || 'bg-gray-100 text-gray-700'}`}>
-            {INSTITUTION_TYPE_LABELS[hospital.type] || hospital.type}
+            {tI(`institutions.institution_types.${hospital.type}`, { defaultValue: hospital.type })}
           </span>
         </div>
 
@@ -241,13 +237,13 @@ const AdminInstitutions: React.FC = () => {
 
         <div className="flex flex-wrap gap-1.5 pt-2">
           {hospital.hasEmergency && (
-            <span className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">Urgencias</span>
+            <span className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded-full">{tI('institutions.badge_emergency')}</span>
           )}
           {hospital.has24Hours && (
-            <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">24 Horas</span>
+            <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">{tI('institutions.badge_24h')}</span>
           )}
           {hospital.hasICU && (
-            <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">UCI</span>
+            <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">{tI('institutions.badge_icu')}</span>
           )}
         </div>
       </div>
@@ -257,14 +253,17 @@ const AdminInstitutions: React.FC = () => {
           onClick={() => handleVerifyHospital(hospital.id, !hospital.isVerified)}
           className={`text-sm font-medium ${hospital.isVerified ? 'text-yellow-600 hover:text-yellow-800' : 'text-green-600 hover:text-green-800'}`}
         >
-          {hospital.isVerified ? 'Quitar verificacion' : 'Verificar'}
+          {hospital.isVerified ? tI('institutions.btn_unverify') : tI('institutions.btn_verify')}
         </button>
       </div>
     </div>
-  );
+    );
+  };
 
   // Insurance Card Component
-  const InsuranceCard: React.FC<{ insurance: InsuranceCompany }> = ({ insurance }) => (
+  const InsuranceCard: React.FC<{ insurance: InsuranceCompany }> = ({ insurance }) => {
+    const { t: tI } = useTranslation('admin');
+    return (
     <div className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-lg transition-shadow">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
@@ -278,9 +277,9 @@ const AdminInstitutions: React.FC = () => {
           )}
         </div>
         {insurance.isVerified ? (
-          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">Verificada</span>
+          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">{tI('institutions.badge_verified_f')}</span>
         ) : (
-          <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-medium">Pendiente</span>
+          <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full font-medium">{tI('institutions.badge_pending_f')}</span>
         )}
       </div>
 
@@ -302,7 +301,7 @@ const AdminInstitutions: React.FC = () => {
 
         <div className="flex flex-wrap gap-1.5">
           {insurance.hasNationalCoverage && (
-            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Cobertura Nacional</span>
+            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">{tI('institutions.badge_national')}</span>
           )}
           {insurance.coverageTypes?.slice(0, 3).map((type, idx) => (
             <span key={idx} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">{type}</span>
@@ -312,11 +311,11 @@ const AdminInstitutions: React.FC = () => {
         <div className="grid grid-cols-2 gap-4 pt-2">
           <div className="text-center p-2 bg-gray-50 rounded-lg">
             <p className="text-xl font-bold text-gray-900">{insurance._count?.networkHospitals || 0}</p>
-            <p className="text-xs text-gray-500">Hospitales en red</p>
+            <p className="text-xs text-gray-500">{tI('institutions.card_network_hospitals')}</p>
           </div>
           <div className="text-center p-2 bg-gray-50 rounded-lg">
             <p className="text-xl font-bold text-gray-900">{insurance._count?.plans || 0}</p>
-            <p className="text-xs text-gray-500">Planes activos</p>
+            <p className="text-xs text-gray-500">{tI('institutions.card_active_plans')}</p>
           </div>
         </div>
       </div>
@@ -326,18 +325,19 @@ const AdminInstitutions: React.FC = () => {
           onClick={() => handleVerifyInsurance(insurance.id, !insurance.isVerified)}
           className={`text-sm font-medium ${insurance.isVerified ? 'text-yellow-600 hover:text-yellow-800' : 'text-green-600 hover:text-green-800'}`}
         >
-          {insurance.isVerified ? 'Quitar verificacion' : 'Verificar'}
+          {insurance.isVerified ? tI('institutions.btn_unverify') : tI('institutions.btn_verify')}
         </button>
       </div>
     </div>
-  );
+    );
+  };
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Instituciones</h1>
-        <p className="text-gray-500">Gestion de hospitales y aseguradoras</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('institutions.title')}</h1>
+        <p className="text-gray-500">{t('institutions.subtitle')}</p>
       </div>
 
       {/* Tabs */}
@@ -355,7 +355,7 @@ const AdminInstitutions: React.FC = () => {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
-              Hospitales
+              {t('institutions.tab_hospitals')}
               {hospitalStats && (
                 <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">
                   {hospitalStats.total}
@@ -375,7 +375,7 @@ const AdminInstitutions: React.FC = () => {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
-              Aseguradoras
+              {t('institutions.tab_insurance')}
               {insuranceStats && (
                 <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">
                   {insuranceStats.total}
@@ -392,10 +392,10 @@ const AdminInstitutions: React.FC = () => {
           {/* Stats */}
           {hospitalStats && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <StatCard label="Total Hospitales" value={hospitalStats.total} color="blue" />
-              <StatCard label="Verificados" value={hospitalStats.verified} color="green" />
-              <StatCard label="Con Urgencias" value={hospitalStats.withEmergency} color="red" />
-              <StatCard label="24 Horas" value={hospitalStats.with24Hours} color="purple" />
+              <StatCard label={t('institutions.stat_total_hospitals')} value={hospitalStats.total} color="blue" />
+              <StatCard label={t('institutions.stat_verified')} value={hospitalStats.verified} color="green" />
+              <StatCard label={t('institutions.stat_with_emergency')} value={hospitalStats.withEmergency} color="red" />
+              <StatCard label={t('institutions.stat_24h')} value={hospitalStats.with24Hours} color="purple" />
             </div>
           )}
 
@@ -403,7 +403,7 @@ const AdminInstitutions: React.FC = () => {
           <form onSubmit={handleHospitalSearch} className="flex gap-4">
             <input
               type="text"
-              placeholder="Buscar por nombre, CLUES, ciudad..."
+              placeholder={t('institutions.search_hospital')}
               value={hospitalSearch}
               onChange={(e) => setHospitalSearch(e.target.value)}
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
@@ -412,7 +412,7 @@ const AdminInstitutions: React.FC = () => {
               type="submit"
               className="px-6 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700"
             >
-              Buscar
+              {t('institutions.btn_search')}
             </button>
             <ViewModeToggle viewMode={hospitalViewMode} onChange={setHospitalViewMode} />
           </form>
@@ -435,12 +435,12 @@ const AdminInstitutions: React.FC = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ubicacion</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Servicios</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('institutions.col_name')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('institutions.col_type')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('institutions.col_location')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('institutions.col_services')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('institutions.col_status')}</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{t('institutions.col_actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -456,7 +456,7 @@ const AdminInstitutions: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <span className={`px-2 py-1 rounded text-xs ${INSTITUTION_TYPE_COLORS[hospital.type] || 'bg-gray-100 text-gray-700'}`}>
-                          {INSTITUTION_TYPE_LABELS[hospital.type] || hospital.type}
+                          {t(`institutions.institution_types.${hospital.type}`, { defaultValue: hospital.type })}
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -465,21 +465,21 @@ const AdminInstitutions: React.FC = () => {
                       <td className="px-6 py-4">
                         <div className="flex gap-1">
                           {hospital.hasEmergency && (
-                            <span className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded">Urgencias</span>
+                            <span className="px-2 py-1 bg-red-100 text-red-700 text-xs rounded">{t('institutions.badge_emergency')}</span>
                           )}
                           {hospital.has24Hours && (
-                            <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">24h</span>
+                            <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">{t('institutions.badge_24h')}</span>
                           )}
                           {hospital.hasICU && (
-                            <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded">UCI</span>
+                            <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded">{t('institutions.badge_icu')}</span>
                           )}
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         {hospital.isVerified ? (
-                          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Verificado</span>
+                          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">{t('institutions.badge_verified')}</span>
                         ) : (
-                          <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">Pendiente</span>
+                          <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">{t('institutions.badge_pending')}</span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-right">
@@ -487,7 +487,7 @@ const AdminInstitutions: React.FC = () => {
                           onClick={() => handleVerifyHospital(hospital.id, !hospital.isVerified)}
                           className={`text-sm ${hospital.isVerified ? 'text-yellow-600 hover:text-yellow-800' : 'text-green-600 hover:text-green-800'}`}
                         >
-                          {hospital.isVerified ? 'Quitar verificacion' : 'Verificar'}
+                          {hospital.isVerified ? t('institutions.btn_unverify') : t('institutions.btn_verify')}
                         </button>
                       </td>
                     </tr>
@@ -501,7 +501,7 @@ const AdminInstitutions: React.FC = () => {
           {hospitalPagination && hospitalPagination.totalPages > 1 && (
             <div className="px-6 py-4 bg-white rounded-xl border border-gray-100 flex items-center justify-between">
               <p className="text-sm text-gray-500">
-                Mostrando {((hospitalPage - 1) * 15) + 1} - {Math.min(hospitalPage * 15, hospitalPagination.total)} de {hospitalPagination.total}
+                {t('institutions.pagination_showing', { from: ((hospitalPage - 1) * 15) + 1, to: Math.min(hospitalPage * 15, hospitalPagination.total), total: hospitalPagination.total })}
               </p>
               <div className="flex gap-2">
                 <button
@@ -509,14 +509,14 @@ const AdminInstitutions: React.FC = () => {
                   disabled={hospitalPage === 1}
                   className="px-3 py-1 border rounded disabled:opacity-50"
                 >
-                  Anterior
+                  {t('institutions.btn_previous')}
                 </button>
                 <button
                   onClick={() => setHospitalPage(p => Math.min(hospitalPagination.totalPages, p + 1))}
                   disabled={hospitalPage === hospitalPagination.totalPages}
                   className="px-3 py-1 border rounded disabled:opacity-50"
                 >
-                  Siguiente
+                  {t('institutions.btn_next')}
                 </button>
               </div>
             </div>
@@ -530,10 +530,10 @@ const AdminInstitutions: React.FC = () => {
           {/* Stats */}
           {insuranceStats && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <StatCard label="Total Aseguradoras" value={insuranceStats.total} color="blue" />
-              <StatCard label="Verificadas" value={insuranceStats.verified} color="green" />
-              <StatCard label="Cobertura Nacional" value={insuranceStats.withNationalCoverage} color="purple" />
-              <StatCard label="Planes Activos" value={insuranceStats.totalPlans} color="orange" />
+              <StatCard label={t('institutions.stat_total_insurance')} value={insuranceStats.total} color="blue" />
+              <StatCard label={t('institutions.stat_insurance_verified')} value={insuranceStats.verified} color="green" />
+              <StatCard label={t('institutions.stat_national_coverage')} value={insuranceStats.withNationalCoverage} color="purple" />
+              <StatCard label={t('institutions.stat_active_plans')} value={insuranceStats.totalPlans} color="orange" />
             </div>
           )}
 
@@ -541,7 +541,7 @@ const AdminInstitutions: React.FC = () => {
           <form onSubmit={handleInsuranceSearch} className="flex gap-4">
             <input
               type="text"
-              placeholder="Buscar por nombre, RFC, CNSF..."
+              placeholder={t('institutions.search_insurance')}
               value={insuranceSearch}
               onChange={(e) => setInsuranceSearch(e.target.value)}
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
@@ -550,7 +550,7 @@ const AdminInstitutions: React.FC = () => {
               type="submit"
               className="px-6 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700"
             >
-              Buscar
+              {t('institutions.btn_search')}
             </button>
             <ViewModeToggle viewMode={insuranceViewMode} onChange={setInsuranceViewMode} />
           </form>
@@ -565,8 +565,8 @@ const AdminInstitutions: React.FC = () => {
               <svg className="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>
-              <p>No hay aseguradoras registradas</p>
-              <p className="text-sm mt-2">Ejecuta el seed para agregar datos de prueba</p>
+              <p>{t('institutions.no_insurance')}</p>
+              <p className="text-sm mt-2">{t('institutions.no_insurance_hint')}</p>
             </div>
           ) : insuranceViewMode === 'cards' ? (
             /* Cards View */
@@ -581,12 +581,12 @@ const AdminInstitutions: React.FC = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cobertura</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Red</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('institutions.col_name')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('institutions.col_type')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('institutions.col_coverage')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('institutions.col_network')}</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('institutions.col_status')}</th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">{t('institutions.col_actions')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -611,7 +611,7 @@ const AdminInstitutions: React.FC = () => {
                       <td className="px-6 py-4">
                         <div className="flex flex-wrap gap-1">
                           {insurance.hasNationalCoverage && (
-                            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">Nacional</span>
+                            <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">{t('institutions.badge_national')}</span>
                           )}
                           {insurance.coverageTypes?.slice(0, 2).map((type, idx) => (
                             <span key={idx} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded">{type}</span>
@@ -620,15 +620,15 @@ const AdminInstitutions: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm">
-                          <p className="text-gray-900">{insurance._count?.networkHospitals || 0} hospitales</p>
-                          <p className="text-gray-500">{insurance._count?.plans || 0} planes</p>
+                          <p className="text-gray-900">{t('institutions.network_hospitals', { count: insurance._count?.networkHospitals || 0 })}</p>
+                          <p className="text-gray-500">{t('institutions.network_plans', { count: insurance._count?.plans || 0 })}</p>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         {insurance.isVerified ? (
-                          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">Verificada</span>
+                          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">{t('institutions.badge_verified_f')}</span>
                         ) : (
-                          <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">Pendiente</span>
+                          <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">{t('institutions.badge_pending_f')}</span>
                         )}
                       </td>
                       <td className="px-6 py-4 text-right">
@@ -636,7 +636,7 @@ const AdminInstitutions: React.FC = () => {
                           onClick={() => handleVerifyInsurance(insurance.id, !insurance.isVerified)}
                           className={`text-sm ${insurance.isVerified ? 'text-yellow-600 hover:text-yellow-800' : 'text-green-600 hover:text-green-800'}`}
                         >
-                          {insurance.isVerified ? 'Quitar verificacion' : 'Verificar'}
+                          {insurance.isVerified ? t('institutions.btn_unverify') : t('institutions.btn_verify')}
                         </button>
                       </td>
                     </tr>
@@ -650,7 +650,7 @@ const AdminInstitutions: React.FC = () => {
           {insurancePagination && insurancePagination.totalPages > 1 && (
             <div className="px-6 py-4 bg-white rounded-xl border border-gray-100 flex items-center justify-between">
               <p className="text-sm text-gray-500">
-                Mostrando {((insurancePage - 1) * 15) + 1} - {Math.min(insurancePage * 15, insurancePagination.total)} de {insurancePagination.total}
+                {t('institutions.pagination_showing', { from: ((insurancePage - 1) * 15) + 1, to: Math.min(insurancePage * 15, insurancePagination.total), total: insurancePagination.total })}
               </p>
               <div className="flex gap-2">
                 <button
@@ -658,14 +658,14 @@ const AdminInstitutions: React.FC = () => {
                   disabled={insurancePage === 1}
                   className="px-3 py-1 border rounded disabled:opacity-50"
                 >
-                  Anterior
+                  {t('institutions.btn_previous')}
                 </button>
                 <button
                   onClick={() => setInsurancePage(p => Math.min(insurancePagination.totalPages, p + 1))}
                   disabled={insurancePage === insurancePagination.totalPages}
                   className="px-3 py-1 border rounded disabled:opacity-50"
                 >
-                  Siguiente
+                  {t('institutions.btn_next')}
                 </button>
               </div>
             </div>

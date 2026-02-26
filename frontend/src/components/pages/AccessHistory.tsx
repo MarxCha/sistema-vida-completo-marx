@@ -1,9 +1,13 @@
 // src/components/pages/AccessHistory.tsx
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from '../../hooks/useLocale';
 import { emergencyApi } from '../../services/api';
 import type { EmergencyAccess } from '../../types';
 
 export default function AccessHistory() {
+  const { t } = useTranslation('emergency');
+  const { formatDate, formatTime } = useLocale();
   const [accesses, setAccesses] = useState<EmergencyAccess[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -16,24 +20,17 @@ export default function AccessHistory() {
           setAccesses(res.data.accesses);
         }
       } catch (err: any) {
-        setError(err.response?.data?.error?.message || 'Error al cargar el historial');
+        setError(err.response?.data?.error?.message || t('accessHistory.errors.loading'));
       } finally {
         setLoading(false);
       }
     };
 
     fetchHistory();
-  }, []);
+  }, [t]);
 
   const getRoleLabel = (role: string) => {
-    const roles: Record<string, string> = {
-      DOCTOR: 'Medico',
-      PARAMEDIC: 'Paramedico',
-      NURSE: 'Enfermero(a)',
-      EMERGENCY_TECH: 'Tecnico en urgencias',
-      OTHER: 'Otro personal de salud',
-    };
-    return roles[role] || role;
+    return t(`accessHistory.roles.${role}`, { defaultValue: role });
   };
 
   if (loading) {
@@ -41,7 +38,7 @@ export default function AccessHistory() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-vida-200 border-t-vida-600 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando historial...</p>
+          <p className="text-gray-600">{t('accessHistory.loading')}</p>
         </div>
       </div>
     );
@@ -61,9 +58,9 @@ export default function AccessHistory() {
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Historial de Accesos de Emergencia</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('accessHistory.title')}</h1>
         <p className="text-gray-600 mt-1">
-          Registro de todas las veces que personal medico ha accedido a tu informacion
+          {t('accessHistory.subtitle')}
         </p>
       </div>
 
@@ -77,7 +74,7 @@ export default function AccessHistory() {
           </div>
           <div>
             <p className="text-3xl font-bold text-gray-900">{accesses.length}</p>
-            <p className="text-gray-500">Accesos totales registrados</p>
+            <p className="text-gray-500">{t('accessHistory.totalAccesses')}</p>
           </div>
         </div>
       </div>
@@ -90,10 +87,9 @@ export default function AccessHistory() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Sin accesos registrados</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('accessHistory.emptyState.title')}</h3>
           <p className="text-gray-500">
-            Aun no se ha accedido a tu informacion de emergencia.
-            Esto es bueno - significa que no has tenido emergencias.
+            {t('accessHistory.emptyState.description')}
           </p>
         </div>
       ) : (
@@ -121,17 +117,10 @@ export default function AccessHistory() {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium text-gray-900">
-                      {new Date(access.accessedAt).toLocaleDateString('es-MX', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
+                      {formatDate(access.accessedAt)}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {new Date(access.accessedAt).toLocaleTimeString('es-MX', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })}
+                      {formatTime(access.accessedAt)}
                     </p>
                   </div>
                 </div>
@@ -150,7 +139,7 @@ export default function AccessHistory() {
                 {/* Data accessed */}
                 {access.dataAccessed && access.dataAccessed.length > 0 && (
                   <div className="mt-4 pt-4 border-t border-gray-100">
-                    <p className="text-xs text-gray-400 mb-2">Datos consultados:</p>
+                    <p className="text-xs text-gray-400 mb-2">{t('accessHistory.dataAccessed')}</p>
                     <div className="flex flex-wrap gap-2">
                       {access.dataAccessed.map((item, i) => (
                         <span
@@ -175,12 +164,10 @@ export default function AccessHistory() {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          Sobre este historial
+          {t('accessHistory.infoBox.title')}
         </h3>
         <p className="text-blue-700 text-sm">
-          Cada vez que alguien escanea tu codigo QR y accede a tu informacion de emergencia,
-          el acceso queda registrado aqui. Tus representantes tambien son notificados automaticamente.
-          Si ves un acceso que no reconoces, contacta a soporte.
+          {t('accessHistory.infoBox.description')}
         </p>
       </div>
     </div>

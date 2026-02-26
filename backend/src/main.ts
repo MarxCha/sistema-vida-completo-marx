@@ -18,6 +18,10 @@ import { requestLogger, logger } from './common/services/logger.service';
 import { securityMetrics } from './common/services/security-metrics.service';
 import { auditRetentionService } from './common/services/audit-retention.service';
 
+// i18n
+import i18next from './common/i18n/config';
+import { i18nMiddleware, i18nLocaleMiddleware } from './common/i18n';
+
 import path from 'path';
 import config from './config';
 
@@ -134,6 +138,11 @@ app.use('/api/v1/webhooks/stripe', express.raw({ type: 'application/json' }), pa
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// i18n: detecta Accept-Language y lo pone en req.language
+app.use(i18nMiddleware.handle(i18next));
+// i18n: resuelve locale final (user preference > Accept-Language > 'es') y crea req.t
+app.use(i18nLocaleMiddleware);
 
 // NOTA: Los archivos locales ahora se sirven a través de /api/v1/secure-download
 // con tokens temporales para mayor seguridad. Ver secure-download.controller.ts

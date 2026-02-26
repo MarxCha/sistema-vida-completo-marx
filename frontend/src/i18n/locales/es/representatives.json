@@ -1,0 +1,66 @@
+{
+  "title": "Representantes",
+  "subtitle": "Personas que pueden tomar decisiones médicas en tu nombre",
+  "addButton": "Agregar",
+  "infoBanner": "Los representantes serán notificados automáticamente cuando alguien acceda a tu información médica en una emergencia. Puedes designar hasta 5 representantes.",
+  "emptyState": {
+    "title": "Sin representantes",
+    "description": "Agrega personas de confianza para emergencias",
+    "addFirst": "Agregar primer representante"
+  },
+  "relations": {
+    "Esposa": "Esposa",
+    "Esposo": "Esposo",
+    "Hijo": "Hijo",
+    "Hija": "Hija",
+    "Padre": "Padre",
+    "Madre": "Madre",
+    "Hermano": "Hermano",
+    "Hermana": "Hermana",
+    "Abuelo": "Abuelo",
+    "Abuela": "Abuela",
+    "Amigo": "Amigo(a)",
+    "Apoderado Legal": "Apoderado Legal",
+    "Otro": "Otro"
+  },
+  "badges": {
+    "notifyOnEmergency": "Notificar en emergencia",
+    "medicalDecisions": "Decisiones médicas",
+    "donorSpokesperson": "Vocero de donación"
+  },
+  "priorityNote": "El orden de los representantes indica la prioridad de contacto en una emergencia. El primer representante será contactado primero.",
+  "modal": {
+    "titleCreate": "Nuevo representante",
+    "titleEdit": "Editar representante",
+    "fields": {
+      "name": "Nombre completo *",
+      "phone": "Teléfono *",
+      "email": "Correo electrónico",
+      "relation": "Relación *"
+    },
+    "phonePlaceholder": "+52 55 1234 5678",
+    "checkboxes": {
+      "notifyOnEmergency": "Notificar en caso de emergencia",
+      "canMakeMedicalDecisions": "Puede tomar decisiones médicas en mi nombre",
+      "isDonorSpokesperson": "Es vocero de donación de órganos"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "save": "Agregar",
+      "update": "Actualizar",
+      "saving": "Guardando..."
+    }
+  },
+  "tooltips": {
+    "setDonorSpokesperson": "Designar como vocero de donación"
+  },
+  "confirm": {
+    "delete": "¿Está seguro de eliminar este representante?"
+  },
+  "errors": {
+    "loading": "Error cargando representantes",
+    "saving": "Error guardando representante",
+    "deleting": "Error eliminando representante",
+    "updatingSpokesperson": "Error actualizando vocero"
+  }
+}

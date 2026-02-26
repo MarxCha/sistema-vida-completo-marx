@@ -1,5 +1,6 @@
 // src/components/panic/PanicAlertModal.tsx
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import EmergencyMap from '../maps/EmergencyMap';
 import { panicAlertFeedback } from '../../utils/notificationFeedback';
 
@@ -42,8 +43,8 @@ export default function PanicAlertModal({
   onClose,
   onCancel,
 }: PanicAlertModalProps) {
+  const { t } = useTranslation('emergency');
   const [isCancelling, setIsCancelling] = useState(false);
-
   const [selectedHospitalId, setSelectedHospitalId] = useState<string | null>(null);
 
   // Reproducir sonido y vibrar al abrir el modal
@@ -92,8 +93,8 @@ export default function PanicAlertModal({
               </svg>
             </div>
             <div>
-              <h2 className="text-xl font-bold">Alerta Activada</h2>
-              <p className="text-red-100 text-sm">Tus representantes han sido notificados</p>
+              <h2 className="text-xl font-bold">{t('panic.modal.header.title')}</h2>
+              <p className="text-red-100 text-sm">{t('panic.modal.header.subtitle')}</p>
             </div>
           </div>
         </div>
@@ -106,7 +107,7 @@ export default function PanicAlertModal({
               <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
-              Notificaciones ({successCount}/{result.representativesNotified.length})
+              {t('panic.modal.notifications.title')} ({successCount}/{result.representativesNotified.length})
             </h3>
 
             {result.representativesNotified.length === 0 ? (
@@ -116,12 +117,11 @@ export default function PanicAlertModal({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
                   <div>
-                    <p className="font-medium text-amber-900">Sin representantes configurados</p>
-                    <p className="text-sm text-amber-700 mt-1">
-                      No tienes representantes con notificaciones de emergencia activadas.
-                      Ve a <strong>Menú → Representantes</strong> para agregar contactos de emergencia
-                      y activa la opción "Notificar en emergencias".
-                    </p>
+                    <p className="font-medium text-amber-900">{t('panic.modal.notifications.no_reps_title')}</p>
+                    <p
+                      className="text-sm text-amber-700 mt-1"
+                      dangerouslySetInnerHTML={{ __html: t('panic.modal.notifications.no_reps_description') }}
+                    />
                   </div>
                 </div>
               </div>
@@ -190,7 +190,7 @@ export default function PanicAlertModal({
                 <svg className="w-5 h-5 text-sky-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
-                Hospitales Cercanos
+                {t('panic.modal.hospitals.title')}
               </h3>
               <EmergencyMap
                 userLocation={getMapCenter()}
@@ -206,8 +206,8 @@ export default function PanicAlertModal({
                   <div
                     key={hospital.id}
                     className={`flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors ${
-                      selectedHospitalId === hospital.id 
-                        ? 'bg-sky-100 border-2 border-sky-500' 
+                      selectedHospitalId === hospital.id
+                        ? 'bg-sky-100 border-2 border-sky-500'
                         : 'bg-sky-50 hover:bg-sky-100'
                     }`}
                     onClick={() => handleHospitalClick(hospital)}
@@ -215,7 +215,9 @@ export default function PanicAlertModal({
                     <div>
                       <p className="font-medium text-gray-900 text-sm">{hospital.name}</p>
                       {hospital.distance !== undefined && (
-                        <p className="text-xs text-gray-500">{hospital.distance.toFixed(1)} km</p>
+                        <p className="text-xs text-gray-500">
+                          {hospital.distance.toFixed(1)} {t('panic.modal.hospitals.distance_unit')}
+                        </p>
                       )}
                     </div>
                     {hospital.emergencyPhone && (
@@ -226,7 +228,7 @@ export default function PanicAlertModal({
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                         </svg>
-                        Llamar
+                        {t('panic.modal.hospitals.call')}
                       </a>
                     )}
                   </div>
@@ -243,13 +245,13 @@ export default function PanicAlertModal({
             disabled={isCancelling}
             className="flex-1 py-3 bg-gray-200 text-gray-800 rounded-xl font-semibold hover:bg-gray-300 transition disabled:opacity-50"
           >
-            {isCancelling ? 'Cancelando...' : 'Cancelar Alerta'}
+            {isCancelling ? t('panic.modal.buttons.cancelling') : t('panic.modal.buttons.cancel_alert')}
           </button>
           <button
             onClick={onClose}
             className="flex-1 py-3 bg-vida-600 text-white rounded-xl font-semibold hover:bg-vida-700 transition"
           >
-            Cerrar
+            {t('panic.modal.buttons.close')}
           </button>
         </div>
       </div>

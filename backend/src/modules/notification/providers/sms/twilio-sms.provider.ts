@@ -6,6 +6,7 @@ import { formatPhoneForSMS } from '../phone-utils';
 import { getGoogleMapsUrl } from '../../../../common/utils/geolocation';
 import { logger } from '../../../../common/services/logger.service';
 import config from '../../../../config';
+import i18next from '../../../../common/i18n/config';
 
 /**
  * Proveedor de SMS via Twilio.
@@ -34,14 +35,15 @@ export class TwilioSMSProvider implements ISMSProvider {
   }
 
   async send(params: NotificationParams): Promise<SendResult> {
-    const { to, patientName, location, type, accessorName, nearestHospital } = params;
+    const { to, patientName, location, type, accessorName, locale } = params;
     const mapsUrl = getGoogleMapsUrl(location.lat, location.lng);
+    const t = i18next.getFixedT(locale || 'es');
 
     let message: string;
     if (type === 'PANIC') {
-      message = `EMERGENCIA: ${patientName} activó alerta de pánico. ${mapsUrl}`;
+      message = t('notifications:sms.emergency', { patientName, mapsUrl });
     } else {
-      message = `VIDA: Acceso medico a ${patientName} por ${accessorName || 'personal'}. ${mapsUrl}`;
+      message = t('notifications:sms.access', { patientName, accessorName: accessorName || t('notifications:defaults.medicalStaff'), mapsUrl });
     }
 
     if (!this.isAvailable()) {

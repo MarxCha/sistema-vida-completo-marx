@@ -1,6 +1,8 @@
 // src/components/admin/pages/AdminUsers.tsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from '../../../hooks/useLocale';
 import { listUsers, updateUserStatus } from '../../../services/adminApi';
 import { SystemUser, Pagination } from '../../../types/admin';
 import { useAdminAuth } from '../../../context/AdminAuthContext';
@@ -18,6 +20,7 @@ interface UserCardProps {
 }
 
 const UserCard: React.FC<UserCardProps> = ({ user, canWrite, onToggleStatus, formatDate }) => {
+  const { t } = useTranslation('admin');
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md hover:border-gray-200 transition-all">
       {/* Header con avatar y estado */}
@@ -37,12 +40,12 @@ const UserCard: React.FC<UserCardProps> = ({ user, canWrite, onToggleStatus, for
           <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
             user.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
           }`}>
-            {user.isActive ? 'Activo' : 'Inactivo'}
+            {user.isActive ? t('users.status_active') : t('users.status_inactive')}
           </span>
           <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
             user.isVerified ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
           }`}>
-            {user.isVerified ? 'Verificado' : 'No verificado'}
+            {user.isVerified ? t('users.status_verified') : t('users.status_not_verified')}
           </span>
         </div>
       </div>
@@ -59,7 +62,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, canWrite, onToggleStatus, for
           <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
           </svg>
-          <span>Registrado: {formatDate(user.createdAt)}</span>
+          <span>{t('users.registered_on')} {formatDate(user.createdAt)}</span>
         </div>
       </div>
 
@@ -67,11 +70,11 @@ const UserCard: React.FC<UserCardProps> = ({ user, canWrite, onToggleStatus, for
       <div className="flex gap-2 mb-4">
         <div className="flex-1 bg-gray-50 rounded-lg p-2 text-center">
           <p className="text-lg font-bold text-gray-900">{user._count?.directives || 0}</p>
-          <p className="text-xs text-gray-500">Directivas</p>
+          <p className="text-xs text-gray-500">{t('users.directives_label')}</p>
         </div>
         <div className="flex-1 bg-gray-50 rounded-lg p-2 text-center">
           <p className="text-lg font-bold text-gray-900">{user._count?.representatives || 0}</p>
-          <p className="text-xs text-gray-500">Representantes</p>
+          <p className="text-xs text-gray-500">{t('users.reps_label')}</p>
         </div>
       </div>
 
@@ -85,7 +88,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, canWrite, onToggleStatus, for
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
           </svg>
-          Ver detalles
+          {t('users.btn_view')}
         </Link>
         {canWrite && (
           <button
@@ -96,7 +99,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, canWrite, onToggleStatus, for
                 : 'bg-green-50 text-green-700 hover:bg-green-100'
             }`}
           >
-            {user.isActive ? 'Desactivar' : 'Activar'}
+            {user.isActive ? t('users.btn_deactivate') : t('users.btn_activate')}
           </button>
         )}
       </div>
@@ -105,6 +108,8 @@ const UserCard: React.FC<UserCardProps> = ({ user, canWrite, onToggleStatus, for
 };
 
 const AdminUsers: React.FC = () => {
+  const { t } = useTranslation('admin');
+  const { formatDate: fmtDate } = useLocale();
   const { hasPermission } = useAdminAuth();
   const [users, setUsers] = useState<SystemUser[]>([]);
   const [pagination, setPagination] = useState<Pagination | null>(null);
@@ -152,7 +157,7 @@ const AdminUsers: React.FC = () => {
       setUsers(result.users);
       setPagination(result.pagination);
     } catch (err: any) {
-      setError(err.message || 'Error al cargar usuarios');
+      setError(err.message || t('users.load_error'));
     } finally {
       setIsLoading(false);
     }
@@ -169,8 +174,8 @@ const AdminUsers: React.FC = () => {
 
     const reason = window.prompt(
       currentStatus
-        ? 'Razon para desactivar este usuario:'
-        : 'Razon para activar este usuario:'
+        ? t('users.prompt_deactivate')
+        : t('users.prompt_activate')
     );
 
     if (reason === null) return;
@@ -179,17 +184,13 @@ const AdminUsers: React.FC = () => {
       await updateUserStatus(userId, !currentStatus, reason);
       loadUsers();
     } catch (err: any) {
-      alert(err.message || 'Error al actualizar estado');
+      alert(err.message || t('users.toggle_error'));
     }
   };
 
   const formatDate = (date?: string) => {
     if (!date) return '-';
-    return new Date(date).toLocaleDateString('es-MX', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
+    return fmtDate(date, { year: 'numeric', month: 'short', day: 'numeric' });
   };
 
   return (
@@ -197,8 +198,8 @@ const AdminUsers: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Gestion de Usuarios</h1>
-          <p className="text-gray-500">Administra los usuarios del sistema</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('users.title')}</h1>
+          <p className="text-gray-500">{t('users.subtitle')}</p>
         </div>
         <div className="flex items-center gap-4">
           {/* Toggle de vista */}
@@ -210,7 +211,7 @@ const AdminUsers: React.FC = () => {
                   ? 'bg-white text-sky-600 shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
-              title="Vista de lista"
+              title={t('users.view_list')}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
@@ -223,7 +224,7 @@ const AdminUsers: React.FC = () => {
                   ? 'bg-white text-sky-600 shadow-sm'
                   : 'text-gray-500 hover:text-gray-700'
               }`}
-              title="Vista de tarjetas"
+              title={t('users.view_cards')}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
@@ -232,7 +233,7 @@ const AdminUsers: React.FC = () => {
           </div>
           {pagination && (
             <div className="text-sm text-gray-500">
-              {pagination.total.toLocaleString()} usuarios registrados
+              {t('users.registered_count', { count: pagination.total })}
             </div>
           )}
         </div>
@@ -251,7 +252,7 @@ const AdminUsers: React.FC = () => {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar por nombre, email o CURP..."
+                placeholder={t('users.search_placeholder')}
                 className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-transparent"
               />
             </div>
@@ -266,9 +267,9 @@ const AdminUsers: React.FC = () => {
             }}
             className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-sky-500"
           >
-            <option value="">Todos los estados</option>
-            <option value="true">Activos</option>
-            <option value="false">Inactivos</option>
+            <option value="">{t('users.filter_all_status')}</option>
+            <option value="true">{t('users.filter_active')}</option>
+            <option value="false">{t('users.filter_inactive')}</option>
           </select>
 
           {/* Filter: Verified */}
@@ -280,9 +281,9 @@ const AdminUsers: React.FC = () => {
             }}
             className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-sky-500"
           >
-            <option value="">Verificacion</option>
-            <option value="true">Verificados</option>
-            <option value="false">No verificados</option>
+            <option value="">{t('users.filter_verification')}</option>
+            <option value="true">{t('users.filter_verified')}</option>
+            <option value="false">{t('users.filter_not_verified')}</option>
           </select>
 
           {/* Sort */}
@@ -296,18 +297,18 @@ const AdminUsers: React.FC = () => {
             }}
             className="px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-sky-500"
           >
-            <option value="createdAt-desc">Mas recientes</option>
-            <option value="createdAt-asc">Mas antiguos</option>
-            <option value="name-asc">Nombre A-Z</option>
-            <option value="name-desc">Nombre Z-A</option>
-            <option value="lastLoginAt-desc">Ultimo acceso</option>
+            <option value="createdAt-desc">{t('users.sort_newest')}</option>
+            <option value="createdAt-asc">{t('users.sort_oldest')}</option>
+            <option value="name-asc">{t('users.sort_name_az')}</option>
+            <option value="name-desc">{t('users.sort_name_za')}</option>
+            <option value="lastLoginAt-desc">{t('users.sort_last_login')}</option>
           </select>
 
           <button
             type="submit"
             className="px-6 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition"
           >
-            Buscar
+            {t('users.btn_search')}
           </button>
         </form>
       </div>
@@ -323,15 +324,15 @@ const AdminUsers: React.FC = () => {
       {isLoading ? (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600 mx-auto"></div>
-          <p className="mt-4 text-gray-500">Cargando usuarios...</p>
+          <p className="mt-4 text-gray-500">{t('users.loading')}</p>
         </div>
       ) : users.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 text-center">
           <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
           </svg>
-          <p className="text-gray-500 font-medium">No se encontraron usuarios</p>
-          <p className="text-sm text-gray-400 mt-1">Intenta ajustar los filtros de busqueda</p>
+          <p className="text-gray-500 font-medium">{t('users.no_results')}</p>
+          <p className="text-sm text-gray-400 mt-1">{t('users.no_results_hint')}</p>
         </div>
       ) : viewMode === 'cards' ? (
         /* Vista de tarjetas */
@@ -354,22 +355,22 @@ const AdminUsers: React.FC = () => {
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Usuario
+                    {t('users.col_user')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    CURP
+                    {t('users.col_curp')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Estado
+                    {t('users.col_status')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Datos
+                    {t('users.col_data')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Registro
+                    {t('users.col_registered')}
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Acciones
+                    {t('users.col_actions')}
                   </th>
                 </tr>
               </thead>
@@ -397,12 +398,12 @@ const AdminUsers: React.FC = () => {
                         <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
                           user.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
                         }`}>
-                          {user.isActive ? 'Activo' : 'Inactivo'}
+                          {user.isActive ? t('users.status_active') : t('users.status_inactive')}
                         </span>
                         <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
                           user.isVerified ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
                         }`}>
-                          {user.isVerified ? 'Verificado' : 'No verificado'}
+                          {user.isVerified ? t('users.status_verified') : t('users.status_not_verified')}
                         </span>
                       </div>
                     </td>
@@ -424,7 +425,7 @@ const AdminUsers: React.FC = () => {
                         <Link
                           to={`/admin/users/${user.id}`}
                           className="p-2 text-gray-400 hover:text-sky-600 hover:bg-sky-50 rounded-lg transition"
-                          title="Ver detalles"
+                          title={t('users.btn_view')}
                         >
                           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -439,7 +440,7 @@ const AdminUsers: React.FC = () => {
                                 ? 'text-gray-400 hover:text-red-600 hover:bg-red-50'
                                 : 'text-gray-400 hover:text-green-600 hover:bg-green-50'
                             }`}
-                            title={user.isActive ? 'Desactivar' : 'Activar'}
+                            title={user.isActive ? t('users.btn_deactivate') : t('users.btn_activate')}
                           >
                             {user.isActive ? (
                               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

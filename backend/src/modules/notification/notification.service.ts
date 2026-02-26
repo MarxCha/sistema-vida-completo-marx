@@ -158,8 +158,9 @@ class NotificationService {
     accessorName?: string;
     nearestHospital?: string;
     nearbyHospitals?: Array<{ name: string; distance: number; phone?: string }>;
+    locale?: string;
   }): Promise<NotificationResult[]> {
-    const { userId, patientName, type, location, accessorName, nearestHospital, nearbyHospitals } = params;
+    const { userId, patientName, type, location, accessorName, nearestHospital, nearbyHospitals, locale } = params;
 
     const representatives = await prisma.representative.findMany({
       where: {
@@ -185,6 +186,7 @@ class NotificationService {
         accessorName,
         nearestHospital,
         nearbyHospitals,
+        locale,
       };
 
       // Enviar SMS + WhatsApp en paralelo

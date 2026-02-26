@@ -1,5 +1,6 @@
 // src/components/maps/EmergencyMap.tsx
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -99,6 +100,7 @@ export default function EmergencyMap({
   onHospitalSelect,
   showMatchScore = false,
 }: EmergencyMapProps) {
+  const { t } = useTranslation('emergency');
   const [mapCenter, setMapCenter] = useState<[number, number]>([19.4326, -99.1332]); // CDMX default
 
   useEffect(() => {
@@ -108,25 +110,23 @@ export default function EmergencyMap({
   }, [userLocation]);
 
   const getHospitalTypeLabel = (type: string) => {
-    const types: Record<string, string> = {
-      HOSPITAL_PUBLIC: 'Hospital Publico',
-      HOSPITAL_PRIVATE: 'Hospital Privado',
-      CLINIC: 'Clinica',
-      AMBULANCE_SERVICE: 'Servicio de Ambulancias',
-      IMSS: 'IMSS',
-      ISSSTE: 'ISSSTE',
-      OTHER: 'Otro',
-    };
-    return types[type] || type;
+    const key = `map.hospitalTypes.${type}`;
+    const translated = t(key);
+    return translated !== key ? translated : type;
+  };
+
+  const attentionLevelColors: Record<string, string> = {
+    FIRST: 'bg-blue-100 text-blue-700',
+    SECOND: 'bg-purple-100 text-purple-700',
+    THIRD: 'bg-amber-100 text-amber-700',
   };
 
   const getAttentionLevelLabel = (level?: string) => {
-    const levels: Record<string, { label: string; color: string }> = {
-      FIRST: { label: '1er Nivel', color: 'bg-blue-100 text-blue-700' },
-      SECOND: { label: '2do Nivel', color: 'bg-purple-100 text-purple-700' },
-      THIRD: { label: '3er Nivel', color: 'bg-amber-100 text-amber-700' },
+    if (!level || !attentionLevelColors[level]) return null;
+    return {
+      label: t(`map.attentionLevels.${level}`),
+      color: attentionLevelColors[level],
     };
-    return levels[level || ''] || null;
   };
 
   const getMatchScoreColor = (score: number) => {
@@ -162,7 +162,7 @@ export default function EmergencyMap({
             <Marker position={[userLocation.lat, userLocation.lng]} icon={userIcon}>
               <Popup>
                 <div className="text-center">
-                  <strong className="text-red-600">Tu ubicacion</strong>
+                  <strong className="text-red-600">{t('map.yourLocation')}</strong>
                   <br />
                   <span className="text-sm text-gray-500">
                     {userLocation.lat.toFixed(6)}, {userLocation.lng.toFixed(6)}
@@ -231,20 +231,20 @@ export default function EmergencyMap({
                     <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded">24h</span>
                   )}
                   {hospital.hasEmergency && (
-                    <span className="text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded">Urgencias</span>
+                    <span className="text-xs bg-red-100 text-red-700 px-1.5 py-0.5 rounded">{t('map.capabilities.emergency')}</span>
                   )}
                   {hospital.hasICU && (
-                    <span className="text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded">UCI</span>
+                    <span className="text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded">{t('map.capabilities.icu')}</span>
                   )}
                   {hospital.hasTrauma && (
-                    <span className="text-xs bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded">Trauma</span>
+                    <span className="text-xs bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded">{t('map.capabilities.trauma')}</span>
                   )}
                 </div>
 
                 {/* Matched specialties */}
                 {showMatchScore && hospital.matchedSpecialties && hospital.matchedSpecialties.length > 0 && (
                   <div className="mb-2">
-                    <p className="text-xs text-gray-500 mb-1">Especialidades relevantes:</p>
+                    <p className="text-xs text-gray-500 mb-1">{t('map.relevantSpecialties')}</p>
                     <div className="flex flex-wrap gap-1">
                       {hospital.matchedSpecialties.slice(0, 3).map((spec, i) => (
                         <span key={i} className="text-xs bg-sky-100 text-sky-700 px-1.5 py-0.5 rounded">
@@ -265,7 +265,7 @@ export default function EmergencyMap({
                 {/* Distance */}
                 {hospital.distance !== undefined && (
                   <p className="text-sm font-medium text-red-600 mb-2">
-                    A {hospital.distance.toFixed(1)} km
+                    {t('map.distanceAway', { distance: hospital.distance.toFixed(1) })}
                   </p>
                 )}
 
@@ -278,7 +278,7 @@ export default function EmergencyMap({
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
-                    Llamar Urgencias
+                    {t('map.callEmergency')}
                   </a>
                 )}
               </div>

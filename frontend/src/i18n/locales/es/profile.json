@@ -1,0 +1,72 @@
+{
+  "title": "Mi Perfil Médico",
+  "subtitle": "Información crítica que estará disponible en emergencias",
+  "sections": {
+    "personalInfo": "Información Personal",
+    "allergies": "Alergias",
+    "conditions": "Condiciones Médicas",
+    "medications": "Medicamentos Actuales",
+    "insurance": "Seguro Médico",
+    "organDonation": "Donación de Órganos"
+  },
+  "fields": {
+    "name": "Nombre",
+    "curp": "CURP",
+    "email": "Correo",
+    "bloodType": "Tipo de Sangre",
+    "insuranceProvider": "Aseguradora",
+    "insurancePolicy": "Número de Póliza",
+    "insurancePhone": "Teléfono de Emergencias",
+    "selectedInsurance": "Aseguradora seleccionada"
+  },
+  "placeholders": {
+    "select": "Seleccionar...",
+    "allergies": "Ej: Penicilina, Mariscos...",
+    "conditions": "Ej: Diabetes Tipo 2, Hipertensión...",
+    "medications": "Ej: Metformina 500mg, Losartán 50mg...",
+    "insuranceSearch": "Buscar aseguradora...",
+    "insurancePolicy": "Número de póliza",
+    "insurancePhone": "800 123 4567"
+  },
+  "descriptions": {
+    "allergies": "Lista de alergias conocidas (medicamentos, alimentos, etc.)",
+    "conditions": "Enfermedades crónicas o condiciones relevantes",
+    "medications": "Medicamentos que tomas regularmente",
+    "organDonation": "Esta preferencia será visible en emergencias"
+  },
+  "emptyStates": {
+    "allergies": "No hay alergias registradas",
+    "conditions": "No hay condiciones registradas",
+    "medications": "No hay medicamentos registrados",
+    "insuranceSearch": "No se encontraron aseguradoras"
+  },
+  "donor": {
+    "yes": "Soy donador de órganos",
+    "no": "No soy donador de órganos"
+  },
+  "insuranceTypes": {
+    "HEALTH": "Gastos Médicos",
+    "HEALTH_LIFE": "Gastos Médicos y Vida",
+    "ACCIDENT": "Accidentes",
+    "LIFE": "Vida",
+    "GOVERNMENT": "Gobierno",
+    "OTHER": "Otro"
+  },
+  "networkModal": {
+    "title": "Hospitales en Red",
+    "subtitle": "{{name}} - {{count}} hospitales",
+    "viewButton": "Ver hospitales en red",
+    "noHospitals": "No se encontraron hospitales en la red",
+    "emergency": "Urgencias",
+    "hours24": "24 hrs",
+    "close": "Cerrar"
+  },
+  "buttons": {
+    "save": "Guardar Cambios",
+    "saving": "Guardando..."
+  },
+  "toast": {
+    "saveSuccess": "Perfil actualizado correctamente",
+    "saveError": "Error al actualizar el perfil"
+  }
+}

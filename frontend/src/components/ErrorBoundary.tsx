@@ -1,4 +1,5 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode } from 'react';
+import i18next from 'i18next';
 
 interface Props {
   children: ReactNode;
@@ -25,6 +26,7 @@ class ErrorBoundary extends Component<Props, State> {
 
   public render() {
     if (this.state.hasError) {
+      const t = (key: string) => i18next.t(key, { ns: 'common' });
       return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
           <div className="max-w-md w-full text-center p-8 bg-white rounded-lg shadow-lg">
@@ -44,16 +46,16 @@ class ErrorBoundary extends Component<Props, State> {
               </svg>
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              Algo salió mal
+              {t('errorBoundary.title')}
             </h1>
             <p className="text-gray-600 mb-6">
-              Ha ocurrido un error inesperado. Por favor, intenta recargar la página.
+              {t('errorBoundary.description')}
             </p>
             <button
               onClick={() => window.location.reload()}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200"
             >
-              Recargar página
+              {t('errorBoundary.reload')}
             </button>
           </div>
         </div>

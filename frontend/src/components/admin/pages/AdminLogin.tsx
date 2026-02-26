@@ -1,6 +1,7 @@
 // src/components/admin/pages/AdminLogin.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAdminAuth } from '../../../context/AdminAuthContext';
 
 // Verificar si el modo demo está habilitado (solo en desarrollo)
@@ -13,7 +14,7 @@ const DEMO_ADMINS = [
     password: 'Admin123!',
     name: 'Super Admin',
     role: 'SUPER_ADMIN',
-    description: 'Acceso total al sistema',
+    descriptionKey: 'demo_admins.super_admin_desc',
     color: 'from-rose-500 to-red-600',
   },
   {
@@ -21,7 +22,7 @@ const DEMO_ADMINS = [
     password: 'Admin123!',
     name: 'Administrador',
     role: 'ADMIN',
-    description: 'Gestión de usuarios e instituciones',
+    descriptionKey: 'demo_admins.admin_desc',
     color: 'from-sky-500 to-blue-600',
   },
   {
@@ -29,12 +30,13 @@ const DEMO_ADMINS = [
     password: 'Admin123!',
     name: 'Visor',
     role: 'VIEWER',
-    description: 'Solo lectura de métricas',
+    descriptionKey: 'demo_admins.viewer_desc',
     color: 'from-slate-500 to-gray-600',
   },
 ];
 
 const AdminLogin: React.FC = () => {
+  const { t } = useTranslation('admin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -59,7 +61,7 @@ const AdminLogin: React.FC = () => {
       await login(email, password);
       navigate('/admin/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesion');
+      setError(err.message || t('login.error_default'));
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +76,7 @@ const AdminLogin: React.FC = () => {
       await login(demoAdmin.email, demoAdmin.password);
       navigate('/admin/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Error al iniciar sesion');
+      setError(err.message || t('login.error_default'));
     } finally {
       setIsLoading(false);
     }
@@ -97,7 +99,7 @@ const AdminLogin: React.FC = () => {
             <span className="text-white font-bold text-3xl">V</span>
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Sistema VIDA</h1>
-          <p className="text-slate-400">Panel de Administracion</p>
+          <p className="text-slate-400">{t('login.subtitle')}</p>
         </div>
 
         {/* Login form */}
@@ -116,7 +118,7 @@ const AdminLogin: React.FC = () => {
             {/* Email */}
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                Correo Electronico
+                {t('login.email_label')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -129,7 +131,7 @@ const AdminLogin: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-white/10 border border-white/20 rounded-lg pl-10 pr-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition"
-                  placeholder="admin@sistemavida.mx"
+                  placeholder={t('login.email_placeholder')}
                   required
                 />
               </div>
@@ -138,7 +140,7 @@ const AdminLogin: React.FC = () => {
             {/* Password */}
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-2">
-                Contrasena
+                {t('login.password_label')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -151,7 +153,7 @@ const AdminLogin: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-white/10 border border-white/20 rounded-lg pl-10 pr-12 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition"
-                  placeholder="••••••••"
+                  placeholder={t('login.password_placeholder')}
                   required
                 />
                 <button
@@ -185,11 +187,11 @@ const AdminLogin: React.FC = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  Iniciando sesion...
+                  {t('login.submitting')}
                 </>
               ) : (
                 <>
-                  Iniciar Sesion
+                  {t('login.submit')}
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                   </svg>
@@ -205,7 +207,7 @@ const AdminLogin: React.FC = () => {
                 <svg className="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                 </svg>
-                <span className="font-semibold text-white">Acceso Demo</span>
+                <span className="font-semibold text-white">{t('login.demo_section')}</span>
               </div>
               <div className="space-y-2">
                 {DEMO_ADMINS.map((admin, index) => (
@@ -221,7 +223,7 @@ const AdminLogin: React.FC = () => {
                     </svg>
                     <div className="flex-1 text-left">
                       <div className="font-medium">{admin.name}</div>
-                      <div className="text-xs opacity-80">{admin.description}</div>
+                      <div className="text-xs opacity-80">{t(`login.${admin.descriptionKey}`)}</div>
                     </div>
                     <span className="text-xs bg-white/20 px-2 py-1 rounded-full">{admin.role}</span>
                   </button>
@@ -232,7 +234,7 @@ const AdminLogin: React.FC = () => {
                   to="/login"
                   className="text-sm text-sky-400 hover:text-sky-300 font-medium"
                 >
-                  Ir al login de usuarios
+                  {t('login.user_login_link')}
                 </Link>
               </div>
             </div>
@@ -241,7 +243,7 @@ const AdminLogin: React.FC = () => {
 
         {/* Footer */}
         <p className="text-center text-slate-500 text-sm mt-6">
-          Sistema VIDA &copy; {new Date().getFullYear()} - Acceso restringido
+          {t('login.footer', { year: new Date().getFullYear() })}
         </p>
       </div>
     </div>

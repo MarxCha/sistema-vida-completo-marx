@@ -126,6 +126,7 @@ class PanicService {
       userId,
       patientName: user.name,
       type: 'PANIC',
+      locale: (user as any).preferredLanguage || 'es',
       location: { lat: latitude, lng: longitude },
       nearestHospital: nearestHospital || undefined,
       nearbyHospitals: nearbyHospitals.map(h => ({

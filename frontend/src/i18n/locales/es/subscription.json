@@ -1,0 +1,187 @@
+{
+  "title": "Mi Suscripción",
+  "status": {
+    "ACTIVE": "Activa",
+    "TRIALING": "Prueba",
+    "PAST_DUE": "Pago vencido",
+    "CANCELED": "Cancelada",
+    "PAUSED": "Pausada"
+  },
+  "paymentStatus": {
+    "SUCCEEDED": "Pagado",
+    "PENDING": "Pendiente",
+    "FAILED": "Fallido",
+    "REFUNDED": "Reembolsado"
+  },
+  "plan": {
+    "access_all": "Tienes acceso a todas las funciones de Sistema VIDA",
+    "upgrade_prompt": "Actualiza para desbloquear todas las funciones",
+    "billing_cycle_label": "Ciclo de facturación:",
+    "billing_annual": "Anual",
+    "billing_monthly": "Mensual",
+    "next_billing": "Próxima facturación:",
+    "includes": "Tu plan incluye",
+    "defaultName": "Plan Básico"
+  },
+  "features": {
+    "advanceDirectives": "Directivas de Voluntad Anticipada",
+    "donorPreferences": "Preferencias de Donación",
+    "nom151Seal": "Sello NOM-151",
+    "smsNotifications": "Notificaciones SMS",
+    "exportData": "Exportar Datos",
+    "prioritySupport": "Soporte Prioritario",
+    "representatives_unlimited": "Hasta 10 representantes",
+    "representatives_limited": "Hasta {{count}} representantes",
+    "qr_unlimited": "Descargas QR ilimitadas",
+    "qr_limited": "{{count}} descargas QR/mes"
+  },
+  "buttons": {
+    "manage_payment": "Gestionar pago",
+    "cancel": "Cancelar suscripción",
+    "reactivate": "Reactivar",
+    "upgrade_premium": "Actualizar a Premium"
+  },
+  "payments": {
+    "title": "Historial de pagos",
+    "fiscal_data": "Datos fiscales",
+    "no_payments": "No hay pagos registrados",
+    "col_date": "Fecha",
+    "col_description": "Descripción",
+    "col_amount": "Monto",
+    "col_status": "Estado",
+    "col_invoice": "Factura",
+    "default_description": "Suscripción",
+    "generating": "Generando...",
+    "bill": "Facturar"
+  },
+  "invoices": {
+    "title": "Facturas emitidas",
+    "pending": "Pendiente"
+  },
+  "cancel_modal": {
+    "title": "Cancelar suscripción",
+    "description": "¿Estás seguro de que deseas cancelar tu suscripción Premium? Mantendrás el acceso hasta el final de tu período de facturación actual.",
+    "reason_label": "¿Por qué cancelas? (opcional)",
+    "reason_placeholder": "Tu retroalimentación nos ayuda a mejorar...",
+    "keep_button": "Mantener suscripción",
+    "confirm_button": "Confirmar cancelación",
+    "cancelling": "Cancelando..."
+  },
+  "alerts": {
+    "cancel_error": "Error al cancelar suscripción",
+    "reactivate_error": "Error al reactivar suscripción",
+    "invoice_success": "Factura generada exitosamente",
+    "invoice_error": "Error al generar factura. Verifica tus datos fiscales."
+  },
+  "plans": {
+    "page_title": "Elige tu plan",
+    "page_subtitle": "Protege a tu familia con Sistema VIDA. Elige el plan que mejor se adapte a tus necesidades.",
+    "billing_monthly": "Mensual",
+    "billing_annual": "Anual",
+    "save_amount": "Ahorra ${{amount}}",
+    "mxn_per_month": "MXN / mes",
+    "billed_annually": "Facturado anualmente (${{amount}} MXN)",
+    "trial_days": "{{count}} días de prueba gratis",
+    "includes_label": "Incluye:",
+    "basico": {
+      "description": "Funciones esenciales para empezar",
+      "feature_profile": "Perfil médico digital completo",
+      "feature_qr": "Código QR de emergencia",
+      "feature_history": "Historial de accesos de emergencia",
+      "start_trial": "Comenzar prueba de {{count}} días",
+      "subscribe": "Suscribirse",
+      "current_plan": "Plan actual"
+    },
+    "premium": {
+      "description": "Protección completa para tu familia",
+      "badge": "RECOMENDADO",
+      "includes_basic": "Todo lo del Plan Básico, más:",
+      "subscribe": "Suscribirse ahora",
+      "current_plan": "Plan actual",
+      "processing": "Procesando...",
+      "upgrade_note": "Mejora tu plan y obtén todas las funciones"
+    },
+    "comparison": {
+      "title": "Compara los planes",
+      "col_feature": "Característica",
+      "col_basico": "Básico",
+      "col_premium": "Premium",
+      "row_price": "Precio mensual",
+      "row_profile": "Perfil médico digital",
+      "row_qr": "Código QR de emergencia",
+      "row_representatives": "Representantes",
+      "row_qr_downloads": "Descargas QR",
+      "row_directives": "Directivas de Voluntad Anticipada",
+      "row_donor": "Preferencias de Donación",
+      "row_nom151": "Sello NOM-151",
+      "row_sms": "Notificaciones SMS",
+      "row_export": "Exportar datos (PDF)",
+      "row_support": "Soporte prioritario",
+      "val_basico_reps": "Hasta 2",
+      "val_premium_reps": "Hasta 10",
+      "val_basico_qr": "5/mes",
+      "val_premium_qr": "Ilimitadas"
+    },
+    "faq": {
+      "questions": "¿Tienes preguntas?",
+      "contact_us": "Contáctanos"
+    },
+    "upgrade_error": "Error al procesar el upgrade. Por favor intenta de nuevo."
+  },
+  "success": {
+    "title": "¡Bienvenido a Premium!",
+    "message": "Tu suscripción ha sido activada exitosamente. Ahora tienes acceso a todas las funciones de Sistema VIDA.",
+    "unlocked_title": "Funciones desbloqueadas:",
+    "feature_directives": "Directivas de Voluntad Anticipada",
+    "feature_donor": "Preferencias de Donación de Órganos",
+    "feature_nom151": "Sello NOM-151 para documentos",
+    "feature_sms": "Notificaciones SMS ilimitadas",
+    "feature_representatives": "Hasta 10 representantes",
+    "feature_support": "Soporte prioritario",
+    "trial_info": "Tu período de prueba de {{count}} días ha comenzado. No se realizará ningún cargo hasta que termine.",
+    "btn_dashboard": "Ir al Dashboard",
+    "btn_directive": "Crear mi primera directiva",
+    "receipt_info": "Recibirás un correo de confirmación con los detalles de tu suscripción."
+  },
+  "upgrade_prompt": {
+    "default_title": "Actualiza a Premium",
+    "default_description": "Desbloquea todas las funciones de Sistema VIDA",
+    "btn_see_plans": "Ver planes",
+    "btn_compare": "Comparar planes",
+    "btn_trial": "Comenzar prueba gratis de 7 días",
+    "price": "$149",
+    "currency": "MXN / mes",
+    "trial_days_left": "Te quedan {{count}} días de prueba",
+    "default_features": {
+      "directives": "Directivas de voluntad anticipada",
+      "donor": "Preferencias de donación de órganos",
+      "nom151": "Sello NOM-151 para documentos",
+      "sms": "Notificaciones SMS ilimitadas",
+      "representatives": "Hasta 10 representantes",
+      "support": "Soporte prioritario"
+    }
+  },
+  "trial_banner": {
+    "expires_today": "Tu prueba termina hoy",
+    "expires_in": "Tu prueba termina en {{count}} días",
+    "subscribe_now": "Suscribirse ahora"
+  },
+  "cancelling_banner": {
+    "message": "Tu suscripción se cancelará el",
+    "reactivate": "Reactivar"
+  },
+  "gate": {
+    "premium_only": "Esta función está disponible exclusivamente para usuarios Premium.",
+    "upgrade_premium": "Actualizar a Premium",
+    "limit_reached": "Límite alcanzado",
+    "limit_reached_description": "Has alcanzado el límite de {{limit}} {{name}}.",
+    "upgrade_for_more": "Actualiza a Premium para obtener más.",
+    "view_premium_plans": "Ver planes Premium",
+    "unlimited": "Ilimitado",
+    "increase_limit": "Aumentar límite"
+  },
+  "limitNames": {
+    "representativesLimit": "representantes",
+    "qrDownloadsPerMonth": "descargas de QR por mes"
+  }
+}

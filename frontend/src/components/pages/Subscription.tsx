@@ -1,12 +1,16 @@
 // src/components/pages/Subscription.tsx
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useSubscription, usePaymentHistory, useInvoices } from '../../hooks/useSubscription';
 import { usePremium } from '../../hooks/usePremium';
+import { useLocale } from '../../hooks/useLocale';
 import { TrialExpiringBanner, CancellingBanner } from '../subscription/UpgradePrompt';
 import type { Payment } from '../../services/api';
 
 export default function Subscription() {
+  const { t } = useTranslation('subscription');
+  const { formatDate, formatCurrency } = useLocale();
   const { subscription, loading, cancel, reactivate, openBillingPortal } = useSubscription();
   const { status, isPremium } = usePremium();
   const { payments, loading: loadingPayments } = usePaymentHistory(5);
@@ -22,7 +26,7 @@ export default function Subscription() {
       await cancel(cancelReason);
       setShowCancelModal(false);
     } catch (error) {
-      alert('Error al cancelar suscripción');
+      alert(t('alerts.cancel_error'));
     } finally {
       setCancelling(false);
     }
@@ -32,7 +36,7 @@ export default function Subscription() {
     try {
       await reactivate();
     } catch (error) {
-      alert('Error al reactivar suscripción');
+      alert(t('alerts.reactivate_error'));
     }
   };
 
@@ -40,30 +44,15 @@ export default function Subscription() {
     try {
       setGeneratingInvoice(paymentId);
       await generateInvoice(paymentId);
-      alert('Factura generada exitosamente');
+      alert(t('alerts.invoice_success'));
     } catch (error) {
-      alert('Error al generar factura. Verifica tus datos fiscales.');
+      alert(t('alerts.invoice_error'));
     } finally {
       setGeneratingInvoice(null);
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-MX', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    });
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'MXN',
-    }).format(amount);
-  };
-
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (statusKey: string) => {
     const styles: Record<string, string> = {
       ACTIVE: 'bg-green-100 text-green-800',
       TRIALING: 'bg-blue-100 text-blue-800',
@@ -71,36 +60,23 @@ export default function Subscription() {
       CANCELED: 'bg-gray-100 text-gray-800',
       PAUSED: 'bg-yellow-100 text-yellow-800',
     };
-    const labels: Record<string, string> = {
-      ACTIVE: 'Activa',
-      TRIALING: 'Prueba',
-      PAST_DUE: 'Pago vencido',
-      CANCELED: 'Cancelada',
-      PAUSED: 'Pausada',
-    };
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status] || 'bg-gray-100'}`}>
-        {labels[status] || status}
+      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[statusKey] || 'bg-gray-100'}`}>
+        {t(`status.${statusKey}`, { defaultValue: statusKey })}
       </span>
     );
   };
 
-  const getPaymentStatusBadge = (status: Payment['status']) => {
+  const getPaymentStatusBadge = (statusKey: Payment['status']) => {
     const styles: Record<string, string> = {
       SUCCEEDED: 'bg-green-100 text-green-800',
       PENDING: 'bg-yellow-100 text-yellow-800',
       FAILED: 'bg-red-100 text-red-800',
       REFUNDED: 'bg-gray-100 text-gray-800',
     };
-    const labels: Record<string, string> = {
-      SUCCEEDED: 'Pagado',
-      PENDING: 'Pendiente',
-      FAILED: 'Fallido',
-      REFUNDED: 'Reembolsado',
-    };
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status] || 'bg-gray-100'}`}>
-        {labels[status] || status}
+      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[statusKey] || 'bg-gray-100'}`}>
+        {t(`paymentStatus.${statusKey}`, { defaultValue: statusKey })}
       </span>
     );
   };
@@ -116,7 +92,7 @@ export default function Subscription() {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Mi Suscripción</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('title')}</h1>
 
         {/* Banners de alerta */}
         <TrialExpiringBanner />
@@ -128,23 +104,23 @@ export default function Subscription() {
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <h2 className="text-xl font-semibold text-gray-900">
-                  {subscription?.plan?.name || status?.planName || 'Plan Básico'}
+                  {subscription?.plan?.name || status?.planName || t('plan.defaultName')}
                 </h2>
                 {(subscription?.status || status?.status) && getStatusBadge(subscription?.status || status?.status || '')}
               </div>
               <p className="text-gray-500 mb-4">
                 {isPremium || subscription?.plan?.slug === 'premium'
-                  ? 'Tienes acceso a todas las funciones de Sistema VIDA'
-                  : 'Actualiza para desbloquear todas las funciones'}
+                  ? t('plan.access_all')
+                  : t('plan.upgrade_prompt')}
               </p>
               {subscription && subscription.plan.slug !== 'free' && (
                 <div className="text-sm text-gray-600">
                   <p>
-                    Ciclo de facturación:{' '}
-                    <strong>{subscription.billingCycle === 'ANNUAL' ? 'Anual' : 'Mensual'}</strong>
+                    {t('plan.billing_cycle_label')}{' '}
+                    <strong>{subscription.billingCycle === 'ANNUAL' ? t('plan.billing_annual') : t('plan.billing_monthly')}</strong>
                   </p>
                   <p>
-                    Próxima facturación:{' '}
+                    {t('plan.next_billing')}{' '}
                     <strong>{formatDate(subscription.currentPeriodEnd)}</strong>
                   </p>
                 </div>
@@ -157,14 +133,14 @@ export default function Subscription() {
                     onClick={openBillingPortal}
                     className="px-4 py-2 text-purple-600 border border-purple-200 rounded-lg hover:bg-purple-50 transition-colors text-sm font-medium"
                   >
-                    Gestionar pago
+                    {t('buttons.manage_payment')}
                   </button>
                   {!(subscription?.cancelAtPeriodEnd || status?.cancelAtPeriodEnd) && (
                     <button
                       onClick={() => setShowCancelModal(true)}
                       className="block w-full text-sm text-gray-500 hover:text-red-600"
                     >
-                      Cancelar suscripción
+                      {t('buttons.cancel')}
                     </button>
                   )}
                   {(subscription?.cancelAtPeriodEnd || status?.cancelAtPeriodEnd) && (
@@ -172,7 +148,7 @@ export default function Subscription() {
                       onClick={handleReactivate}
                       className="block w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
                     >
-                      Reactivar
+                      {t('buttons.reactivate')}
                     </button>
                   )}
                 </div>
@@ -181,7 +157,7 @@ export default function Subscription() {
                   to="/subscription/plans"
                   className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
                 >
-                  Actualizar a Premium
+                  {t('buttons.upgrade_premium')}
                 </Link>
               )}
             </div>
@@ -190,10 +166,9 @@ export default function Subscription() {
 
         {/* Features del plan */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Tu plan incluye</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('plan.includes')}</h3>
           <div className="grid md:grid-cols-2 gap-4">
             {(() => {
-              // Usar features de subscription.plan si están disponibles, sino de status
               const features = subscription?.plan?.features || status?.features;
               const limits = subscription?.plan?.limits || status?.limits;
 
@@ -213,12 +188,7 @@ export default function Subscription() {
                         </svg>
                       )}
                       <span className={value ? 'text-gray-900' : 'text-gray-400'}>
-                        {key === 'advanceDirectives' && 'Directivas de Voluntad Anticipada'}
-                        {key === 'donorPreferences' && 'Preferencias de Donación'}
-                        {key === 'nom151Seal' && 'Sello NOM-151'}
-                        {key === 'smsNotifications' && 'Notificaciones SMS'}
-                        {key === 'exportData' && 'Exportar Datos'}
-                        {key === 'prioritySupport' && 'Soporte Prioritario'}
+                        {t(`features.${key}`, { defaultValue: key })}
                       </span>
                     </div>
                   ))}
@@ -228,8 +198,8 @@ export default function Subscription() {
                     </svg>
                     <span className="text-gray-900">
                       {limits?.representativesLimit === -1 || limits?.representativesLimit === 10
-                        ? 'Hasta 10 representantes'
-                        : `Hasta ${limits?.representativesLimit || 2} representantes`}
+                        ? t('features.representatives_unlimited')
+                        : t('features.representatives_limited', { count: limits?.representativesLimit || 2 })}
                     </span>
                   </div>
                   <div className="flex items-center">
@@ -238,8 +208,8 @@ export default function Subscription() {
                     </svg>
                     <span className="text-gray-900">
                       {limits?.qrDownloadsPerMonth === 0 || limits?.qrDownloadsPerMonth === -1
-                        ? 'Descargas QR ilimitadas'
-                        : `${limits?.qrDownloadsPerMonth || 3} descargas QR/mes`}
+                        ? t('features.qr_unlimited')
+                        : t('features.qr_limited', { count: limits?.qrDownloadsPerMonth || 3 })}
                     </span>
                   </div>
                 </>
@@ -252,9 +222,9 @@ export default function Subscription() {
         {(isPremium || subscription?.plan?.slug === 'premium') && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Historial de pagos</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t('payments.title')}</h3>
               <Link to="/billing/fiscal-data" className="text-sm text-purple-600 hover:underline">
-                Datos fiscales
+                {t('payments.fiscal_data')}
               </Link>
             </div>
             {loadingPayments ? (
@@ -264,17 +234,17 @@ export default function Subscription() {
                 ))}
               </div>
             ) : !payments || payments.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">No hay pagos registrados</p>
+              <p className="text-gray-500 text-center py-4">{t('payments.no_payments')}</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
                     <tr className="text-left text-sm text-gray-500 border-b">
-                      <th className="pb-2">Fecha</th>
-                      <th className="pb-2">Descripción</th>
-                      <th className="pb-2">Monto</th>
-                      <th className="pb-2">Estado</th>
-                      <th className="pb-2">Factura</th>
+                      <th className="pb-2">{t('payments.col_date')}</th>
+                      <th className="pb-2">{t('payments.col_description')}</th>
+                      <th className="pb-2">{t('payments.col_amount')}</th>
+                      <th className="pb-2">{t('payments.col_status')}</th>
+                      <th className="pb-2">{t('payments.col_invoice')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -284,7 +254,7 @@ export default function Subscription() {
                           {formatDate(payment.createdAt)}
                         </td>
                         <td className="py-3 text-sm text-gray-900">
-                          {payment.description || 'Suscripción'}
+                          {payment.description || t('payments.default_description')}
                         </td>
                         <td className="py-3 text-sm font-medium text-gray-900">
                           {formatCurrency(payment.amount)}
@@ -297,7 +267,7 @@ export default function Subscription() {
                               disabled={generatingInvoice === payment.id}
                               className="text-sm text-purple-600 hover:underline disabled:opacity-50"
                             >
-                              {generatingInvoice === payment.id ? 'Generando...' : 'Facturar'}
+                              {generatingInvoice === payment.id ? t('payments.generating') : t('payments.bill')}
                             </button>
                           )}
                         </td>
@@ -313,7 +283,7 @@ export default function Subscription() {
         {/* Facturas */}
         {(isPremium || subscription?.plan?.slug === 'premium') && invoices.length > 0 && (
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Facturas emitidas</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('invoices.title')}</h3>
             <div className="space-y-3">
               {invoices.map((invoice) => (
                 <div
@@ -325,7 +295,7 @@ export default function Subscription() {
                       {invoice.serie}-{invoice.folio}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {invoice.uuid ? `UUID: ${invoice.uuid.slice(0, 8)}...` : 'Pendiente'}
+                      {invoice.uuid ? `UUID: ${invoice.uuid.slice(0, 8)}...` : t('invoices.pending')}
                     </p>
                   </div>
                   <div className="text-right">
@@ -363,21 +333,18 @@ export default function Subscription() {
         {showCancelModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-xl max-w-md w-full p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Cancelar suscripción</h3>
-              <p className="text-gray-600 mb-4">
-                ¿Estás seguro de que deseas cancelar tu suscripción Premium? Mantendrás el acceso
-                hasta el final de tu período de facturación actual.
-              </p>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">{t('cancel_modal.title')}</h3>
+              <p className="text-gray-600 mb-4">{t('cancel_modal.description')}</p>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  ¿Por qué cancelas? (opcional)
+                  {t('cancel_modal.reason_label')}
                 </label>
                 <textarea
                   value={cancelReason}
                   onChange={(e) => setCancelReason(e.target.value)}
                   className="w-full border border-gray-300 rounded-lg p-3 text-sm"
                   rows={3}
-                  placeholder="Tu retroalimentación nos ayuda a mejorar..."
+                  placeholder={t('cancel_modal.reason_placeholder')}
                 />
               </div>
               <div className="flex gap-3">
@@ -385,14 +352,14 @@ export default function Subscription() {
                   onClick={() => setShowCancelModal(false)}
                   className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
                 >
-                  Mantener suscripción
+                  {t('cancel_modal.keep_button')}
                 </button>
                 <button
                   onClick={handleCancel}
                   disabled={cancelling}
                   className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
                 >
-                  {cancelling ? 'Cancelando...' : 'Confirmar cancelación'}
+                  {cancelling ? t('cancel_modal.cancelling') : t('cancel_modal.confirm_button')}
                 </button>
               </div>
             </div>

@@ -11,6 +11,7 @@ export interface User {
   sex?: 'H' | 'M';
   isVerified: boolean;
   hasProfile: boolean;
+  preferredLanguage?: 'es' | 'en';
 }
 
 export interface AuthTokens {
@@ -211,4 +212,5 @@ export interface ProfileForm {
   insurancePhone?: string;
   isDonor?: boolean;
   donorPreferences?: DonorPreferences;
+  preferredLanguage?: 'es' | 'en';
 }

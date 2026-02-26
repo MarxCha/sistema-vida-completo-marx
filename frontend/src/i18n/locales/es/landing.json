@@ -1,0 +1,84 @@
+{
+  "nav": {
+    "signIn": "Iniciar Sesión",
+    "register": "Registrarse"
+  },
+  "demo": {
+    "title": "Demo Rápido",
+    "userButton": "Usuario Demo",
+    "userSubtitle": "Ver dashboard completo",
+    "adminButton": "Panel Admin",
+    "adminSubtitle": "Ver métricas y gestión"
+  },
+  "hero": {
+    "badge": "Protegido por la ley mexicana",
+    "title1": "Tu voluntad,",
+    "title2": "siempre respetada",
+    "description": "VIDA garantiza que tus decisiones médicas anticipadas estén disponibles en el momento crítico, protegiendo tu autonomía y dignidad.",
+    "ctaPrimary": "Comenzar Ahora",
+    "ctaSecondary": "Conocer Más",
+    "trustCount": "+10,000",
+    "trustText": "mexicanos confían en VIDA",
+    "accessTitle": "Acceso en segundos",
+    "accessSubtitle": "Información crítica disponible 24/7",
+    "legalTitle": "Validez Legal",
+    "legalSubtitle": "Conforme a la legislación de tu estado",
+    "notificationTitle": "Notificación Inmediata",
+    "notificationSubtitle": "Tus representantes son alertados"
+  },
+  "features": {
+    "sectionTitle": "Todo lo que necesitas para proteger tus decisiones",
+    "sectionSubtitle": "Una plataforma integral diseñada específicamente para el contexto legal y médico mexicano.",
+    "0": {
+      "title": "Voluntad Anticipada Digital",
+      "description": "Crea y almacena tu voluntad anticipada de forma segura, con validez legal conforme a la legislación mexicana."
+    },
+    "1": {
+      "title": "Acceso de Emergencia",
+      "description": "Un código QR único permite a profesionales de salud acceder a tu información crítica en segundos."
+    },
+    "2": {
+      "title": "Representantes Designados",
+      "description": "Notificación automática a tus seres queridos cuando se accede a tu información en emergencias."
+    },
+    "3": {
+      "title": "Seguridad de Grado Militar",
+      "description": "Cifrado AES-256 y cumplimiento con NOM-151 para garantizar la integridad de tus documentos."
+    }
+  },
+  "howItWorks": {
+    "sectionTitle": "Cómo funciona",
+    "sectionSubtitle": "En solo 4 pasos, protege tus decisiones médicas para el futuro.",
+    "0": {
+      "title": "Regístrate",
+      "description": "Crea tu cuenta con tu CURP y verifica tu identidad."
+    },
+    "1": {
+      "title": "Completa tu Perfil",
+      "description": "Añade tu información médica y preferencias de tratamiento."
+    },
+    "2": {
+      "title": "Genera tu QR",
+      "description": "Obtén tu código único para acceso de emergencia."
+    },
+    "3": {
+      "title": "Comparte con Confianza",
+      "description": "Tu información estará disponible cuando más la necesites."
+    }
+  },
+  "cta": {
+    "title": "Protege tu voluntad hoy",
+    "description": "No esperes a una emergencia. Registra tus decisiones médicas ahora y garantiza que sean respetadas cuando más importa.",
+    "button": "Crear mi cuenta gratuita"
+  },
+  "footer": {
+    "terms": "Términos de Uso",
+    "privacy": "Política de Privacidad",
+    "contact": "Contacto",
+    "copyright": "© 2024 Sistema VIDA. Todos los derechos reservados."
+  },
+  "toast": {
+    "welcome": "¡Bienvenido {{name}}!",
+    "loginError": "Error al iniciar sesión"
+  }
+}

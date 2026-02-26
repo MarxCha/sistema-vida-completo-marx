@@ -1,6 +1,7 @@
 // src/components/pages/NFCManager.tsx
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useNFC, EmergencyNFCData } from '../../hooks/useNFC';
 import { profileApi } from '../../services/api';
@@ -16,6 +17,7 @@ interface UserProfile {
 type WriteMode = 'url' | 'full';
 
 export default function NFCManager() {
+  const { t } = useTranslation('extras');
   const { user } = useAuth();
   const { isSupported, isWriting, writeUrl, writeEmergencyData, cancelOperation } = useNFC();
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -47,11 +49,11 @@ export default function NFCManager() {
 
   const handleWriteTag = async () => {
     if (!emergencyUrl) {
-      setStatus({ type: 'error', message: 'No tienes un ID de emergencia configurado' });
+      setStatus({ type: 'error', message: t('nfc.errors.noEmergencyId') });
       return;
     }
 
-    setStatus({ type: 'info', message: 'Acerca el tag NFC al teléfono...' });
+    setStatus({ type: 'info', message: t('nfc.status.approaching') });
 
     let result;
 
@@ -69,9 +71,9 @@ export default function NFCManager() {
     }
 
     if (result.success) {
-      setStatus({ type: 'success', message: '¡Tag NFC grabado exitosamente!' });
+      setStatus({ type: 'success', message: t('nfc.status.success') });
     } else {
-      setStatus({ type: 'error', message: result.error || 'Error grabando tag' });
+      setStatus({ type: 'error', message: result.error || t('nfc.errors.writeError') });
     }
   };
 
@@ -92,9 +94,9 @@ export default function NFCManager() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
           </svg>
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">NFC de Emergencia</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t('nfc.pageTitle')}</h1>
         <p className="text-gray-600 mt-2">
-          Graba tu información médica en tags NFC para brazaletes, tarjetas o stickers
+          {t('nfc.pageDescription')}
         </p>
       </div>
 
@@ -106,17 +108,17 @@ export default function NFCManager() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
             <div>
-              <h3 className="font-semibold text-amber-800">NFC no disponible</h3>
+              <h3 className="font-semibold text-amber-800">{t('nfc.notSupported.title')}</h3>
               <p className="text-sm text-amber-700 mt-1">
-                Tu navegador no soporta Web NFC. Para grabar tags NFC necesitas:
+                {t('nfc.notSupported.description')}
               </p>
               <ul className="text-sm text-amber-700 mt-2 list-disc list-inside">
-                <li>Dispositivo Android con NFC</li>
-                <li>Google Chrome versión 89 o superior</li>
-                <li>Conexión HTTPS</li>
+                <li>{t('nfc.notSupported.requirements.android')}</li>
+                <li>{t('nfc.notSupported.requirements.chrome')}</li>
+                <li>{t('nfc.notSupported.requirements.https')}</li>
               </ul>
               <p className="text-sm text-amber-700 mt-2">
-                <strong>Alternativa:</strong> Usa una app de escritura NFC como "NFC Tools" y copia la URL de emergencia.
+                <strong>{t('nfc.notSupported.alternative')}</strong>
               </p>
             </div>
           </div>
@@ -126,7 +128,7 @@ export default function NFCManager() {
       {/* Emergency URL Display */}
       <div className="bg-gray-50 rounded-xl p-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Tu URL de Emergencia
+          {t('nfc.emergencyUrl.label')}
         </label>
         <div className="flex items-center gap-2">
           <input
@@ -138,7 +140,7 @@ export default function NFCManager() {
           <button
             onClick={() => {
               navigator.clipboard.writeText(emergencyUrl);
-              setStatus({ type: 'success', message: 'URL copiada al portapapeles' });
+              setStatus({ type: 'success', message: t('nfc.emergencyUrl.copySuccess') });
             }}
             className="p-2 bg-vida-600 text-white rounded-lg hover:bg-vida-700 transition"
           >
@@ -153,7 +155,7 @@ export default function NFCManager() {
       {isSupported && (
         <div className="bg-white border border-gray-200 rounded-xl p-4">
           <label className="block text-sm font-medium text-gray-700 mb-3">
-            Tipo de grabación
+            {t('nfc.writeMode.label')}
           </label>
           <div className="space-y-3">
             <label className="flex items-start gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition">
@@ -166,9 +168,9 @@ export default function NFCManager() {
                 className="mt-1"
               />
               <div>
-                <span className="font-medium text-gray-900">Solo URL</span>
+                <span className="font-medium text-gray-900">{t('nfc.writeMode.urlOnly.title')}</span>
                 <p className="text-sm text-gray-500">
-                  Graba solo el enlace. Al escanear, abre el perfil completo en el navegador.
+                  {t('nfc.writeMode.urlOnly.description')}
                 </p>
               </div>
             </label>
@@ -182,9 +184,9 @@ export default function NFCManager() {
                 className="mt-1"
               />
               <div>
-                <span className="font-medium text-gray-900">Datos completos</span>
+                <span className="font-medium text-gray-900">{t('nfc.writeMode.fullData.title')}</span>
                 <p className="text-sm text-gray-500">
-                  Incluye nombre, tipo de sangre, alergias y contacto de emergencia. Útil sin internet.
+                  {t('nfc.writeMode.fullData.description')}
                 </p>
               </div>
             </label>
@@ -195,15 +197,15 @@ export default function NFCManager() {
       {/* Data Preview (for full mode) */}
       {isSupported && writeMode === 'full' && profile && (
         <div className="bg-sky-50 border border-sky-200 rounded-xl p-4">
-          <h3 className="font-semibold text-sky-800 mb-2">Datos a grabar:</h3>
+          <h3 className="font-semibold text-sky-800 mb-2">{t('nfc.dataPreview.title')}</h3>
           <ul className="text-sm text-sky-700 space-y-1">
             <li>👤 {user?.name}</li>
-            {profile.bloodType && <li>🩸 Tipo de sangre: {profile.bloodType}</li>}
+            {profile.bloodType && <li>🩸 {t('nfc.dataPreview.bloodType')}: {profile.bloodType}</li>}
             {profile.allergies?.length ? (
-              <li>⚠️ Alergias: {profile.allergies.join(', ')}</li>
+              <li>⚠️ {t('nfc.dataPreview.allergies')}: {profile.allergies.join(', ')}</li>
             ) : null}
             {profile.conditions?.length ? (
-              <li>💊 Condiciones: {profile.conditions.slice(0, 3).join(', ')}</li>
+              <li>💊 {t('nfc.dataPreview.conditions')}: {profile.conditions.slice(0, 3).join(', ')}</li>
             ) : null}
           </ul>
         </div>
@@ -220,7 +222,7 @@ export default function NFCManager() {
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
-              Grabar Tag NFC
+              {t('nfc.buttons.write')}
             </button>
           ) : (
             <div className="space-y-3">
@@ -230,13 +232,13 @@ export default function NFCManager() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
                 </div>
-                Acerca el tag NFC...
+                {t('nfc.buttons.writing')}
               </div>
               <button
                 onClick={cancelOperation}
                 className="w-full py-3 bg-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-300 transition"
               >
-                Cancelar
+                {t('nfc.buttons.cancel')}
               </button>
             </div>
           )}
@@ -275,27 +277,27 @@ export default function NFCManager() {
 
       {/* Instructions */}
       <div className="bg-gray-50 rounded-xl p-4">
-        <h3 className="font-semibold text-gray-900 mb-3">Instrucciones</h3>
+        <h3 className="font-semibold text-gray-900 mb-3">{t('nfc.instructions.title')}</h3>
         <ol className="text-sm text-gray-600 space-y-2 list-decimal list-inside">
-          <li>Consigue un tag NFC (brazalete, tarjeta o sticker)</li>
-          <li>Selecciona el tipo de grabación</li>
-          <li>Presiona "Grabar Tag NFC"</li>
-          <li>Acerca el tag a la parte trasera de tu teléfono</li>
-          <li>Espera la confirmación</li>
+          <li>{t('nfc.instructions.step1')}</li>
+          <li>{t('nfc.instructions.step2')}</li>
+          <li>{t('nfc.instructions.step3')}</li>
+          <li>{t('nfc.instructions.step4')}</li>
+          <li>{t('nfc.instructions.step5')}</li>
         </ol>
       </div>
 
       {/* Product Recommendations */}
       <div className="bg-white border border-gray-200 rounded-xl p-4">
-        <h3 className="font-semibold text-gray-900 mb-3">Tags NFC Recomendados</h3>
+        <h3 className="font-semibold text-gray-900 mb-3">{t('nfc.products.title')}</h3>
         <div className="space-y-3">
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
             <div className="w-12 h-12 bg-vida-100 rounded-lg flex items-center justify-center">
               <span className="text-2xl">⌚</span>
             </div>
             <div>
-              <p className="font-medium text-gray-900">Brazalete NFC</p>
-              <p className="text-sm text-gray-500">Ideal para uso diario, resistente al agua</p>
+              <p className="font-medium text-gray-900">{t('nfc.products.bracelet.name')}</p>
+              <p className="text-sm text-gray-500">{t('nfc.products.bracelet.description')}</p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
@@ -303,8 +305,8 @@ export default function NFCManager() {
               <span className="text-2xl">💳</span>
             </div>
             <div>
-              <p className="font-medium text-gray-900">Tarjeta NFC</p>
-              <p className="text-sm text-gray-500">Para llevar en la cartera</p>
+              <p className="font-medium text-gray-900">{t('nfc.products.card.name')}</p>
+              <p className="text-sm text-gray-500">{t('nfc.products.card.description')}</p>
             </div>
           </div>
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
@@ -312,8 +314,8 @@ export default function NFCManager() {
               <span className="text-2xl">🏷️</span>
             </div>
             <div>
-              <p className="font-medium text-gray-900">Sticker NFC</p>
-              <p className="text-sm text-gray-500">Para pegar en casco, teléfono o equipo médico</p>
+              <p className="font-medium text-gray-900">{t('nfc.products.sticker.name')}</p>
+              <p className="text-sm text-gray-500">{t('nfc.products.sticker.description')}</p>
             </div>
           </div>
         </div>
@@ -332,11 +334,11 @@ export default function NFCManager() {
           </div>
           <div className="flex-1">
             <h3 className="font-semibold text-white flex items-center gap-2">
-              Tarjeta Digital
-              <span className="text-xs bg-white/20 text-white px-2 py-0.5 rounded-full">Pro</span>
+              {t('nfc.walletPromo.title')}
+              <span className="text-xs bg-white/20 text-white px-2 py-0.5 rounded-full">{t('nfc.walletPromo.proBadge')}</span>
             </h3>
             <p className="text-sm text-gray-300 mt-1">
-              Agrega tu tarjeta de emergencia a Apple Wallet o Google Wallet
+              {t('nfc.walletPromo.description')}
             </p>
           </div>
           <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

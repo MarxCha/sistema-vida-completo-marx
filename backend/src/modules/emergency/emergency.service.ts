@@ -391,6 +391,7 @@ class EmergencyService {
       userId,
       patientName: user.name,
       type: 'QR_ACCESS',
+      locale: (user as any).preferredLanguage || 'es',
       location: {
         lat: location?.lat || 0,
         lng: location?.lng || 0,

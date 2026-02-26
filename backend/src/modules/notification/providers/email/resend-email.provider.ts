@@ -5,6 +5,7 @@ import { IEmailProvider, NotificationParams, SendResult } from '../interfaces';
 import { getGoogleMapsUrl } from '../../../../common/utils/geolocation';
 import { logger } from '../../../../common/services/logger.service';
 import config from '../../../../config';
+import i18next from '../../../../common/i18n/config';
 
 /**
  * Proveedor de Email via Resend.
@@ -33,13 +34,14 @@ export class ResendEmailProvider implements IEmailProvider {
   }
 
   async send(params: NotificationParams): Promise<SendResult> {
-    const { to, patientName, location, type, accessorName, nearestHospital, nearbyHospitals } = params;
+    const { to, patientName, location, type, accessorName, nearestHospital, nearbyHospitals, locale } = params;
     const mapsUrl = getGoogleMapsUrl(location.lat, location.lng);
     const isPanic = type === 'PANIC';
+    const t = i18next.getFixedT(locale || 'es');
 
     const subject = isPanic
-      ? `🚨 ALERTA EMERGENCIA - ${patientName} ha activado el botón de pánico`
-      : `⚠️ ALERTA VIDA - Acceso a información médica de ${patientName}`;
+      ? t('emails:subjects.emergencyAccess') + ` - ${patientName}`
+      : t('emails:subjects.emergencyAccess') + ` - ${patientName}`;
 
     const html = this.buildEmailHtml({
       isPanic,
@@ -48,6 +50,7 @@ export class ResendEmailProvider implements IEmailProvider {
       mapsUrl,
       nearestHospital,
       nearbyHospitals,
+      locale,
     });
 
     if (!this.isAvailable()) {
@@ -91,25 +94,45 @@ export class ResendEmailProvider implements IEmailProvider {
     mapsUrl: string;
     nearestHospital?: string;
     nearbyHospitals?: Array<{ name: string; distance: number; phone?: string }>;
+    locale?: string;
   }): string {
-    const { isPanic, mapsUrl, nearbyHospitals } = params;
+    const { isPanic, mapsUrl, nearbyHospitals, locale } = params;
+    const t = i18next.getFixedT(locale || 'es');
     const patientName = this.escHtml(params.patientName);
     const accessorName = params.accessorName ? this.escHtml(params.accessorName) : undefined;
     const nearestHospital = params.nearestHospital ? this.escHtml(params.nearestHospital) : undefined;
 
+    const nearbyHospitalsLabel = locale === 'en' ? 'Nearby Hospitals:' : 'Hospitales Cercanos:';
+    const distanceLabel = locale === 'en' ? 'km away' : 'km';
+    const callLabel = locale === 'en' ? 'Call' : 'Llamar';
+    const locationLabel = locale === 'en' ? 'Location' : 'Ubicación';
+    const viewMapsLabel = locale === 'en' ? 'View on Google Maps' : 'Ver en Google Maps';
+    const nearestHospitalLabel = locale === 'en' ? 'Nearest hospital:' : 'Hospital más cercano:';
+    const accessByLabel = locale === 'en' ? 'Access by:' : 'Acceso realizado por:';
+    const autoEmailLabel = t('emails:common.autoEmail');
+    const dateLocale = locale === 'en' ? 'en-US' : 'es-MX';
+    const emergencyTitle = locale === 'en' ? '🚨 EMERGENCY' : '🚨 EMERGENCIA';
+    const alertTitle = locale === 'en' ? '⚠️ VIDA ALERT' : '⚠️ ALERTA VIDA';
+    const panicBody = locale === 'en'
+      ? `<strong>${patientName}</strong> has activated the panic button and needs immediate help.`
+      : `<strong>${patientName}</strong> ha activado el botón de pánico y necesita ayuda inmediata.`;
+    const accessBody = locale === 'en'
+      ? `Medical information of <strong>${patientName}</strong> has been accessed.`
+      : `Se ha accedido a la información médica de <strong>${patientName}</strong>.`;
+
     let hospitalsHtml = '';
     if (nearbyHospitals && nearbyHospitals.length > 0) {
       hospitalsHtml = `
-        <h3 style="color: #0284c7; margin-top: 20px;">Hospitales Cercanos:</h3>
+        <h3 style="color: #0284c7; margin-top: 20px;">${nearbyHospitalsLabel}</h3>
         <table style="width: 100%; border-collapse: collapse;">
           ${nearbyHospitals.map(h => `
             <tr style="border-bottom: 1px solid #e5e7eb;">
               <td style="padding: 10px 0;">
                 <strong>${this.escHtml(h.name)}</strong><br>
-                <span style="color: #6b7280; font-size: 14px;">A ${h.distance.toFixed(1)} km</span>
+                <span style="color: #6b7280; font-size: 14px;">${h.distance.toFixed(1)} ${distanceLabel}</span>
               </td>
               <td style="text-align: right; padding: 10px 0;">
-                ${h.phone ? `<a href="tel:${this.escHtml(h.phone)}" style="background: #dc2626; color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none;">Llamar</a>` : ''}
+                ${h.phone ? `<a href="tel:${this.escHtml(h.phone)}" style="background: #dc2626; color: white; padding: 8px 16px; border-radius: 20px; text-decoration: none;">${callLabel}</a>` : ''}
               </td>
             </tr>
           `).join('')}
@@ -127,32 +150,29 @@ export class ResendEmailProvider implements IEmailProvider {
       <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; background: #f3f4f6;">
         <div style="max-width: 600px; margin: 0 auto; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
           <div style="background: ${isPanic ? '#dc2626' : '#f59e0b'}; color: white; padding: 24px; text-align: center;">
-            <h1 style="margin: 0; font-size: 24px;">${isPanic ? '🚨 EMERGENCIA' : '⚠️ ALERTA VIDA'}</h1>
+            <h1 style="margin: 0; font-size: 24px;">${isPanic ? emergencyTitle : alertTitle}</h1>
           </div>
           <div style="padding: 24px;">
             <p style="font-size: 18px; color: #1f2937; margin-bottom: 20px;">
-              ${isPanic
-                ? `<strong>${patientName}</strong> ha activado el botón de pánico y necesita ayuda inmediata.`
-                : `Se ha accedido a la información médica de <strong>${patientName}</strong>.`
-              }
+              ${isPanic ? panicBody : accessBody}
             </p>
             ${!isPanic && accessorName ? `
               <p style="color: #6b7280;">
-                <strong>Acceso realizado por:</strong> ${accessorName}
+                <strong>${accessByLabel}</strong> ${accessorName}
               </p>
             ` : ''}
             <div style="background: #f9fafb; border-radius: 12px; padding: 16px; margin: 20px 0;">
-              <h3 style="color: #374151; margin: 0 0 10px 0;">📍 Ubicación</h3>
+              <h3 style="color: #374151; margin: 0 0 10px 0;">📍 ${locationLabel}</h3>
               <a href="${mapsUrl}" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
-                Ver en Google Maps
+                ${viewMapsLabel}
               </a>
-              ${nearestHospital ? `<p style="color: #6b7280; margin-top: 10px;">Hospital más cercano: <strong>${nearestHospital}</strong></p>` : ''}
+              ${nearestHospital ? `<p style="color: #6b7280; margin-top: 10px;">${nearestHospitalLabel} <strong>${nearestHospital}</strong></p>` : ''}
             </div>
             ${hospitalsHtml}
             <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
               <p style="color: #9ca3af; font-size: 14px; margin: 0;">
-                Este mensaje fue enviado automáticamente por el Sistema VIDA.<br>
-                ${new Date().toLocaleString('es-MX', { dateStyle: 'full', timeStyle: 'short' })}
+                ${autoEmailLabel}<br>
+                ${new Date().toLocaleString(dateLocale, { dateStyle: 'full', timeStyle: 'short' })}
               </p>
             </div>
           </div>

@@ -1,0 +1,72 @@
+{
+  "title": "My Medical Profile",
+  "subtitle": "Critical information that will be available in emergencies",
+  "sections": {
+    "personalInfo": "Personal Information",
+    "allergies": "Allergies",
+    "conditions": "Medical Conditions",
+    "medications": "Current Medications",
+    "insurance": "Medical Insurance",
+    "organDonation": "Organ Donation"
+  },
+  "fields": {
+    "name": "Name",
+    "curp": "CURP",
+    "email": "Email",
+    "bloodType": "Blood Type",
+    "insuranceProvider": "Insurance Provider",
+    "insurancePolicy": "Policy Number",
+    "insurancePhone": "Emergency Phone",
+    "selectedInsurance": "Selected insurance"
+  },
+  "placeholders": {
+    "select": "Select...",
+    "allergies": "E.g.: Penicillin, Shellfish...",
+    "conditions": "E.g.: Type 2 Diabetes, Hypertension...",
+    "medications": "E.g.: Metformin 500mg, Losartan 50mg...",
+    "insuranceSearch": "Search insurance provider...",
+    "insurancePolicy": "Policy number",
+    "insurancePhone": "800 123 4567"
+  },
+  "descriptions": {
+    "allergies": "List of known allergies (medications, food, etc.)",
+    "conditions": "Chronic diseases or relevant conditions",
+    "medications": "Medications you take regularly",
+    "organDonation": "This preference will be visible in emergencies"
+  },
+  "emptyStates": {
+    "allergies": "No allergies recorded",
+    "conditions": "No conditions recorded",
+    "medications": "No medications recorded",
+    "insuranceSearch": "No insurance providers found"
+  },
+  "donor": {
+    "yes": "I am an organ donor",
+    "no": "I am not an organ donor"
+  },
+  "insuranceTypes": {
+    "HEALTH": "Health Insurance",
+    "HEALTH_LIFE": "Health and Life Insurance",
+    "ACCIDENT": "Accident Insurance",
+    "LIFE": "Life Insurance",
+    "GOVERNMENT": "Government",
+    "OTHER": "Other"
+  },
+  "networkModal": {
+    "title": "Network Hospitals",
+    "subtitle": "{{name}} - {{count}} hospitals",
+    "viewButton": "View network hospitals",
+    "noHospitals": "No hospitals found in the network",
+    "emergency": "Emergency",
+    "hours24": "24 hrs",
+    "close": "Close"
+  },
+  "buttons": {
+    "save": "Save Changes",
+    "saving": "Saving..."
+  },
+  "toast": {
+    "saveSuccess": "Profile updated successfully",
+    "saveError": "Error updating profile"
+  }
+}

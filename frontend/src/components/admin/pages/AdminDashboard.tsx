@@ -1,6 +1,8 @@
 // src/components/admin/pages/AdminDashboard.tsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from '../../../hooks/useLocale';
 import { useAdminAuth } from '../../../context/AdminAuthContext';
 import {
   getMetricsOverview,
@@ -26,6 +28,7 @@ interface MetricCardProps {
 }
 
 const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon, color, subtitle, onClick }) => {
+  const { t: tAdmin } = useTranslation('admin');
   const colors = {
     blue: 'bg-blue-500',
     green: 'bg-green-500',
@@ -58,7 +61,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon, col
       </div>
       {onClick && (
         <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-end text-sm text-gray-400">
-          <span>Ver detalles</span>
+          <span>{tAdmin('dashboard.view_details')}</span>
           <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
@@ -179,6 +182,8 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ type, title, description, t
 };
 
 const AdminDashboard: React.FC = () => {
+  const { t } = useTranslation('admin');
+  const { formatTime } = useLocale();
   const { admin } = useAdminAuth();
   const navigate = useNavigate();
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
@@ -226,11 +231,11 @@ const AdminDashboard: React.FC = () => {
       // Solo mostrar error si TODAS fallaron
       const allFailed = results.every(r => r.status === 'rejected');
       if (allFailed) {
-        setError('Error al cargar métricas. Por favor, intente de nuevo.');
+        setError(t('dashboard.error'));
       }
     } catch (err: any) {
       console.error('❌ Unexpected error loading metrics:', err);
-      setError(err.message || 'Error al cargar metricas');
+      setError(err.message || t('dashboard.error'));
     } finally {
       setIsLoading(false);
     }
@@ -241,7 +246,7 @@ const AdminDashboard: React.FC = () => {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando metricas...</p>
+          <p className="mt-4 text-gray-600">{t('dashboard.loading')}</p>
         </div>
       </div>
     );
@@ -255,7 +260,7 @@ const AdminDashboard: React.FC = () => {
         </svg>
         <p className="text-red-600 mb-4">{error}</p>
         <button onClick={loadMetrics} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-          Reintentar
+          {t('dashboard.retry')}
         </button>
       </div>
     );
@@ -266,43 +271,43 @@ const AdminDashboard: React.FC = () => {
       {/* Welcome header */}
       <div className="bg-gradient-to-r from-sky-600 to-blue-700 rounded-xl p-6 text-white">
         <h1 className="text-2xl font-bold mb-2">
-          Bienvenido, {admin?.name?.split(' ')[0]}
+          {t('dashboard.welcome', { name: admin?.name?.split(' ')[0] })}
         </h1>
         <p className="text-sky-100">
-          {ADMIN_ROLE_LABELS[admin?.role || 'VIEWER']} - Panel de Control Sistema VIDA
+          {ADMIN_ROLE_LABELS[admin?.role || 'VIEWER']} - {t('dashboard.subtitle')}
         </p>
       </div>
 
       {/* Main metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <MetricCard
-          title="Usuarios Totales"
+          title={t('dashboard.metric_users')}
           value={metrics?.users.total || 0}
-          subtitle={`${metrics?.users.active || 0} activos`}
+          subtitle={t('dashboard.metric_users_active', { count: metrics?.users.active || 0 })}
           icon={<svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>}
           color="blue"
           onClick={() => navigate('/admin/users')}
         />
         <MetricCard
-          title="Directivas Activas"
+          title={t('dashboard.metric_directives')}
           value={metrics?.directives.active || 0}
-          subtitle={`${metrics?.directives.total || 0} totales`}
+          subtitle={t('dashboard.metric_directives_total', { count: metrics?.directives.total || 0 })}
           icon={<svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>}
           color="green"
           onClick={() => navigate('/admin/users')}
         />
         <MetricCard
-          title="Accesos QR Hoy"
+          title={t('dashboard.metric_qr_today')}
           value={metrics?.emergency.accessesToday || 0}
-          subtitle={`${metrics?.emergency.totalAccesses || 0} totales`}
+          subtitle={t('dashboard.metric_qr_total', { count: metrics?.emergency.totalAccesses || 0 })}
           icon={<svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h2M4 12h2m10 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" /></svg>}
           color="purple"
           onClick={() => navigate('/admin/audit')}
         />
         <MetricCard
-          title="Alertas Activas"
+          title={t('dashboard.metric_alerts')}
           value={metrics?.emergency.activeAlerts || 0}
-          subtitle={`${metrics?.emergency.alertsToday || 0} hoy`}
+          subtitle={t('dashboard.metric_alerts_today', { count: metrics?.emergency.alertsToday || 0 })}
           icon={<svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>}
           color="red"
           onClick={() => navigate('/admin/audit')}
@@ -315,7 +320,7 @@ const AdminDashboard: React.FC = () => {
         {userMetrics && userMetrics.timeline.length > 0 && (
           <TimelineChart
             data={userMetrics.timeline}
-            title="Nuevos Usuarios (Ultimo Mes)"
+            title={t('dashboard.chart_new_users')}
           />
         )}
 
@@ -326,7 +331,7 @@ const AdminDashboard: React.FC = () => {
               label: role,
               value: count,
             }))}
-            title="Accesos por Rol Profesional"
+            title={t('dashboard.chart_accesses_by_role')}
             color="bg-purple-500"
           />
         )}
@@ -338,30 +343,30 @@ const AdminDashboard: React.FC = () => {
         {userMetrics && (
           <SimpleBarChart
             data={[
-              { label: 'Con Perfil', value: userMetrics.completeness.withProfile },
-              { label: 'Con Directiva', value: userMetrics.completeness.withDirective },
-              { label: 'Con Representantes', value: userMetrics.completeness.withRepresentatives },
+              { label: t('dashboard.completeness_with_profile'), value: userMetrics.completeness.withProfile },
+              { label: t('dashboard.completeness_with_directive'), value: userMetrics.completeness.withDirective },
+              { label: t('dashboard.completeness_with_reps'), value: userMetrics.completeness.withRepresentatives },
             ]}
-            title="Completitud de Usuarios"
+            title={t('dashboard.chart_user_completeness')}
             color="bg-green-500"
           />
         )}
 
         {/* Institutions */}
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Instituciones</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('dashboard.institutions_card')}</h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-gray-600">Total Registradas</span>
+              <span className="text-gray-600">{t('dashboard.institutions_total')}</span>
               <span className="text-2xl font-bold text-gray-900">{metrics?.institutions.total || 0}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-gray-600">Verificadas</span>
+              <span className="text-gray-600">{t('dashboard.institutions_verified')}</span>
               <span className="text-2xl font-bold text-green-600">{metrics?.institutions.verified || 0}</span>
             </div>
             <div className="pt-4 border-t">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">Tasa de verificacion</span>
+                <span className="text-gray-500">{t('dashboard.institutions_rate')}</span>
                 <span className="font-medium text-gray-900">
                   {metrics?.institutions.total
                     ? Math.round((metrics.institutions.verified / metrics.institutions.total) * 100)
@@ -375,7 +380,7 @@ const AdminDashboard: React.FC = () => {
         {/* Recent activity */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100">
           <div className="p-4 border-b">
-            <h3 className="text-lg font-semibold text-gray-900">Actividad Reciente</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('dashboard.recent_activity')}</h3>
           </div>
           <div className="divide-y max-h-64 overflow-y-auto">
             {emergencyMetrics?.accesses.recent.slice(0, 5).map((access, index) => (
@@ -383,16 +388,13 @@ const AdminDashboard: React.FC = () => {
                 key={index}
                 type="emergency"
                 title={access.accessorName}
-                description={`Acceso QR en ${access.institution || 'Institucion desconocida'}`}
-                time={new Date(access.accessedAt).toLocaleTimeString('es-MX', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
+                description={t('dashboard.qr_access_desc', { institution: access.institution || t('dashboard.unknown_institution') })}
+                time={formatTime(access.accessedAt)}
               />
             ))}
             {(!emergencyMetrics?.accesses.recent || emergencyMetrics.accesses.recent.length === 0) && (
               <div className="p-4 text-center text-gray-500">
-                No hay actividad reciente
+                {t('dashboard.no_recent_activity')}
               </div>
             )}
           </div>
@@ -403,19 +405,19 @@ const AdminDashboard: React.FC = () => {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-blue-50 rounded-xl p-4 text-center">
           <p className="text-3xl font-bold text-blue-600">{metrics?.users.newToday || 0}</p>
-          <p className="text-sm text-blue-600">Usuarios Hoy</p>
+          <p className="text-sm text-blue-600">{t('dashboard.quick_users_today')}</p>
         </div>
         <div className="bg-green-50 rounded-xl p-4 text-center">
           <p className="text-3xl font-bold text-green-600">{metrics?.users.verified || 0}</p>
-          <p className="text-sm text-green-600">Verificados</p>
+          <p className="text-sm text-green-600">{t('dashboard.quick_verified')}</p>
         </div>
         <div className="bg-purple-50 rounded-xl p-4 text-center">
           <p className="text-3xl font-bold text-purple-600">{emergencyMetrics?.accesses.total || 0}</p>
-          <p className="text-sm text-purple-600">Accesos Semana</p>
+          <p className="text-sm text-purple-600">{t('dashboard.quick_accesses_week')}</p>
         </div>
         <div className="bg-orange-50 rounded-xl p-4 text-center">
           <p className="text-3xl font-bold text-orange-600">{emergencyMetrics?.alerts.total || 0}</p>
-          <p className="text-sm text-orange-600">Alertas Semana</p>
+          <p className="text-sm text-orange-600">{t('dashboard.quick_alerts_week')}</p>
         </div>
       </div>
     </div>

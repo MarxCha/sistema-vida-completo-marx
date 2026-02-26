@@ -1,0 +1,162 @@
+{
+  "title": "Additional Features",
+  "nfc": {
+    "pageTitle": "Emergency NFC",
+    "pageDescription": "Write your medical information to NFC tags for bracelets, cards, or stickers",
+    "notSupported": {
+      "title": "NFC not available",
+      "description": "Your browser does not support Web NFC. To write NFC tags you need:",
+      "requirements": {
+        "android": "Android device with NFC",
+        "chrome": "Google Chrome version 89 or higher",
+        "https": "HTTPS connection"
+      },
+      "alternative": "Alternative: Use an NFC writing app like \"NFC Tools\" and copy the emergency URL."
+    },
+    "emergencyUrl": {
+      "label": "Your Emergency URL",
+      "copySuccess": "URL copied to clipboard"
+    },
+    "writeMode": {
+      "label": "Write type",
+      "urlOnly": {
+        "title": "URL only",
+        "description": "Writes only the link. When scanned, opens the full profile in the browser."
+      },
+      "fullData": {
+        "title": "Full data",
+        "description": "Includes name, blood type, allergies and emergency contact. Useful without internet."
+      }
+    },
+    "dataPreview": {
+      "title": "Data to write:",
+      "bloodType": "Blood type",
+      "allergies": "Allergies",
+      "conditions": "Conditions"
+    },
+    "buttons": {
+      "write": "Write NFC Tag",
+      "writing": "Bring the NFC tag closer...",
+      "cancel": "Cancel"
+    },
+    "errors": {
+      "noEmergencyId": "You do not have an emergency ID configured",
+      "writeError": "Error writing tag"
+    },
+    "status": {
+      "approaching": "Bring the NFC tag close to the phone...",
+      "success": "NFC tag written successfully!"
+    },
+    "instructions": {
+      "title": "Instructions",
+      "step1": "Get an NFC tag (bracelet, card, or sticker)",
+      "step2": "Select the write type",
+      "step3": "Press \"Write NFC Tag\"",
+      "step4": "Bring the tag to the back of your phone",
+      "step5": "Wait for confirmation"
+    },
+    "products": {
+      "title": "Recommended NFC Tags",
+      "bracelet": {
+        "name": "NFC Bracelet",
+        "description": "Ideal for daily use, water resistant"
+      },
+      "card": {
+        "name": "NFC Card",
+        "description": "To carry in your wallet"
+      },
+      "sticker": {
+        "name": "NFC Sticker",
+        "description": "To stick on a helmet, phone or medical equipment"
+      }
+    },
+    "walletPromo": {
+      "title": "Digital Card",
+      "proBadge": "Pro",
+      "description": "Add your emergency card to Apple Wallet or Google Wallet"
+    }
+  },
+  "wallet": {
+    "pageTitle": "Digital Card",
+    "pageDescription": "Add your emergency card to Apple Wallet or Google Wallet",
+    "whyUse": {
+      "title": "Why use the digital card?",
+      "reason1": "Quick access from the lock screen",
+      "reason2": "Paramedics can scan your phone",
+      "reason3": "No need to unlock the device",
+      "reason4": "Works with NFC on modern iPhones"
+    },
+    "notAvailable": {
+      "title": "Not available yet",
+      "description": "Wallet passes are not yet configured on this server. In the meantime, you can use the QR code or NFC tags."
+    },
+    "apple": {
+      "title": "Apple Wallet",
+      "subtitle": "For iPhone and Apple Watch",
+      "notConfigured": "Not configured",
+      "add": "Add",
+      "downloading": "Downloading..."
+    },
+    "google": {
+      "title": "Google Wallet",
+      "subtitle": "For Android and Wear OS",
+      "notConfigured": "Not configured",
+      "add": "Add",
+      "loading": "Loading..."
+    },
+    "howItWorks": {
+      "title": "How does it work?",
+      "step1": "Add the card to your wallet by tapping the button",
+      "step2": "The card will appear in your Wallet app",
+      "step3": "In an emergency, medical staff can scan the QR code on the card",
+      "step4": "On iPhones, they can also use NFC (without unlocking)"
+    },
+    "requirements": "Apple Wallet requires iOS 9+ • Google Wallet requires Android 5+",
+    "errors": {
+      "generatePass": "Error generating pass",
+      "applePass": "Error downloading Apple Wallet pass",
+      "googlePass": "Error generating Google Wallet pass",
+      "googleUrl": "Could not get the pass URL"
+    }
+  },
+  "biometric": {
+    "sectionTitle": "Biometric Authentication",
+    "sectionSubtitle": "Face ID, Touch ID or Windows Hello",
+    "description": "Set up your fingerprint or facial recognition for quick and secure access. You can register multiple devices.",
+    "addDevice": "Add device",
+    "configuring": "Configuring...",
+    "emptyState": {
+      "title": "You have no biometric devices configured",
+      "hint": "Click \"Add device\" to set up Face ID or Touch ID"
+    },
+    "credential": {
+      "defaultName": "Biometric device",
+      "registered": "Registered",
+      "lastUsed": "Last used",
+      "never": "Never",
+      "deleteTitle": "Delete device"
+    },
+    "notSupported": {
+      "title": "Biometric authentication not available",
+      "description": "Your browser or device does not support biometric authentication (WebAuthn). Try using Chrome, Safari, Firefox or Edge on a device with Face ID, Touch ID or Windows Hello."
+    },
+    "security": {
+      "title": "Your security is our priority.",
+      "description": "Biometric data never leaves your device. Only a cryptographic key that verifies your identity is stored."
+    },
+    "confirmDelete": "Are you sure you want to delete this biometric credential?",
+    "errors": {
+      "getOptions": "Could not get registration options",
+      "verify": "Could not verify the credential",
+      "cancelled": "Registration was cancelled or access was not allowed",
+      "notSupported": "This device does not support biometric authentication",
+      "alreadyRegistered": "This credential is already registered",
+      "configure": "Error configuring biometric authentication",
+      "delete": "Error deleting the credential"
+    },
+    "toast": {
+      "success": "Biometric authentication configured successfully",
+      "deleted": "Credential deleted successfully"
+    }
+  }
+}

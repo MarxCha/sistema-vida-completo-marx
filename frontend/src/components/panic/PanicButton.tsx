@@ -1,5 +1,6 @@
 // src/components/panic/PanicButton.tsx
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface PanicButtonProps {
   onPanicActivated?: (result: any) => void;
@@ -14,6 +15,8 @@ const vibrate = (pattern: number | number[]) => {
 };
 
 export default function PanicButton({ onPanicActivated, onError }: PanicButtonProps) {
+  const { t } = useTranslation('emergency');
+
   const [isConfirming, setIsConfirming] = useState(false);
   const [isActivating, setIsActivating] = useState(false);
   const [countdown, setCountdown] = useState(3);
@@ -70,13 +73,13 @@ export default function PanicButton({ onPanicActivated, onError }: PanicButtonPr
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) {
-        throw new Error('No hay sesión activa');
+        throw new Error(t('panic.button.errors.no_session'));
       }
 
       // Get current location
       const position = await new Promise<GeolocationPosition>((resolve) => {
         navigator.geolocation.getCurrentPosition(
-          resolve, 
+          resolve,
           (error) => {
             console.warn('Geolocation error (using fallback):', error);
             // Fallback location (CDMX) for development/HTTP environment
@@ -92,7 +95,7 @@ export default function PanicButton({ onPanicActivated, onError }: PanicButtonPr
               },
               timestamp: Date.now()
             } as GeolocationPosition);
-          }, 
+          },
           {
             enableHighAccuracy: true,
             timeout: 10000,
@@ -121,14 +124,14 @@ export default function PanicButton({ onPanicActivated, onError }: PanicButtonPr
       // Check if response is OK before parsing
       if (!response.ok) {
         const errorText = await response.text();
-        let errorMessage = 'Error al activar alerta de pánico';
+        let errorMessage = t('panic.button.errors.activation_failed');
         try {
           const errorData = JSON.parse(errorText);
           errorMessage = errorData.error?.message || errorMessage;
         } catch {
           // Response is not JSON (likely HTML error page)
           console.error('Server returned non-JSON response:', errorText.substring(0, 200));
-          errorMessage = `Error del servidor (${response.status}): ${response.statusText}`;
+          errorMessage = `${t('panic.button.errors.server_error')} (${response.status}): ${response.statusText}`;
         }
         throw new Error(errorMessage);
       }
@@ -136,7 +139,7 @@ export default function PanicButton({ onPanicActivated, onError }: PanicButtonPr
       // Safely parse JSON response
       const responseText = await response.text();
       if (!responseText) {
-        throw new Error('El servidor no devolvió datos');
+        throw new Error(t('panic.button.errors.no_data'));
       }
 
       let data;
@@ -144,18 +147,18 @@ export default function PanicButton({ onPanicActivated, onError }: PanicButtonPr
         data = JSON.parse(responseText);
       } catch {
         console.error('Invalid JSON response:', responseText.substring(0, 200));
-        throw new Error('Respuesta inválida del servidor');
+        throw new Error(t('panic.button.errors.invalid_response'));
       }
 
       if (data.success) {
         onPanicActivated?.(data.data);
       } else {
-        throw new Error(data.error?.message || 'Error al activar alerta');
+        throw new Error(data.error?.message || t('panic.button.errors.activation_failed'));
       }
     } catch (error: any) {
       console.error('Error activating panic:', error);
       vibrate(500); // Error feedback
-      onError?.(error.message || 'No se pudo activar la alerta de pánico');
+      onError?.(error.message || t('panic.button.errors.could_not_activate'));
     } finally {
       setIsActivating(false);
       setIsConfirming(false);
@@ -225,9 +228,9 @@ export default function PanicButton({ onPanicActivated, onError }: PanicButtonPr
             </div>
           </div>
 
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Activando Alerta</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('panic.modal.confirming.title')}</h2>
           <p className="text-gray-600 mb-8">
-            Se notificará a tus representantes con tu ubicación actual
+            {t('panic.modal.confirming.description')}
           </p>
 
           <button
@@ -235,7 +238,7 @@ export default function PanicButton({ onPanicActivated, onError }: PanicButtonPr
             className="w-full py-4 bg-gray-100 text-gray-800 rounded-2xl font-semibold text-lg active:bg-gray-200 transition touch-manipulation"
             style={{ minHeight: '56px' }}
           >
-            Cancelar
+            {t('panic.modal.confirming.cancel')}
           </button>
         </div>
       </div>
@@ -262,7 +265,7 @@ export default function PanicButton({ onPanicActivated, onError }: PanicButtonPr
         {isExpanded ? (
           <div className="bg-white rounded-3xl p-4 shadow-2xl">
             <p className="text-center text-gray-600 text-sm mb-3">
-              Mantén presionado para activar
+              {t('panic.button.hold_to_activate')}
             </p>
 
             <div className="relative flex justify-center">
@@ -314,7 +317,7 @@ export default function PanicButton({ onPanicActivated, onError }: PanicButtonPr
               onClick={() => setIsExpanded(false)}
               className="w-full mt-4 py-3 text-gray-500 font-medium"
             >
-              Cerrar
+              {t('panic.button.close')}
             </button>
           </div>
         ) : (
@@ -323,7 +326,7 @@ export default function PanicButton({ onPanicActivated, onError }: PanicButtonPr
             {/* Hold instruction tooltip */}
             {isHolding && (
               <div className="absolute -top-12 left-1/2 -translate-x-1/2 bg-black/90 text-white text-sm px-4 py-2 rounded-xl whitespace-nowrap animate-fade-in">
-                Mantener presionado...
+                {t('panic.button.holding')}
               </div>
             )}
 

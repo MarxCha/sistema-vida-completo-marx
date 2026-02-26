@@ -1,0 +1,75 @@
+{
+  "auth": {
+    "registerSuccess": "Usuario registrado exitosamente. Verifica tu correo electrónico.",
+    "logoutSuccess": "Sesión cerrada exitosamente",
+    "allSessionsClosed": "Todas las sesiones han sido cerradas",
+    "passwordResetSent": "Si el email existe, recibirás instrucciones para restablecer tu contraseña",
+    "passwordResetSuccess": "Contraseña restablecida exitosamente",
+    "emailVerified": "Email verificado exitosamente",
+    "emailAlreadyRegistered": "Este correo electrónico ya está registrado",
+    "curpAlreadyRegistered": "Este CURP ya está registrado",
+    "curpInvalid": "El CURP es inválido",
+    "invalidCredentials": "Credenciales inválidas",
+    "accountDisabled": "Esta cuenta ha sido desactivada",
+    "invalidRefreshToken": "Token de refresco inválido",
+    "sessionExpired": "La sesión ha expirado",
+    "tokenRequired": "Token requerido",
+    "refreshTokenRequired": "Refresh token requerido"
+  },
+  "emergency": {
+    "invalidQR": "Token QR inválido",
+    "nameRequired": "Nombre del profesional requerido",
+    "roleRequired": "Rol del profesional requerido",
+    "patientNotFound": "No se encontró paciente con este código QR",
+    "accessGranted": "Acceso de emergencia autorizado",
+    "invalidAccessToken": "Token de acceso inválido o expirado",
+    "tooManyAttempts": "Demasiados intentos de acceso. Por favor espere un momento antes de intentar nuevamente."
+  },
+  "panic": {
+    "locationRequired": "Se requiere ubicación (latitude, longitude) para activar la alerta",
+    "invalidCoordinates": "Las coordenadas proporcionadas no son válidas",
+    "activated": "Alerta de pánico activada. Tus representantes han sido notificados.",
+    "cancelled": "Alerta de pánico cancelada exitosamente",
+    "notFound": "Alerta no encontrada",
+    "notActive": "Alerta no encontrada o ya no está activa"
+  },
+  "representatives": {
+    "created": "Representante creado exitosamente",
+    "updated": "Representante actualizado exitosamente",
+    "deleted": "Representante eliminado exitosamente",
+    "prioritiesUpdated": "Prioridades actualizadas exitosamente",
+    "spokespersonSet": "Portavoz de donación establecido exitosamente",
+    "notFound": "Representante no encontrado"
+  },
+  "directives": {
+    "draftCreated": "Borrador de voluntad anticipada creado exitosamente",
+    "documentUploaded": "Documento de voluntad anticipada cargado exitosamente",
+    "draftUpdated": "Borrador actualizado exitosamente",
+    "validated": "Directiva validada y activada exitosamente",
+    "revoked": "Directiva revocada exitosamente",
+    "draftDeleted": "Borrador eliminado exitosamente",
+    "notFound": "Directiva no encontrada"
+  },
+  "documents": {
+    "uploaded": "Documento subido exitosamente",
+    "updated": "Documento actualizado exitosamente",
+    "deleted": "Documento eliminado exitosamente",
+    "notFound": "Documento no encontrado",
+    "invalidFileType": "Tipo de archivo no permitido. Use PDF, imágenes (JPG, PNG) o documentos Word."
+  },
+  "payments": {
+    "noActiveSubscription": "No tienes una suscripción activa",
+    "subscriptionCancelled": "Suscripción cancelada",
+    "subscriptionReactivated": "Suscripción reactivada",
+    "paymentMethodSaved": "Método de pago guardado",
+    "invoiceGenerated": "Factura generada exitosamente"
+  },
+  "generic": {
+    "serverError": "Error interno del servidor",
+    "tooManyRequests": "Demasiadas solicitudes. Por favor espere.",
+    "notAuthorized": "No autorizado",
+    "tokenNotProvided": "Token de autorización no proporcionado",
+    "invalidTokenFormat": "Formato de token inválido",
+    "premiumRequired": "Esta función requiere una suscripción Premium"
+  }
+}

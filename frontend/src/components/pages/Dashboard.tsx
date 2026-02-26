@@ -18,8 +18,10 @@ import {
   FolderOpen,
   Eye
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function Dashboard() {
+  const { t } = useTranslation('dashboard');
   const { user } = useAuth();
 
   // Queries
@@ -89,18 +91,18 @@ export default function Dashboard() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold mb-1">
-              ¡Hola, {user?.name?.split(' ')[0]}!
+              {t('welcome', { name: user?.name?.split(' ')[0] })}
             </h1>
             <p className="text-vida-100">
-              Bienvenido a tu panel de control VIDA
+              {t('subtitle')}
             </p>
           </div>
-          <Link 
-            to="/emergency-qr" 
+          <Link
+            to="/emergency-qr"
             className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors"
           >
             <QrCode className="w-5 h-5" />
-            Ver mi QR de emergencia
+            {t('viewEmergencyQR')}
           </Link>
         </div>
       </div>
@@ -110,13 +112,13 @@ export default function Dashboard() {
         <div className="alert-warning">
           <AlertTriangle className="w-5 h-5 flex-shrink-0" />
           <div>
-            <p className="font-medium">Tu perfil está incompleto ({profileCompleteness}%)</p>
+            <p className="font-medium">{t('alerts.incompleteProfile', { percent: profileCompleteness })}</p>
             <p className="text-sm mt-1">
-              Completa tu información médica para que esté disponible en emergencias.
+              {t('alerts.completeInfo')}
             </p>
           </div>
           <Link to="/profile" className="btn-secondary text-sm ml-auto whitespace-nowrap">
-            Completar
+            {t('alerts.complete')}
           </Link>
         </div>
       )}
@@ -125,13 +127,13 @@ export default function Dashboard() {
         <div className="alert-info">
           <FileText className="w-5 h-5 flex-shrink-0" />
           <div>
-            <p className="font-medium">No tienes una voluntad anticipada activa</p>
+            <p className="font-medium">{t('alerts.noDirective')}</p>
             <p className="text-sm mt-1">
-              Crea tu voluntad anticipada para garantizar que tus decisiones sean respetadas.
+              {t('alerts.createDirectiveInfo')}
             </p>
           </div>
           <Link to="/directives/new" className="btn-primary text-sm ml-auto whitespace-nowrap">
-            Crear ahora
+            {t('alerts.createNow')}
           </Link>
         </div>
       )}
@@ -146,22 +148,22 @@ export default function Dashboard() {
             </div>
             <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-vida-600 transition-colors" />
           </div>
-          <h3 className="font-semibold text-gray-900 mb-1">Perfil Médico</h3>
+          <h3 className="font-semibold text-gray-900 mb-1">{t('cards.medicalProfile')}</h3>
           <div className="flex items-center gap-2 text-sm">
             {profileCompleteness === 100 ? (
               <>
                 <CheckCircle className="w-4 h-4 text-salud-500" />
-                <span className="text-salud-600">Completo</span>
+                <span className="text-salud-600">{t('cards.complete')}</span>
               </>
             ) : (
               <>
                 <Clock className="w-4 h-4 text-yellow-500" />
-                <span className="text-yellow-600">{profileCompleteness}% completado</span>
+                <span className="text-yellow-600">{t('cards.percentComplete', { percent: profileCompleteness })}</span>
               </>
             )}
           </div>
           <div className="mt-3 w-full bg-gray-200 rounded-full h-2">
-            <div 
+            <div
               className="bg-vida-500 h-2 rounded-full transition-all"
               style={{ width: `${profileCompleteness}%` }}
             ></div>
@@ -176,24 +178,24 @@ export default function Dashboard() {
             </div>
             <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-coral-600 transition-colors" />
           </div>
-          <h3 className="font-semibold text-gray-900 mb-1">Voluntad Anticipada</h3>
+          <h3 className="font-semibold text-gray-900 mb-1">{t('cards.directive')}</h3>
           <div className="flex items-center gap-2 text-sm">
             {hasActiveDirective ? (
               <>
                 <CheckCircle className="w-4 h-4 text-salud-500" />
-                <span className="text-salud-600">Activa</span>
+                <span className="text-salud-600">{t('cards.active')}</span>
               </>
             ) : (
               <>
                 <AlertTriangle className="w-4 h-4 text-yellow-500" />
-                <span className="text-yellow-600">Sin registrar</span>
+                <span className="text-yellow-600">{t('cards.notRegistered')}</span>
               </>
             )}
           </div>
           <p className="mt-2 text-xs text-gray-500">
-            {hasActiveDirective 
-              ? 'Tu voluntad anticipada está protegida'
-              : 'Registra tus preferencias médicas'}
+            {hasActiveDirective
+              ? t('cards.directiveProtected')
+              : t('cards.directiveRegister')}
           </p>
         </Link>
 
@@ -205,24 +207,26 @@ export default function Dashboard() {
             </div>
             <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-salud-600 transition-colors" />
           </div>
-          <h3 className="font-semibold text-gray-900 mb-1">Representantes</h3>
+          <h3 className="font-semibold text-gray-900 mb-1">{t('cards.representatives')}</h3>
           <div className="flex items-center gap-2 text-sm">
             {representatives.length > 0 ? (
               <>
                 <CheckCircle className="w-4 h-4 text-salud-500" />
-                <span className="text-salud-600">{representatives.length} registrado{representatives.length > 1 ? 's' : ''}</span>
+                <span className="text-salud-600">
+                  {t('cards.representativesCount', { count: representatives.length })}
+                </span>
               </>
             ) : (
               <>
                 <AlertTriangle className="w-4 h-4 text-yellow-500" />
-                <span className="text-yellow-600">Sin registrar</span>
+                <span className="text-yellow-600">{t('cards.notRegistered')}</span>
               </>
             )}
           </div>
           <p className="mt-2 text-xs text-gray-500">
             {representatives.length > 0
-              ? `${representatives[0]?.name} (primario)`
-              : 'Designa a tus representantes'}
+              ? `${representatives[0]?.name} ${t('cards.representativesPrimary')}`
+              : t('cards.representativesDesignate')}
           </p>
         </Link>
 
@@ -234,29 +238,31 @@ export default function Dashboard() {
             </div>
             <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-amber-600 transition-colors" />
           </div>
-          <h3 className="font-semibold text-gray-900 mb-1">Mis Documentos</h3>
+          <h3 className="font-semibold text-gray-900 mb-1">{t('cards.documents')}</h3>
           <div className="flex items-center gap-2 text-sm">
             {documents.length > 0 ? (
               <>
                 <CheckCircle className="w-4 h-4 text-salud-500" />
-                <span className="text-salud-600">{documents.length} documento{documents.length > 1 ? 's' : ''}</span>
+                <span className="text-salud-600">
+                  {t('cards.documentsCount', { count: documents.length })}
+                </span>
               </>
             ) : (
               <>
                 <Clock className="w-4 h-4 text-gray-400" />
-                <span className="text-gray-500">Sin documentos</span>
+                <span className="text-gray-500">{t('cards.noDocuments')}</span>
               </>
             )}
           </div>
           {visibleDocuments.length > 0 && (
             <div className="mt-2 flex items-center gap-1 text-xs text-amber-600">
               <Eye className="w-3 h-3" />
-              <span>{visibleDocuments.length} visible{visibleDocuments.length > 1 ? 's' : ''} en emergencias</span>
+              <span>{t('cards.documentsVisible', { count: visibleDocuments.length })}</span>
             </div>
           )}
           {documents.length === 0 && (
             <p className="mt-2 text-xs text-gray-500">
-              Sube tu historial clínico y estudios
+              {t('cards.documentsUpload')}
             </p>
           )}
         </Link>
@@ -268,37 +274,37 @@ export default function Dashboard() {
         <div className="card">
           <div className="flex items-center gap-3 mb-4">
             <Heart className="w-5 h-5 text-coral-500" />
-            <h3 className="font-semibold text-gray-900">Información Crítica</h3>
+            <h3 className="font-semibold text-gray-900">{t('criticalInfo.title')}</h3>
           </div>
           {profile ? (
             <div className="space-y-3">
               <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                <span className="text-gray-600">Tipo de sangre</span>
+                <span className="text-gray-600">{t('criticalInfo.bloodType')}</span>
                 <span className="font-medium text-gray-900">
-                  {profile.bloodType || <span className="text-gray-400">No especificado</span>}
+                  {profile.bloodType || <span className="text-gray-400">{t('criticalInfo.notSpecified')}</span>}
                 </span>
               </div>
               <div className="py-2 border-b border-gray-100">
-                <span className="text-gray-600">Alergias</span>
+                <span className="text-gray-600">{t('criticalInfo.allergies')}</span>
                 <div className="mt-1 flex flex-wrap gap-1">
                   {profile.allergies.length > 0 ? (
-                    profile.allergies.map((allergy, i) => (
+                    profile.allergies.map((allergy: string, i: number) => (
                       <span key={i} className="badge-danger">{allergy}</span>
                     ))
                   ) : (
-                    <span className="text-gray-400 text-sm">Ninguna registrada</span>
+                    <span className="text-gray-400 text-sm">{t('criticalInfo.noneRegistered')}</span>
                   )}
                 </div>
               </div>
               <div className="flex justify-between items-center py-2">
-                <span className="text-gray-600">Donador de órganos</span>
+                <span className="text-gray-600">{t('criticalInfo.donor')}</span>
                 <span className={`font-medium ${profile.isDonor ? 'text-salud-600' : 'text-gray-900'}`}>
-                  {profile.isDonor ? 'Sí' : 'No'}
+                  {profile.isDonor ? t('criticalInfo.yes') : t('criticalInfo.no')}
                 </span>
               </div>
             </div>
           ) : (
-            <p className="text-gray-500">Carga tu información médica para verla aquí</p>
+            <p className="text-gray-500">{t('criticalInfo.loadInfo')}</p>
           )}
         </div>
 
@@ -307,15 +313,15 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <History className="w-5 h-5 text-vida-500" />
-              <h3 className="font-semibold text-gray-900">Accesos Recientes</h3>
+              <h3 className="font-semibold text-gray-900">{t('recentAccesses.title')}</h3>
             </div>
             <Link to="/access-history" className="text-sm text-vida-600 hover:underline">
-              Ver todo
+              {t('recentAccesses.viewAll')}
             </Link>
           </div>
           {recentAccesses.length > 0 ? (
             <div className="space-y-3">
-              {recentAccesses.map((access, i) => (
+              {recentAccesses.map((access: any, i: number) => (
                 <div key={i} className="flex items-start gap-3 py-2 border-b border-gray-100 last:border-0">
                   <div className="w-8 h-8 rounded-full bg-vida-100 flex items-center justify-center flex-shrink-0">
                     <Shield className="w-4 h-4 text-vida-600" />
@@ -325,7 +331,7 @@ export default function Dashboard() {
                       {access.accessorName}
                     </p>
                     <p className="text-xs text-gray-500">
-                      {access.accessorRole} • {access.institutionName || 'Institución no especificada'}
+                      {access.accessorRole} • {access.institutionName || t('recentAccesses.unknownInstitution')}
                     </p>
                   </div>
                   <span className="text-xs text-gray-400 whitespace-nowrap">
@@ -340,7 +346,7 @@ export default function Dashboard() {
           ) : (
             <div className="text-center py-6 text-gray-500">
               <Shield className="w-10 h-10 mx-auto mb-2 text-gray-300" />
-              <p className="text-sm">Aún no hay accesos registrados</p>
+              <p className="text-sm">{t('recentAccesses.noAccesses')}</p>
             </div>
           )}
         </div>
@@ -350,27 +356,16 @@ export default function Dashboard() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <FolderOpen className="w-5 h-5 text-amber-500" />
-              <h3 className="font-semibold text-gray-900">Documentos Recientes</h3>
+              <h3 className="font-semibold text-gray-900">{t('recentDocuments.title')}</h3>
             </div>
             <Link to="/documents" className="text-sm text-amber-600 hover:underline">
-              Ver todos
+              {t('recentDocuments.viewAll')}
             </Link>
           </div>
           {recentDocuments.length > 0 ? (
             <div className="space-y-3">
               {recentDocuments.map((doc: any, i: number) => {
-                const categoryLabels: Record<string, string> = {
-                  CLINICAL_HISTORY: 'Historial',
-                  LAB_RESULTS: 'Lab',
-                  IMAGING: 'Imagen',
-                  PRESCRIPTIONS: 'Receta',
-                  DISCHARGE_SUMMARY: 'Alta',
-                  SURGICAL_REPORT: 'Cirugía',
-                  VACCINATION: 'Vacuna',
-                  INSURANCE: 'Seguro',
-                  IDENTIFICATION: 'ID',
-                  OTHER: 'Otro',
-                };
+                const categoryLabel = t(`recentDocuments.categories.${doc.category}`, { defaultValue: doc.category });
                 return (
                   <div key={i} className="flex items-start gap-3 py-2 border-b border-gray-100 last:border-0">
                     <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center flex-shrink-0">
@@ -381,11 +376,11 @@ export default function Dashboard() {
                         {doc.title}
                       </p>
                       <div className="flex items-center gap-2 text-xs text-gray-500">
-                        <span>{categoryLabels[doc.category] || doc.category}</span>
+                        <span>{categoryLabel}</span>
                         {doc.isVisible && (
                           <span className="flex items-center gap-0.5 text-amber-600">
                             <Eye className="w-3 h-3" />
-                            Visible
+                            {t('recentDocuments.visible')}
                           </span>
                         )}
                       </div>
@@ -403,9 +398,9 @@ export default function Dashboard() {
           ) : (
             <div className="text-center py-6 text-gray-500">
               <FolderOpen className="w-10 h-10 mx-auto mb-2 text-gray-300" />
-              <p className="text-sm">No tienes documentos cargados</p>
+              <p className="text-sm">{t('recentDocuments.noDocuments')}</p>
               <Link to="/documents" className="text-sm text-amber-600 hover:underline mt-2 inline-block">
-                Subir primer documento
+                {t('recentDocuments.uploadFirst')}
               </Link>
             </div>
           )}

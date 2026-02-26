@@ -1,0 +1,19 @@
+{
+  "subjects": {
+    "emailVerification": "Verify your account - VIDA System",
+    "passwordReset": "Reset your password - VIDA System",
+    "passwordChanged": "⚠️ Your password was changed - VIDA System",
+    "welcome": "Welcome to VIDA System! Your account is ready",
+    "subscriptionCreated": "Your {{planName}} plan is active!",
+    "subscriptionCancelled": "Your subscription has been cancelled",
+    "securityAlert": "Security alert - VIDA System",
+    "paymentFailed": "⚠️ Problem with your payment",
+    "emergencyAccess": "🚨 Emergency access to your information"
+  },
+  "common": {
+    "greeting": "Hello, {{name}}",
+    "autoEmail": "This is an automated email, please do not reply directly.",
+    "copyright": "© {{year}} VIDA System. All rights reserved.",
+    "subtitle": "Information Will for Advance Decisions"
+  }
+}

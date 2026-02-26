@@ -1,0 +1,66 @@
+{
+  "title": "Representatives",
+  "subtitle": "People who can make medical decisions on your behalf",
+  "addButton": "Add",
+  "infoBanner": "Representatives will be automatically notified when someone accesses your medical information in an emergency. You can designate up to 5 representatives.",
+  "emptyState": {
+    "title": "No representatives",
+    "description": "Add trusted people for emergencies",
+    "addFirst": "Add first representative"
+  },
+  "relations": {
+    "Esposa": "Wife",
+    "Esposo": "Husband",
+    "Hijo": "Son",
+    "Hija": "Daughter",
+    "Padre": "Father",
+    "Madre": "Mother",
+    "Hermano": "Brother",
+    "Hermana": "Sister",
+    "Abuelo": "Grandfather",
+    "Abuela": "Grandmother",
+    "Amigo": "Friend",
+    "Apoderado Legal": "Legal Guardian",
+    "Otro": "Other"
+  },
+  "badges": {
+    "notifyOnEmergency": "Notify in emergency",
+    "medicalDecisions": "Medical decisions",
+    "donorSpokesperson": "Donation spokesperson"
+  },
+  "priorityNote": "The order of representatives indicates the contact priority in an emergency. The first representative will be contacted first.",
+  "modal": {
+    "titleCreate": "New representative",
+    "titleEdit": "Edit representative",
+    "fields": {
+      "name": "Full name *",
+      "phone": "Phone *",
+      "email": "Email address",
+      "relation": "Relation *"
+    },
+    "phonePlaceholder": "+52 55 1234 5678",
+    "checkboxes": {
+      "notifyOnEmergency": "Notify in case of emergency",
+      "canMakeMedicalDecisions": "Can make medical decisions on my behalf",
+      "isDonorSpokesperson": "Is organ donation spokesperson"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "save": "Add",
+      "update": "Update",
+      "saving": "Saving..."
+    }
+  },
+  "tooltips": {
+    "setDonorSpokesperson": "Designate as donation spokesperson"
+  },
+  "confirm": {
+    "delete": "Are you sure you want to delete this representative?"
+  },
+  "errors": {
+    "loading": "Error loading representatives",
+    "saving": "Error saving representative",
+    "deleting": "Error deleting representative",
+    "updatingSpokesperson": "Error updating spokesperson"
+  }
+}

@@ -1,5 +1,7 @@
 // src/components/admin/pages/AdminSubscriptions.tsx
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from '../../../hooks/useLocale';
 import {
   DollarSign,
   Users,
@@ -82,22 +84,11 @@ const statusColors: Record<string, string> = {
   REFUNDED: 'bg-gray-100 text-gray-800',
 };
 
-const statusLabels: Record<string, string> = {
-  ACTIVE: 'Activa',
-  TRIALING: 'En prueba',
-  PAST_DUE: 'Pago pendiente',
-  CANCELED: 'Cancelada',
-  UNPAID: 'Sin pagar',
-  INCOMPLETE: 'Incompleta',
-  PAUSED: 'Pausada',
-  PENDING: 'Pendiente',
-  PROCESSING: 'Procesando',
-  SUCCEEDED: 'Exitoso',
-  FAILED: 'Fallido',
-  REFUNDED: 'Reembolsado',
-};
+// Status labels are now handled via i18n (subscriptions.status_*)
 
 export default function AdminSubscriptions() {
+  const { t } = useTranslation('admin');
+  const { formatCurrency: fmtCurrency, formatDate: fmtDate } = useLocale();
   const [activeTab, setActiveTab] = useState<'overview' | 'subscriptions' | 'payments'>('overview');
   const [stats, setStats] = useState<SubscriptionStats | null>(null);
   const [subscriptions, setSubscriptions] = useState<SubscriptionRecord[]>([]);
@@ -165,20 +156,8 @@ export default function AdminSubscriptions() {
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'MXN',
-    }).format(amount);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-MX', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  };
+  const formatCurrency = (amount: number) => fmtCurrency(amount);
+  const formatDate = (dateString: string) => fmtDate(dateString);
 
   const renderOverview = () => (
     <div className="space-y-6">
@@ -187,7 +166,7 @@ export default function AdminSubscriptions() {
         <div className="bg-white rounded-xl shadow-sm border p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Ingresos Totales</p>
+              <p className="text-sm text-gray-500">{t('subscriptions.stat_total_revenue')}</p>
               <p className="text-2xl font-bold text-gray-900 mt-1">
                 {formatCurrency(stats?.totalRevenue || 0)}
               </p>
@@ -199,14 +178,14 @@ export default function AdminSubscriptions() {
           <div className="mt-4 flex items-center text-sm">
             <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
             <span className="text-green-600 font-medium">+{stats?.revenueGrowth || 0}%</span>
-            <span className="text-gray-500 ml-1">vs mes anterior</span>
+            <span className="text-gray-500 ml-1">{t('subscriptions.vs_previous_month')}</span>
           </div>
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Ingresos del Mes</p>
+              <p className="text-sm text-gray-500">{t('subscriptions.stat_monthly_revenue')}</p>
               <p className="text-2xl font-bold text-gray-900 mt-1">
                 {formatCurrency(stats?.monthlyRevenue || 0)}
               </p>
@@ -216,7 +195,7 @@ export default function AdminSubscriptions() {
             </div>
           </div>
           <div className="mt-4 flex items-center text-sm">
-            <span className="text-gray-500">Promedio por usuario:</span>
+            <span className="text-gray-500">{t('subscriptions.avg_per_user')}</span>
             <span className="text-gray-900 font-medium ml-1">
               {formatCurrency(stats?.avgRevenuePerUser || 0)}
             </span>
@@ -226,7 +205,7 @@ export default function AdminSubscriptions() {
         <div className="bg-white rounded-xl shadow-sm border p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Suscripciones Activas</p>
+              <p className="text-sm text-gray-500">{t('subscriptions.stat_active_subs')}</p>
               <p className="text-2xl font-bold text-gray-900 mt-1">
                 {stats?.activeSubscriptions || 0}
               </p>
@@ -238,14 +217,14 @@ export default function AdminSubscriptions() {
           <div className="mt-4 flex items-center text-sm">
             <UserCheck className="w-4 h-4 text-blue-500 mr-1" />
             <span className="text-blue-600 font-medium">{stats?.trialSubscriptions || 0}</span>
-            <span className="text-gray-500 ml-1">en período de prueba</span>
+            <span className="text-gray-500 ml-1">{t('subscriptions.in_trial')}</span>
           </div>
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500">Tasa de Conversión</p>
+              <p className="text-sm text-gray-500">{t('subscriptions.stat_conversion')}</p>
               <p className="text-2xl font-bold text-gray-900 mt-1">
                 {stats?.conversionRate || 0}%
               </p>
@@ -255,7 +234,7 @@ export default function AdminSubscriptions() {
             </div>
           </div>
           <div className="mt-4 flex items-center text-sm">
-            <span className="text-gray-500">De prueba a pago</span>
+            <span className="text-gray-500">{t('subscriptions.trial_to_paid')}</span>
           </div>
         </div>
       </div>
@@ -264,33 +243,33 @@ export default function AdminSubscriptions() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Subscription Breakdown */}
         <div className="bg-white rounded-xl shadow-sm border p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Desglose de Suscripciones</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('subscriptions.breakdown_title')}</h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div className="flex items-center gap-3">
                 <CheckCircle className="w-5 h-5 text-green-500" />
-                <span className="text-gray-700">Activas</span>
+                <span className="text-gray-700">{t('subscriptions.breakdown_active')}</span>
               </div>
               <span className="font-semibold text-gray-900">{stats?.activeSubscriptions || 0}</span>
             </div>
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div className="flex items-center gap-3">
                 <Clock className="w-5 h-5 text-blue-500" />
-                <span className="text-gray-700">En prueba</span>
+                <span className="text-gray-700">{t('subscriptions.breakdown_trial')}</span>
               </div>
               <span className="font-semibold text-gray-900">{stats?.trialSubscriptions || 0}</span>
             </div>
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
               <div className="flex items-center gap-3">
                 <XCircle className="w-5 h-5 text-gray-500" />
-                <span className="text-gray-700">Canceladas</span>
+                <span className="text-gray-700">{t('subscriptions.breakdown_cancelled')}</span>
               </div>
               <span className="font-semibold text-gray-900">{stats?.cancelledSubscriptions || 0}</span>
             </div>
             <div className="flex items-center justify-between p-3 bg-vida-50 rounded-lg border border-vida-200">
               <div className="flex items-center gap-3">
                 <Users className="w-5 h-5 text-vida-600" />
-                <span className="text-vida-700 font-medium">Total</span>
+                <span className="text-vida-700 font-medium">{t('subscriptions.breakdown_total')}</span>
               </div>
               <span className="font-bold text-vida-700">{stats?.totalSubscriptions || 0}</span>
             </div>
@@ -299,7 +278,7 @@ export default function AdminSubscriptions() {
 
         {/* Quick Actions */}
         <div className="bg-white rounded-xl shadow-sm border p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('subscriptions.quick_actions')}</h3>
           <div className="space-y-3">
             <button
               onClick={() => setActiveTab('subscriptions')}
@@ -307,7 +286,7 @@ export default function AdminSubscriptions() {
             >
               <div className="flex items-center gap-3">
                 <Crown className="w-5 h-5 text-purple-600" />
-                <span className="text-gray-700">Ver todas las suscripciones</span>
+                <span className="text-gray-700">{t('subscriptions.action_view_subs')}</span>
               </div>
               <ChevronRight className="w-5 h-5 text-gray-400" />
             </button>
@@ -317,7 +296,7 @@ export default function AdminSubscriptions() {
             >
               <div className="flex items-center gap-3">
                 <CreditCard className="w-5 h-5 text-green-600" />
-                <span className="text-gray-700">Ver historial de pagos</span>
+                <span className="text-gray-700">{t('subscriptions.action_view_payments')}</span>
               </div>
               <ChevronRight className="w-5 h-5 text-gray-400" />
             </button>
@@ -327,7 +306,7 @@ export default function AdminSubscriptions() {
             >
               <div className="flex items-center gap-3">
                 <DollarSign className="w-5 h-5 text-blue-600" />
-                <span className="text-gray-700">Abrir Stripe Dashboard</span>
+                <span className="text-gray-700">{t('subscriptions.action_stripe')}</span>
               </div>
               <ChevronRight className="w-5 h-5 text-gray-400" />
             </button>
@@ -340,8 +319,7 @@ export default function AdminSubscriptions() {
         <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
         <div>
           <p className="text-sm text-blue-800">
-            <strong>Nota:</strong> Los datos de ingresos se actualizan en tiempo real desde Stripe.
-            Para ver reportes detallados y realizar reembolsos, accede al Dashboard de Stripe.
+            <strong>Nota:</strong> {t('subscriptions.note_stripe')}
           </p>
         </div>
       </div>
@@ -356,7 +334,7 @@ export default function AdminSubscriptions() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input
             type="text"
-            placeholder="Buscar por nombre o email..."
+            placeholder={t('subscriptions.search_placeholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-vida-500 focus:border-vida-500"
@@ -367,18 +345,18 @@ export default function AdminSubscriptions() {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-vida-500 focus:border-vida-500"
         >
-          <option value="all">Todos los estados</option>
-          <option value="ACTIVE">Activas</option>
-          <option value="TRIALING">En prueba</option>
-          <option value="PAST_DUE">Pago pendiente</option>
-          <option value="CANCELED">Canceladas</option>
+          <option value="all">{t('subscriptions.filter_all')}</option>
+          <option value="ACTIVE">{t('subscriptions.filter_active')}</option>
+          <option value="TRIALING">{t('subscriptions.filter_trial')}</option>
+          <option value="PAST_DUE">{t('subscriptions.filter_past_due')}</option>
+          <option value="CANCELED">{t('subscriptions.filter_cancelled')}</option>
         </select>
         <button
           onClick={fetchData}
           className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-900 border rounded-lg hover:bg-gray-50"
         >
           <RefreshCw className="w-4 h-4" />
-          Actualizar
+          {t('subscriptions.btn_refresh')}
         </button>
       </div>
 
@@ -388,12 +366,12 @@ export default function AdminSubscriptions() {
           <table className="w-full">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usuario</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Plan</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ciclo</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Período</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Creada</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('subscriptions.col_user')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('subscriptions.col_plan')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('subscriptions.col_cycle')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('subscriptions.col_status')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('subscriptions.col_period')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('subscriptions.col_created')}</th>
               </tr>
             </thead>
             <tbody className="divide-y">
@@ -401,8 +379,8 @@ export default function AdminSubscriptions() {
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                     <Crown className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-                    <p>No hay suscripciones premium aún</p>
-                    <p className="text-sm mt-1">Las suscripciones aparecerán aquí cuando los usuarios actualicen a Premium</p>
+                    <p>{t('subscriptions.empty_subs')}</p>
+                    <p className="text-sm mt-1">{t('subscriptions.empty_subs_hint')}</p>
                   </td>
                 </tr>
               ) : (
@@ -421,11 +399,11 @@ export default function AdminSubscriptions() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-gray-600">
-                      {sub.billingCycle === 'MONTHLY' ? 'Mensual' : 'Anual'}
+                      {sub.billingCycle === 'MONTHLY' ? t('subscriptions.cycle_monthly') : t('subscriptions.cycle_annual')}
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${statusColors[sub.status]}`}>
-                        {statusLabels[sub.status]}
+                        {t(`subscriptions.status_${sub.status.toLowerCase()}`, { defaultValue: sub.status })}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
@@ -445,7 +423,7 @@ export default function AdminSubscriptions() {
         {totalPages > 1 && (
           <div className="px-6 py-4 border-t flex items-center justify-between">
             <p className="text-sm text-gray-500">
-              Página {currentPage} de {totalPages}
+              {t('subscriptions.pagination_page', { current: currentPage, total: totalPages })}
             </p>
             <div className="flex gap-2">
               <button
@@ -488,15 +466,15 @@ export default function AdminSubscriptions() {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-vida-500 focus:border-vida-500"
         >
-          <option value="all">Todos los estados</option>
-          <option value="SUCCEEDED">Exitosos</option>
-          <option value="PENDING">Pendientes</option>
-          <option value="FAILED">Fallidos</option>
-          <option value="REFUNDED">Reembolsados</option>
+          <option value="all">{t('subscriptions.filter_all')}</option>
+          <option value="SUCCEEDED">{t('subscriptions.filter_succeeded')}</option>
+          <option value="PENDING">{t('subscriptions.filter_pending')}</option>
+          <option value="FAILED">{t('subscriptions.filter_failed')}</option>
+          <option value="REFUNDED">{t('subscriptions.filter_refunded')}</option>
         </select>
         <button className="flex items-center gap-2 px-4 py-2 bg-vida-600 text-white rounded-lg hover:bg-vida-700">
           <Download className="w-4 h-4" />
-          Exportar
+          {t('subscriptions.btn_export')}
         </button>
       </div>
 
@@ -506,12 +484,12 @@ export default function AdminSubscriptions() {
           <table className="w-full">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usuario</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Monto</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Método</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Descripción</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('subscriptions.col_user')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('subscriptions.col_amount')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('subscriptions.col_method')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('subscriptions.col_status')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('subscriptions.col_description')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{t('subscriptions.col_date')}</th>
               </tr>
             </thead>
             <tbody className="divide-y">
@@ -519,8 +497,8 @@ export default function AdminSubscriptions() {
                 <tr>
                   <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                     <CreditCard className="w-12 h-12 mx-auto text-gray-300 mb-3" />
-                    <p>No hay pagos registrados aún</p>
-                    <p className="text-sm mt-1">Los pagos aparecerán aquí cuando los usuarios realicen transacciones</p>
+                    <p>{t('subscriptions.empty_payments')}</p>
+                    <p className="text-sm mt-1">{t('subscriptions.empty_payments_hint')}</p>
                   </td>
                 </tr>
               ) : (
@@ -538,12 +516,12 @@ export default function AdminSubscriptions() {
                     <td className="px-6 py-4">
                       <span className="inline-flex items-center gap-1 text-gray-600">
                         <CreditCard className="w-4 h-4" />
-                        {payment.paymentMethod === 'CARD' ? 'Tarjeta' : 'OXXO'}
+                        {payment.paymentMethod === 'CARD' ? t('subscriptions.method_card') : t('subscriptions.method_oxxo')}
                       </span>
                     </td>
                     <td className="px-6 py-4">
                       <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${statusColors[payment.status]}`}>
-                        {statusLabels[payment.status]}
+                        {t(`subscriptions.status_${payment.status.toLowerCase()}`, { defaultValue: payment.status })}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
@@ -563,7 +541,7 @@ export default function AdminSubscriptions() {
         {totalPages > 1 && (
           <div className="px-6 py-4 border-t flex items-center justify-between">
             <p className="text-sm text-gray-500">
-              Página {currentPage} de {totalPages}
+              {t('subscriptions.pagination_page', { current: currentPage, total: totalPages })}
             </p>
             <div className="flex gap-2">
               <button
@@ -592,8 +570,8 @@ export default function AdminSubscriptions() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Ingresos y Suscripciones</h1>
-          <p className="text-gray-500 mt-1">Gestiona los pagos y suscripciones de usuarios</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('subscriptions.title')}</h1>
+          <p className="text-gray-500 mt-1">{t('subscriptions.subtitle')}</p>
         </div>
       </div>
 
@@ -608,7 +586,7 @@ export default function AdminSubscriptions() {
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
-            Resumen
+            {t('subscriptions.tab_overview')}
           </button>
           <button
             onClick={() => { setActiveTab('subscriptions'); setCurrentPage(1); }}
@@ -618,7 +596,7 @@ export default function AdminSubscriptions() {
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
-            Suscripciones
+            {t('subscriptions.tab_subscriptions')}
           </button>
           <button
             onClick={() => { setActiveTab('payments'); setCurrentPage(1); }}
@@ -628,7 +606,7 @@ export default function AdminSubscriptions() {
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
-            Pagos
+            {t('subscriptions.tab_payments')}
           </button>
         </nav>
       </div>

@@ -1,7 +1,9 @@
 // src/components/pages/Notifications.tsx
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNotifications } from '../../context/NotificationContext';
 import { VidaNotification } from '../../hooks/usePushNotifications';
+import { useLocale } from '../../hooks/useLocale';
 import {
   Bell,
   BellOff,
@@ -19,60 +21,11 @@ import { Link } from 'react-router-dom';
 
 type FilterType = 'all' | 'unread' | 'PANIC_ALERT' | 'QR_ACCESS' | 'SYSTEM' | 'REPRESENTATIVE' | 'DOCUMENT';
 
-const NOTIFICATION_CONFIG: Record<VidaNotification['type'], {
-  icon: typeof Bell;
-  color: string;
-  bgColor: string;
-  label: string;
-}> = {
-  PANIC_ALERT: {
-    icon: AlertTriangle,
-    color: 'text-red-600',
-    bgColor: 'bg-red-100',
-    label: 'Alerta de Panico'
-  },
-  QR_ACCESS: {
-    icon: QrCode,
-    color: 'text-blue-600',
-    bgColor: 'bg-blue-100',
-    label: 'Acceso QR'
-  },
-  SYSTEM: {
-    icon: Bell,
-    color: 'text-gray-600',
-    bgColor: 'bg-gray-100',
-    label: 'Sistema'
-  },
-  REPRESENTATIVE: {
-    icon: Users,
-    color: 'text-purple-600',
-    bgColor: 'bg-purple-100',
-    label: 'Representante'
-  },
-  DOCUMENT: {
-    icon: FileText,
-    color: 'text-amber-600',
-    bgColor: 'bg-amber-100',
-    label: 'Documento'
-  }
-};
-
-function formatTimeAgo(date: Date): string {
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffMins = Math.floor(diffMs / 60000);
-  const diffHours = Math.floor(diffMs / 3600000);
-  const diffDays = Math.floor(diffMs / 86400000);
-
-  if (diffMins < 1) return 'Ahora';
-  if (diffMins < 60) return `Hace ${diffMins} min`;
-  if (diffHours < 24) return `Hace ${diffHours}h`;
-  if (diffDays < 7) return `Hace ${diffDays}d`;
-
-  return date.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
-}
-
 export default function Notifications() {
+  const { t } = useTranslation('notifications');
+  const { t: tCommon } = useTranslation('common');
+  const { formatDate } = useLocale();
+
   const {
     notifications,
     unreadCount,
@@ -88,6 +41,59 @@ export default function Notifications() {
   const [filter, setFilter] = useState<FilterType>('all');
   const [showConfirmClear, setShowConfirmClear] = useState(false);
 
+  const NOTIFICATION_CONFIG: Record<VidaNotification['type'], {
+    icon: typeof Bell;
+    color: string;
+    bgColor: string;
+    label: string;
+  }> = {
+    PANIC_ALERT: {
+      icon: AlertTriangle,
+      color: 'text-red-600',
+      bgColor: 'bg-red-100',
+      label: t('types.PANIC_ALERT')
+    },
+    QR_ACCESS: {
+      icon: QrCode,
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-100',
+      label: t('types.QR_ACCESS')
+    },
+    SYSTEM: {
+      icon: Bell,
+      color: 'text-gray-600',
+      bgColor: 'bg-gray-100',
+      label: t('types.SYSTEM')
+    },
+    REPRESENTATIVE: {
+      icon: Users,
+      color: 'text-purple-600',
+      bgColor: 'bg-purple-100',
+      label: t('types.REPRESENTATIVE')
+    },
+    DOCUMENT: {
+      icon: FileText,
+      color: 'text-amber-600',
+      bgColor: 'bg-amber-100',
+      label: t('types.DOCUMENT')
+    }
+  };
+
+  function formatTimeAgo(date: Date): string {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return tCommon('time.now');
+    if (diffMins < 60) return tCommon('time.minutesAgo', { count: diffMins });
+    if (diffHours < 24) return tCommon('time.hoursAgo', { count: diffHours });
+    if (diffDays < 7) return tCommon('time.daysAgo', { count: diffDays });
+
+    return formatDate(date, { day: 'numeric', month: 'short' });
+  }
+
   // Filtrar notificaciones
   const filteredNotifications = notifications.filter(n => {
     if (filter === 'all') return true;
@@ -102,8 +108,8 @@ export default function Notifications() {
     const yesterday = new Date(Date.now() - 86400000).toDateString();
 
     let groupKey = date;
-    if (date === today) groupKey = 'Hoy';
-    else if (date === yesterday) groupKey = 'Ayer';
+    if (date === today) groupKey = t('groups.today');
+    else if (date === yesterday) groupKey = t('groups.yesterday');
 
     if (!groups[groupKey]) {
       groups[groupKey] = [];
@@ -124,11 +130,11 @@ export default function Notifications() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Notificaciones</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
           <p className="text-gray-600 mt-1">
             {unreadCount > 0
-              ? `${unreadCount} notificacion${unreadCount > 1 ? 'es' : ''} sin leer`
-              : 'Todas las notificaciones leidas'
+              ? t('unreadCount', { count: unreadCount })
+              : t('allRead')
             }
           </p>
         </div>
@@ -139,7 +145,7 @@ export default function Notifications() {
             className="btn-secondary flex items-center gap-2"
           >
             <Settings className="w-4 h-4" />
-            <span className="hidden sm:inline">Configurar</span>
+            <span className="hidden sm:inline">{t('configure')}</span>
           </Link>
           {unreadCount > 0 && (
             <button
@@ -147,7 +153,7 @@ export default function Notifications() {
               className="btn-secondary flex items-center gap-2"
             >
               <CheckCheck className="w-4 h-4" />
-              <span className="hidden sm:inline">Marcar todas leidas</span>
+              <span className="hidden sm:inline">{t('markAllRead')}</span>
             </button>
           )}
         </div>
@@ -161,16 +167,15 @@ export default function Notifications() {
               <BellOff className="w-6 h-6 text-amber-600" />
             </div>
             <div className="flex-1">
-              <h3 className="font-medium text-amber-900">Notificaciones deshabilitadas</h3>
+              <h3 className="font-medium text-amber-900">{t('permissionBanner.title')}</h3>
               <p className="text-sm text-amber-700 mt-1">
-                Activa las notificaciones para recibir alertas importantes sobre accesos a tu informacion
-                y alertas de emergencia, incluso cuando no estes usando la app.
+                {t('permissionBanner.description')}
               </p>
               <button
                 onClick={handleRequestPermission}
                 className="mt-3 bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-700 transition-colors"
               >
-                Activar notificaciones
+                {t('permissionBanner.enable')}
               </button>
             </div>
           </div>
@@ -181,11 +186,11 @@ export default function Notifications() {
       <div className="flex items-center gap-2 overflow-x-auto pb-2">
         <Filter className="w-4 h-4 text-gray-400 flex-shrink-0" />
         {[
-          { key: 'all', label: 'Todas' },
-          { key: 'unread', label: 'Sin leer' },
-          { key: 'PANIC_ALERT', label: 'Alertas' },
-          { key: 'QR_ACCESS', label: 'Accesos' },
-          { key: 'SYSTEM', label: 'Sistema' },
+          { key: 'all', label: t('filters.all') },
+          { key: 'unread', label: t('filters.unread') },
+          { key: 'PANIC_ALERT', label: t('filters.alerts') },
+          { key: 'QR_ACCESS', label: t('filters.access') },
+          { key: 'SYSTEM', label: t('filters.system') },
         ].map(({ key, label }) => (
           <button
             key={key}
@@ -212,14 +217,14 @@ export default function Notifications() {
           <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">
             {filter === 'all'
-              ? 'No tienes notificaciones'
+              ? t('empty.all')
               : filter === 'unread'
-                ? 'No tienes notificaciones sin leer'
-                : 'No hay notificaciones de este tipo'
+                ? t('empty.unread')
+                : t('empty.filtered')
             }
           </h3>
           <p className="text-gray-500">
-            Las notificaciones apareceran aqui cuando recibas alertas o accesos a tu informacion.
+            {t('empty.description')}
           </p>
         </div>
       ) : (
@@ -268,10 +273,10 @@ export default function Notifications() {
                           {notification.data && (
                             <div className="mt-2 text-xs text-gray-500">
                               {notification.data.accessorRole && (
-                                <span>Rol: {notification.data.accessorRole}</span>
+                                <span>{t('data.role')}: {notification.data.accessorRole}</span>
                               )}
                               {notification.data.location && (
-                                <span className="ml-2">Ubicacion: {notification.data.location}</span>
+                                <span className="ml-2">{t('data.location')}: {notification.data.location}</span>
                               )}
                             </div>
                           )}
@@ -283,7 +288,7 @@ export default function Notifications() {
                                 className="text-xs text-vida-600 hover:text-vida-700 flex items-center gap-1"
                               >
                                 <Check className="w-3.5 h-3.5" />
-                                Marcar como leida
+                                {t('actions.markRead')}
                               </button>
                             )}
                             <button
@@ -291,7 +296,7 @@ export default function Notifications() {
                               className="text-xs text-gray-400 hover:text-red-600 flex items-center gap-1"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
-                              Eliminar
+                              {t('actions.delete')}
                             </button>
                           </div>
                         </div>
@@ -308,7 +313,7 @@ export default function Notifications() {
             <div className="text-center pt-4">
               {showConfirmClear ? (
                 <div className="inline-flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
-                  <span className="text-sm text-red-700">Eliminar todas?</span>
+                  <span className="text-sm text-red-700">{t('confirmClear.question')}</span>
                   <button
                     onClick={() => {
                       clearAllNotifications();
@@ -316,13 +321,13 @@ export default function Notifications() {
                     }}
                     className="text-sm font-medium text-red-600 hover:text-red-700"
                   >
-                    Si, eliminar
+                    {t('confirmClear.confirm')}
                   </button>
                   <button
                     onClick={() => setShowConfirmClear(false)}
                     className="text-sm text-gray-500 hover:text-gray-700"
                   >
-                    Cancelar
+                    {t('confirmClear.cancel')}
                   </button>
                 </div>
               ) : (
@@ -331,7 +336,7 @@ export default function Notifications() {
                   className="text-sm text-gray-400 hover:text-red-600 flex items-center gap-1 mx-auto"
                 >
                   <Trash2 className="w-4 h-4" />
-                  Eliminar todas las notificaciones
+                  {t('actions.deleteAll')}
                 </button>
               )}
             </div>

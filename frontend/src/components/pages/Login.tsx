@@ -1,5 +1,5 @@
 // src/components/pages/Login.tsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,6 +9,8 @@ import { startAuthentication } from '@simplewebauthn/browser';
 import { useAuth } from '../../context/AuthContext';
 import { webauthnApi } from '../../services/api';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
+import { TFunction } from 'i18next';
 
 // Verificar si el modo demo está habilitado (solo en desarrollo)
 const DEMO_ENABLED = import.meta.env.VITE_ENABLE_DEMO_MODE !== 'false';
@@ -25,14 +27,18 @@ const DEMO_USERS = [
   },
 ];
 
-const loginSchema = z.object({
-  email: z.string().email('Correo electrónico inválido'),
-  password: z.string().min(1, 'La contraseña es requerida'),
+const getLoginSchema = (t: TFunction) => z.object({
+  email: z.string().email(t('validation.invalidEmail')),
+  password: z.string().min(1, t('validation.passwordRequired')),
 });
 
-type LoginFormData = z.infer<typeof loginSchema>;
+type LoginFormData = {
+  email: string;
+  password: string;
+};
 
 export default function Login() {
+  const { t } = useTranslation('auth');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isBiometricLoading, setIsBiometricLoading] = useState(false);
@@ -40,6 +46,8 @@ export default function Login() {
   const [isWebAuthnSupported, setIsWebAuthnSupported] = useState(false);
   const { login, loginWithTokens } = useAuth();
   const navigate = useNavigate();
+
+  const loginSchema = useMemo(() => getLoginSchema(t), [t]);
 
   const {
     register,
@@ -89,10 +97,10 @@ export default function Login() {
     setIsLoading(true);
     try {
       await login(data);
-      toast.success('¡Bienvenido de nuevo!');
+      toast.success(t('login.welcomeBack'));
       navigate('/dashboard');
     } catch (error: any) {
-      toast.error(error.message || 'Error al iniciar sesión');
+      toast.error(error.message || t('toast.loginError'));
     } finally {
       setIsLoading(false);
     }
@@ -103,10 +111,10 @@ export default function Login() {
     setIsLoading(true);
     try {
       await login({ email: demoUser.email, password: demoUser.password });
-      toast.success(`¡Bienvenido ${demoUser.name}!`);
+      toast.success(t('login.welcomeUser', { name: demoUser.name }));
       navigate('/dashboard');
     } catch (error: any) {
-      toast.error(error.message || 'Error al iniciar sesión');
+      toast.error(error.message || t('toast.loginError'));
     } finally {
       setIsLoading(false);
     }
@@ -114,7 +122,7 @@ export default function Login() {
 
   const handleBiometricLogin = async () => {
     if (!emailValue) {
-      toast.error('Ingresa tu correo electrónico primero');
+      toast.error(t('toast.emailRequired'));
       return;
     }
 
@@ -124,7 +132,7 @@ export default function Login() {
       const optionsResponse = await webauthnApi.getAuthenticationOptions(emailValue);
 
       if (!optionsResponse.success || !optionsResponse.data) {
-        throw new Error('No se pudieron obtener las opciones de autenticación');
+        throw new Error(t('toast.authOptionsError'));
       }
 
       const { options, userId } = optionsResponse.data;
@@ -136,25 +144,25 @@ export default function Login() {
       const verifyResponse = await webauthnApi.verifyAuthentication(userId, credential);
 
       if (!verifyResponse.success || !verifyResponse.data) {
-        throw new Error('Error verificando la autenticación');
+        throw new Error(t('toast.verifyError'));
       }
 
       // 4. Guardar tokens y navegar
       const { user, accessToken, refreshToken } = verifyResponse.data;
       loginWithTokens(user, { accessToken, refreshToken });
 
-      toast.success('¡Bienvenido de nuevo!');
+      toast.success(t('login.welcomeBack'));
       navigate('/dashboard');
     } catch (error: any) {
       console.error('Error en login biométrico:', error);
 
       // Mensajes de error más amigables
-      let errorMessage = 'Error en la autenticación biométrica';
+      let errorMessage = t('toast.biometricError');
 
       if (error.name === 'NotAllowedError') {
-        errorMessage = 'La autenticación fue cancelada';
+        errorMessage = t('toast.biometricCancelled');
       } else if (error.name === 'SecurityError') {
-        errorMessage = 'Error de seguridad. Asegúrate de estar en HTTPS';
+        errorMessage = t('toast.biometricSecurityError');
       } else if (error.message) {
         errorMessage = error.message;
       }
@@ -168,9 +176,9 @@ export default function Login() {
   return (
     <div className="animate-fade-in">
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Iniciar Sesión</h1>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('login.title')}</h1>
         <p className="text-gray-600">
-          Accede a tu cuenta para gestionar tu voluntad anticipada
+          {t('login.subtitle')}
         </p>
       </div>
 
@@ -180,10 +188,10 @@ export default function Login() {
           <div className="mb-8 p-4 bg-gradient-to-r from-violet-50 to-purple-50 rounded-xl border border-violet-200">
             <div className="flex items-center gap-2 mb-3">
               <Sparkles className="w-5 h-5 text-violet-600" />
-              <span className="font-semibold text-violet-800">Acceso Demo</span>
+              <span className="font-semibold text-violet-800">{t('login.demo')}</span>
             </div>
             <p className="text-sm text-violet-600 mb-4">
-              Prueba el sistema con un usuario de demostración
+              {t('login.demoDescription')}
             </p>
             <div className="space-y-2">
               {DEMO_USERS.map((demoUser, index) => (
@@ -209,7 +217,7 @@ export default function Login() {
                 className="flex items-center justify-center gap-2 text-sm text-violet-700 hover:text-violet-900 font-medium"
               >
                 <Shield className="w-4 h-4" />
-                Acceder como Administrador
+                {t('login.adminAccess')}
               </Link>
             </div>
           </div>
@@ -219,7 +227,7 @@ export default function Login() {
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">o ingresa tus credenciales</span>
+              <span className="px-4 bg-white text-gray-500">{t('login.orCredentials')}</span>
             </div>
           </div>
         </>
@@ -229,7 +237,7 @@ export default function Login() {
         {/* Email */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-            Correo Electrónico
+            {t('login.email')}
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -241,7 +249,7 @@ export default function Login() {
               autoComplete="email"
               {...register('email')}
               className={`input pl-10 ${errors.email ? 'input-error' : ''}`}
-              placeholder="tu@email.com"
+              placeholder={t('login.emailPlaceholder')}
             />
           </div>
           {errors.email && (
@@ -264,12 +272,12 @@ export default function Login() {
               {isBiometricLoading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Verificando...</span>
+                  <span>{t('login.biometricVerifying')}</span>
                 </>
               ) : (
                 <>
                   <Fingerprint className="w-6 h-6" />
-                  <span className="font-medium">Acceder con Face ID / Touch ID</span>
+                  <span className="font-medium">{t('login.biometric')}</span>
                 </>
               )}
             </button>
@@ -279,7 +287,7 @@ export default function Login() {
                 <div className="w-full border-t border-gray-200"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-gray-500">o usa tu contraseña</span>
+                <span className="px-4 bg-white text-gray-500">{t('login.orPassword')}</span>
               </div>
             </div>
           </div>
@@ -288,7 +296,7 @@ export default function Login() {
         {/* Password */}
         <div>
           <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-            Contraseña
+            {t('login.password')}
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -300,7 +308,7 @@ export default function Login() {
               autoComplete="current-password"
               {...register('password')}
               className={`input pl-10 pr-10 ${errors.password ? 'input-error' : ''}`}
-              placeholder="••••••••"
+              placeholder={t('login.passwordPlaceholder')}
             />
             <button
               type="button"
@@ -328,7 +336,7 @@ export default function Login() {
             to="/forgot-password"
             className="text-sm text-vida-600 hover:text-vida-700 font-medium"
           >
-            ¿Olvidaste tu contraseña?
+            {t('login.forgotPassword')}
           </Link>
         </div>
 
@@ -341,10 +349,10 @@ export default function Login() {
           {isLoading ? (
             <div className="flex items-center justify-center gap-2">
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              Iniciando sesión...
+              {t('login.submitting')}
             </div>
           ) : (
-            'Iniciar Sesión'
+            t('login.submit')
           )}
         </button>
       </form>
@@ -354,16 +362,16 @@ export default function Login() {
         <div className="mt-4 p-3 bg-gray-50 rounded-lg">
           <p className="text-sm text-gray-600 text-center">
             <Fingerprint className="w-4 h-4 inline mr-1" />
-            ¿Quieres usar Face ID / Touch ID? Configúralo en tu perfil después de iniciar sesión.
+            {t('login.biometricSetupHint')}
           </p>
         </div>
       )}
 
       {/* Register link */}
       <p className="mt-8 text-center text-gray-600">
-        ¿No tienes cuenta?{' '}
+        {t('login.noAccount')}{' '}
         <Link to="/register" className="text-vida-600 hover:text-vida-700 font-medium">
-          Regístrate aquí
+          {t('login.registerLink')}
         </Link>
       </p>
     </div>

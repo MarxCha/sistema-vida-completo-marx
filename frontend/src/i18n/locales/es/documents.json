@@ -1,0 +1,120 @@
+{
+  "title": "Mis Documentos",
+  "subtitle": "Historial clínico, estudios y documentos médicos",
+  "uploadButton": "Subir Documento",
+  "categories": {
+    "CLINICAL_HISTORY": "Historial Clínico",
+    "LAB_RESULTS": "Resultados de Laboratorio",
+    "IMAGING": "Estudios de Imagen",
+    "PRESCRIPTIONS": "Recetas Médicas",
+    "DISCHARGE_SUMMARY": "Resumen de Alta",
+    "SURGICAL_REPORT": "Reporte Quirúrgico",
+    "VACCINATION": "Cartilla de Vacunación",
+    "INSURANCE": "Póliza de Seguro",
+    "IDENTIFICATION": "Identificación",
+    "OTHER": "Otro"
+  },
+  "stats": {
+    "documents": "Documentos",
+    "categories": "Categorías",
+    "storageUsed": "Espacio utilizado"
+  },
+  "filters": {
+    "searchPlaceholder": "Buscar documentos...",
+    "allCategories": "Todas las categorías"
+  },
+  "emptyState": {
+    "title": "No hay documentos",
+    "withFilters": "No se encontraron documentos con los filtros seleccionados",
+    "noDocuments": "Sube tu primer documento para comenzar"
+  },
+  "document": {
+    "notVisibleInEmergency": "No visible en emergencias",
+    "visibleInEmergency": "Visible en emergencias",
+    "notVisible": "No visible"
+  },
+  "tooltips": {
+    "view": "Ver detalles",
+    "download": "Descargar",
+    "edit": "Editar",
+    "delete": "Eliminar"
+  },
+  "uploadModal": {
+    "title": "Subir Documento",
+    "dropzone": {
+      "drag": "Arrastra un archivo aquí",
+      "click": "o haz clic para seleccionar",
+      "formats": "PDF, imágenes o Word (máx. 10MB)",
+      "changeFile": "Cambiar archivo"
+    },
+    "fields": {
+      "title": "Título *",
+      "titlePlaceholder": "Nombre del documento",
+      "category": "Categoría *",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Descripción breve del documento",
+      "documentDate": "Fecha del documento",
+      "doctor": "Médico",
+      "doctorPlaceholder": "Dr. ...",
+      "institution": "Institución",
+      "institutionPlaceholder": "Hospital o clínica",
+      "visibleInEmergency": "Visible en emergencias"
+    },
+    "buttons": {
+      "cancel": "Cancelar",
+      "upload": "Subir Documento",
+      "uploading": "Subiendo..."
+    }
+  },
+  "viewModal": {
+    "title": "Detalles del Documento",
+    "previewButton": "Ver documento",
+    "loadingPreview": "Cargando vista previa...",
+    "noPreview": "Vista previa no disponible",
+    "noPreviewDesc": "Descarga el archivo para verlo",
+    "fields": {
+      "date": "Fecha",
+      "size": "Tamaño",
+      "doctor": "Médico",
+      "institution": "Institución",
+      "fileName": "Archivo",
+      "uploadedAt": "Subido"
+    },
+    "buttons": {
+      "close": "Cerrar",
+      "download": "Descargar"
+    }
+  },
+  "editModal": {
+    "title": "Editar Documento",
+    "buttons": {
+      "cancel": "Cancelar",
+      "save": "Guardar Cambios",
+      "saving": "Guardando..."
+    }
+  },
+  "deleteModal": {
+    "title": "Eliminar documento",
+    "description": "¿Estás seguro de que deseas eliminar <strong>{{name}}</strong>? Esta acción no se puede deshacer.",
+    "buttons": {
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "deleting": "Eliminando..."
+    }
+  },
+  "toast": {
+    "uploadSuccess": "Documento subido exitosamente",
+    "uploadError": "Error al subir el documento",
+    "updateSuccess": "Documento actualizado",
+    "updateError": "Error al actualizar el documento",
+    "deleteSuccess": "Documento eliminado",
+    "deleteError": "Error al eliminar el documento",
+    "downloadError": "No se pudo obtener el enlace de descarga",
+    "downloadErrorGeneric": "Error al descargar el documento",
+    "previewError": "Error al cargar vista previa",
+    "fileTypeError": "Tipo de archivo no permitido. Use PDF, imágenes o documentos Word.",
+    "fileSizeError": "El archivo excede el límite de 10MB",
+    "noFile": "No hay archivo seleccionado",
+    "noDocument": "No hay documento seleccionado"
+  }
+}

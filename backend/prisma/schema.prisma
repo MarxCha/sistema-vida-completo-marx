@@ -38,6 +38,9 @@ model User {
   // WebAuthn challenge temporal
   webauthnChallenge String?
 
+  // Preferencia de idioma
+  preferredLanguage String   @default("es") @db.VarChar(5)
+
   // Timestamps
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -779,6 +782,9 @@ model AdminUser {
 
   isActive        Boolean     @default(true)
   isSuperAdmin    Boolean     @default(false)
+
+  // Preferencia de idioma
+  preferredLanguage String    @default("es") @db.VarChar(5)
 
   // Seguridad
   lastLoginAt     DateTime?

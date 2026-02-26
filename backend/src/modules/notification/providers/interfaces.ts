@@ -13,6 +13,7 @@ export interface NotificationParams {
   accessorName?: string;
   nearestHospital?: string;
   nearbyHospitals?: Array<{ name: string; distance: number; phone?: string }>;
+  locale?: string;
 }
 
 export interface SendResult {

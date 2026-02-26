@@ -1,0 +1,120 @@
+{
+  "title": "My Documents",
+  "subtitle": "Clinical history, studies and medical documents",
+  "uploadButton": "Upload Document",
+  "categories": {
+    "CLINICAL_HISTORY": "Clinical History",
+    "LAB_RESULTS": "Lab Results",
+    "IMAGING": "Imaging Studies",
+    "PRESCRIPTIONS": "Medical Prescriptions",
+    "DISCHARGE_SUMMARY": "Discharge Summary",
+    "SURGICAL_REPORT": "Surgical Report",
+    "VACCINATION": "Vaccination Record",
+    "INSURANCE": "Insurance Policy",
+    "IDENTIFICATION": "Identification",
+    "OTHER": "Other"
+  },
+  "stats": {
+    "documents": "Documents",
+    "categories": "Categories",
+    "storageUsed": "Storage used"
+  },
+  "filters": {
+    "searchPlaceholder": "Search documents...",
+    "allCategories": "All categories"
+  },
+  "emptyState": {
+    "title": "No documents",
+    "withFilters": "No documents found with the selected filters",
+    "noDocuments": "Upload your first document to get started"
+  },
+  "document": {
+    "notVisibleInEmergency": "Not visible in emergencies",
+    "visibleInEmergency": "Visible in emergencies",
+    "notVisible": "Not visible"
+  },
+  "tooltips": {
+    "view": "View details",
+    "download": "Download",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "uploadModal": {
+    "title": "Upload Document",
+    "dropzone": {
+      "drag": "Drag a file here",
+      "click": "or click to select",
+      "formats": "PDF, images or Word (max. 10MB)",
+      "changeFile": "Change file"
+    },
+    "fields": {
+      "title": "Title *",
+      "titlePlaceholder": "Document name",
+      "category": "Category *",
+      "description": "Description",
+      "descriptionPlaceholder": "Brief description of the document",
+      "documentDate": "Document date",
+      "doctor": "Doctor",
+      "doctorPlaceholder": "Dr. ...",
+      "institution": "Institution",
+      "institutionPlaceholder": "Hospital or clinic",
+      "visibleInEmergency": "Visible in emergencies"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "upload": "Upload Document",
+      "uploading": "Uploading..."
+    }
+  },
+  "viewModal": {
+    "title": "Document Details",
+    "previewButton": "View document",
+    "loadingPreview": "Loading preview...",
+    "noPreview": "Preview not available",
+    "noPreviewDesc": "Download the file to view it",
+    "fields": {
+      "date": "Date",
+      "size": "Size",
+      "doctor": "Doctor",
+      "institution": "Institution",
+      "fileName": "File",
+      "uploadedAt": "Uploaded"
+    },
+    "buttons": {
+      "close": "Close",
+      "download": "Download"
+    }
+  },
+  "editModal": {
+    "title": "Edit Document",
+    "buttons": {
+      "cancel": "Cancel",
+      "save": "Save Changes",
+      "saving": "Saving..."
+    }
+  },
+  "deleteModal": {
+    "title": "Delete document",
+    "description": "Are you sure you want to delete <strong>{{name}}</strong>? This action cannot be undone.",
+    "buttons": {
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleting": "Deleting..."
+    }
+  },
+  "toast": {
+    "uploadSuccess": "Document uploaded successfully",
+    "uploadError": "Error uploading document",
+    "updateSuccess": "Document updated",
+    "updateError": "Error updating document",
+    "deleteSuccess": "Document deleted",
+    "deleteError": "Error deleting document",
+    "downloadError": "Could not get download link",
+    "downloadErrorGeneric": "Error downloading document",
+    "previewError": "Error loading preview",
+    "fileTypeError": "File type not allowed. Use PDF, images or Word documents.",
+    "fileSizeError": "File exceeds the 10MB limit",
+    "noFile": "No file selected",
+    "noDocument": "No document selected"
+  }
+}

@@ -2,6 +2,7 @@
 import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { profileApi, insuranceApi, type InsuranceOption } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -25,17 +26,8 @@ import BiometricSettings from '../BiometricSettings';
 
 const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 
-// Etiquetas para tipos de aseguradoras
-const INSURANCE_TYPE_LABELS: Record<string, string> = {
-  HEALTH: 'Gastos Médicos',
-  HEALTH_LIFE: 'Gastos Médicos y Vida',
-  ACCIDENT: 'Accidentes',
-  LIFE: 'Vida',
-  GOVERNMENT: 'Gobierno',
-  OTHER: 'Otro',
-};
-
 export default function Profile() {
+  const { t } = useTranslation('profile');
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [newAllergy, setNewAllergy] = useState('');
@@ -84,7 +76,7 @@ export default function Profile() {
   const filteredInsurances = useMemo(() => {
     if (!insuranceSearch.trim()) return insuranceOptions;
     const search = insuranceSearch.toLowerCase();
-    return insuranceOptions.filter(ins =>
+    return insuranceOptions.filter((ins: InsuranceOption) =>
       ins.shortName?.toLowerCase().includes(search) ||
       ins.name.toLowerCase().includes(search)
     );
@@ -113,10 +105,10 @@ export default function Profile() {
     mutationFn: (data: ProfileForm) => profileApi.updateProfile(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['profile'] });
-      toast.success('Perfil actualizado correctamente');
+      toast.success(t('toast.saveSuccess'));
     },
     onError: () => {
-      toast.error('Error al actualizar el perfil');
+      toast.error(t('toast.saveError'));
     },
   });
 
@@ -153,9 +145,9 @@ export default function Profile() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Mi Perfil Médico</h1>
+          <h1 className="text-2xl font-bold text-gray-900">{t('title')}</h1>
           <p className="text-gray-600 mt-1">
-            Información crítica que estará disponible en emergencias
+            {t('subtitle')}
           </p>
         </div>
       </div>
@@ -165,28 +157,28 @@ export default function Profile() {
         <div className="card">
           <div className="flex items-center gap-3 mb-4">
             <User className="w-5 h-5 text-vida-600" />
-            <h2 className="text-lg font-semibold text-gray-900">Información Personal</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('sections.personalInfo')}</h2>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Nombre</label>
+              <label className="block text-sm font-medium text-gray-500 mb-1">{t('fields.name')}</label>
               <p className="text-gray-900 font-medium">{user?.name}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">CURP</label>
+              <label className="block text-sm font-medium text-gray-500 mb-1">{t('fields.curp')}</label>
               <p className="text-gray-900 font-mono">{user?.curp}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Correo</label>
+              <label className="block text-sm font-medium text-gray-500 mb-1">{t('fields.email')}</label>
               <p className="text-gray-900">{user?.email}</p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-500 mb-1">Tipo de Sangre</label>
+              <label className="block text-sm font-medium text-gray-500 mb-1">{t('fields.bloodType')}</label>
               <select
                 {...register('bloodType')}
                 className="input"
               >
-                <option value="">Seleccionar...</option>
+                <option value="">{t('placeholders.select')}</option>
                 {bloodTypes.map(type => (
                   <option key={type} value={type}>{type}</option>
                 ))}
@@ -199,12 +191,12 @@ export default function Profile() {
         <div className="card">
           <div className="flex items-center gap-3 mb-4">
             <AlertTriangle className="w-5 h-5 text-coral-500" />
-            <h2 className="text-lg font-semibold text-gray-900">Alergias</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('sections.allergies')}</h2>
           </div>
           <p className="text-sm text-gray-600 mb-4">
-            Lista de alergias conocidas (medicamentos, alimentos, etc.)
+            {t('descriptions.allergies')}
           </p>
-          
+
           <div className="flex gap-2 mb-4">
             <input
               type="text"
@@ -212,7 +204,7 @@ export default function Profile() {
               onChange={(e) => setNewAllergy(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addItem('allergies', newAllergy, setNewAllergy))}
               className="input flex-1"
-              placeholder="Ej: Penicilina, Mariscos..."
+              placeholder={t('placeholders.allergies')}
             />
             <button
               type="button"
@@ -222,7 +214,7 @@ export default function Profile() {
               <Plus className="w-5 h-5" />
             </button>
           </div>
-          
+
           <div className="flex flex-wrap gap-2">
             {allergies.map((allergy, index) => (
               <span key={index} className="inline-flex items-center gap-1 px-3 py-1.5 bg-coral-100 text-coral-800 rounded-full text-sm">
@@ -237,7 +229,7 @@ export default function Profile() {
               </span>
             ))}
             {allergies.length === 0 && (
-              <p className="text-gray-400 text-sm italic">No hay alergias registradas</p>
+              <p className="text-gray-400 text-sm italic">{t('emptyStates.allergies')}</p>
             )}
           </div>
         </div>
@@ -246,12 +238,12 @@ export default function Profile() {
         <div className="card">
           <div className="flex items-center gap-3 mb-4">
             <Heart className="w-5 h-5 text-vida-600" />
-            <h2 className="text-lg font-semibold text-gray-900">Condiciones Médicas</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('sections.conditions')}</h2>
           </div>
           <p className="text-sm text-gray-600 mb-4">
-            Enfermedades crónicas o condiciones relevantes
+            {t('descriptions.conditions')}
           </p>
-          
+
           <div className="flex gap-2 mb-4">
             <input
               type="text"
@@ -259,7 +251,7 @@ export default function Profile() {
               onChange={(e) => setNewCondition(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addItem('conditions', newCondition, setNewCondition))}
               className="input flex-1"
-              placeholder="Ej: Diabetes Tipo 2, Hipertensión..."
+              placeholder={t('placeholders.conditions')}
             />
             <button
               type="button"
@@ -269,7 +261,7 @@ export default function Profile() {
               <Plus className="w-5 h-5" />
             </button>
           </div>
-          
+
           <div className="flex flex-wrap gap-2">
             {conditions.map((condition, index) => (
               <span key={index} className="inline-flex items-center gap-1 px-3 py-1.5 bg-vida-100 text-vida-800 rounded-full text-sm">
@@ -284,7 +276,7 @@ export default function Profile() {
               </span>
             ))}
             {conditions.length === 0 && (
-              <p className="text-gray-400 text-sm italic">No hay condiciones registradas</p>
+              <p className="text-gray-400 text-sm italic">{t('emptyStates.conditions')}</p>
             )}
           </div>
         </div>
@@ -293,12 +285,12 @@ export default function Profile() {
         <div className="card">
           <div className="flex items-center gap-3 mb-4">
             <Pill className="w-5 h-5 text-salud-600" />
-            <h2 className="text-lg font-semibold text-gray-900">Medicamentos Actuales</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('sections.medications')}</h2>
           </div>
           <p className="text-sm text-gray-600 mb-4">
-            Medicamentos que tomas regularmente
+            {t('descriptions.medications')}
           </p>
-          
+
           <div className="flex gap-2 mb-4">
             <input
               type="text"
@@ -306,7 +298,7 @@ export default function Profile() {
               onChange={(e) => setNewMedication(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addItem('medications', newMedication, setNewMedication))}
               className="input flex-1"
-              placeholder="Ej: Metformina 500mg, Losartán 50mg..."
+              placeholder={t('placeholders.medications')}
             />
             <button
               type="button"
@@ -316,7 +308,7 @@ export default function Profile() {
               <Plus className="w-5 h-5" />
             </button>
           </div>
-          
+
           <div className="flex flex-wrap gap-2">
             {medications.map((medication, index) => (
               <span key={index} className="inline-flex items-center gap-1 px-3 py-1.5 bg-salud-100 text-salud-800 rounded-full text-sm">
@@ -331,7 +323,7 @@ export default function Profile() {
               </span>
             ))}
             {medications.length === 0 && (
-              <p className="text-gray-400 text-sm italic">No hay medicamentos registrados</p>
+              <p className="text-gray-400 text-sm italic">{t('emptyStates.medications')}</p>
             )}
           </div>
         </div>
@@ -341,7 +333,7 @@ export default function Profile() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <Shield className="w-5 h-5 text-gray-600" />
-              <h2 className="text-lg font-semibold text-gray-900">Seguro Médico</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t('sections.insurance')}</h2>
             </div>
             {selectedInsurance && (
               <button
@@ -350,7 +342,7 @@ export default function Profile() {
                 className="text-sm text-vida-600 hover:text-vida-700 font-medium flex items-center gap-1"
               >
                 <Building2 className="w-4 h-4" />
-                Ver hospitales en red
+                {t('networkModal.viewButton')}
               </button>
             )}
           </div>
@@ -358,7 +350,7 @@ export default function Profile() {
           <div className="grid md:grid-cols-3 gap-4">
             {/* Selector de Aseguradora */}
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Aseguradora</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('fields.insuranceProvider')}</label>
               <div className="relative">
                 <input
                   type="text"
@@ -369,7 +361,7 @@ export default function Profile() {
                   }}
                   onFocus={() => setShowInsuranceDropdown(true)}
                   className="input pr-10"
-                  placeholder="Buscar aseguradora..."
+                  placeholder={t('placeholders.insuranceSearch')}
                 />
                 <button
                   type="button"
@@ -385,10 +377,10 @@ export default function Profile() {
                 <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
                   {filteredInsurances.length === 0 ? (
                     <div className="p-3 text-sm text-gray-500 text-center">
-                      No se encontraron aseguradoras
+                      {t('emptyStates.insuranceSearch')}
                     </div>
                   ) : (
-                    filteredInsurances.map((ins) => (
+                    filteredInsurances.map((ins: InsuranceOption) => (
                       <button
                         key={ins.id}
                         type="button"
@@ -399,7 +391,7 @@ export default function Profile() {
                       >
                         <div>
                           <div className="font-medium text-gray-900">{ins.shortName || ins.name}</div>
-                          <div className="text-xs text-gray-500">{INSURANCE_TYPE_LABELS[ins.type] || ins.type}</div>
+                          <div className="text-xs text-gray-500">{t(`insuranceTypes.${ins.type}`, { defaultValue: ins.type })}</div>
                         </div>
                         {selectedInsurance === ins.shortName && (
                           <Check className="w-4 h-4 text-vida-600" />
@@ -420,21 +412,21 @@ export default function Profile() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Número de Póliza</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('fields.insurancePolicy')}</label>
               <input
                 type="text"
                 {...register('insurancePolicy')}
                 className="input"
-                placeholder="Número de póliza"
+                placeholder={t('placeholders.insurancePolicy')}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono de Emergencias</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('fields.insurancePhone')}</label>
               <input
                 type="tel"
                 {...register('insurancePhone')}
                 className="input"
-                placeholder="800 123 4567"
+                placeholder={t('placeholders.insurancePhone')}
               />
             </div>
           </div>
@@ -443,7 +435,7 @@ export default function Profile() {
           {selectedInsurance && (
             <div className="mt-4 p-3 bg-gray-50 rounded-lg">
               <p className="text-sm text-gray-600">
-                <span className="font-medium">Aseguradora seleccionada:</span> {selectedInsurance}
+                <span className="font-medium">{t('fields.selectedInsurance')}:</span> {selectedInsurance}
               </p>
             </div>
           )}
@@ -458,8 +450,8 @@ export default function Profile() {
               <div className="relative bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
                 <div className="flex items-center justify-between p-4 border-b">
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Hospitales en Red</h3>
-                    <p className="text-sm text-gray-500">{selectedInsurance} - {networkHospitals.length} hospitales</p>
+                    <h3 className="text-lg font-semibold text-gray-900">{t('networkModal.title')}</h3>
+                    <p className="text-sm text-gray-500">{t('networkModal.subtitle', { name: selectedInsurance, count: networkHospitals.length })}</p>
                   </div>
                   <button
                     type="button"
@@ -478,11 +470,11 @@ export default function Profile() {
                   ) : networkHospitals.length === 0 ? (
                     <div className="text-center py-8 text-gray-500">
                       <Building2 className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                      <p>No se encontraron hospitales en la red</p>
+                      <p>{t('networkModal.noHospitals')}</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {networkHospitals.map((hospital) => (
+                      {networkHospitals.map((hospital: any) => (
                         <div key={hospital.id} className="p-4 border border-gray-200 rounded-lg hover:border-vida-300 transition-colors">
                           <div className="flex items-start justify-between">
                             <div>
@@ -502,10 +494,10 @@ export default function Profile() {
                             </div>
                             <div className="flex flex-col items-end gap-1">
                               {hospital.hasEmergency && (
-                                <span className="px-2 py-0.5 bg-coral-100 text-coral-700 text-xs rounded-full">Urgencias</span>
+                                <span className="px-2 py-0.5 bg-coral-100 text-coral-700 text-xs rounded-full">{t('networkModal.emergency')}</span>
                               )}
                               {hospital.has24Hours && (
-                                <span className="px-2 py-0.5 bg-salud-100 text-salud-700 text-xs rounded-full">24 hrs</span>
+                                <span className="px-2 py-0.5 bg-salud-100 text-salud-700 text-xs rounded-full">{t('networkModal.hours24')}</span>
                               )}
                             </div>
                           </div>
@@ -521,7 +513,7 @@ export default function Profile() {
                     onClick={() => setShowNetworkModal(false)}
                     className="w-full btn-secondary"
                   >
-                    Cerrar
+                    {t('networkModal.close')}
                   </button>
                 </div>
               </div>
@@ -533,7 +525,7 @@ export default function Profile() {
         <div className="card">
           <div className="flex items-center gap-3 mb-4">
             <Heart className="w-5 h-5 text-coral-500" />
-            <h2 className="text-lg font-semibold text-gray-900">Donación de Órganos</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('sections.organDonation')}</h2>
           </div>
           <div className="flex items-center gap-4">
             <label className="relative inline-flex items-center cursor-pointer">
@@ -546,10 +538,10 @@ export default function Profile() {
             </label>
             <div>
               <p className="font-medium text-gray-900">
-                {isDonor ? 'Soy donador de órganos' : 'No soy donador de órganos'}
+                {isDonor ? t('donor.yes') : t('donor.no')}
               </p>
               <p className="text-sm text-gray-500">
-                Esta preferencia será visible en emergencias
+                {t('descriptions.organDonation')}
               </p>
             </div>
           </div>
@@ -565,12 +557,12 @@ export default function Profile() {
             {updateMutation.isPending ? (
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                Guardando...
+                {t('buttons.saving')}
               </div>
             ) : (
               <div className="flex items-center gap-2">
                 <Save className="w-5 h-5" />
-                Guardar Cambios
+                {t('buttons.save')}
               </div>
             )}
           </button>

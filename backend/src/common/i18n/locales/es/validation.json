@@ -1,0 +1,14 @@
+{
+  "emailInvalid": "Email inválido",
+  "passwordMinLength": "La contraseña debe tener al menos 8 caracteres",
+  "passwordComplexity": "La contraseña debe contener mayúsculas, minúsculas y números",
+  "curpLength": "El CURP debe tener 18 caracteres",
+  "nameRequired": "El nombre es requerido",
+  "phoneInvalid": "Teléfono inválido. Debe ser un número mexicano válido",
+  "emailRequired": "El email es requerido",
+  "relationRequired": "Relación requerida",
+  "titleRequired": "Título requerido",
+  "categoryInvalid": "Categoría inválida",
+  "fileRequired": "Archivo requerido",
+  "arrayRequired": "Se requiere un array de IDs"
+}

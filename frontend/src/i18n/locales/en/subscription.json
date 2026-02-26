@@ -1,0 +1,187 @@
+{
+  "title": "My Subscription",
+  "status": {
+    "ACTIVE": "Active",
+    "TRIALING": "Trial",
+    "PAST_DUE": "Past Due",
+    "CANCELED": "Canceled",
+    "PAUSED": "Paused"
+  },
+  "paymentStatus": {
+    "SUCCEEDED": "Paid",
+    "PENDING": "Pending",
+    "FAILED": "Failed",
+    "REFUNDED": "Refunded"
+  },
+  "plan": {
+    "access_all": "You have access to all Sistema VIDA features",
+    "upgrade_prompt": "Upgrade to unlock all features",
+    "billing_cycle_label": "Billing cycle:",
+    "billing_annual": "Annual",
+    "billing_monthly": "Monthly",
+    "next_billing": "Next billing:",
+    "includes": "Your plan includes",
+    "defaultName": "Basic Plan"
+  },
+  "features": {
+    "advanceDirectives": "Advance Directives",
+    "donorPreferences": "Donor Preferences",
+    "nom151Seal": "NOM-151 Seal",
+    "smsNotifications": "SMS Notifications",
+    "exportData": "Export Data",
+    "prioritySupport": "Priority Support",
+    "representatives_unlimited": "Up to 10 representatives",
+    "representatives_limited": "Up to {{count}} representatives",
+    "qr_unlimited": "Unlimited QR downloads",
+    "qr_limited": "{{count}} QR downloads/month"
+  },
+  "buttons": {
+    "manage_payment": "Manage payment",
+    "cancel": "Cancel subscription",
+    "reactivate": "Reactivate",
+    "upgrade_premium": "Upgrade to Premium"
+  },
+  "payments": {
+    "title": "Payment history",
+    "fiscal_data": "Tax information",
+    "no_payments": "No payments recorded",
+    "col_date": "Date",
+    "col_description": "Description",
+    "col_amount": "Amount",
+    "col_status": "Status",
+    "col_invoice": "Invoice",
+    "default_description": "Subscription",
+    "generating": "Generating...",
+    "bill": "Invoice"
+  },
+  "invoices": {
+    "title": "Issued invoices",
+    "pending": "Pending"
+  },
+  "cancel_modal": {
+    "title": "Cancel subscription",
+    "description": "Are you sure you want to cancel your Premium subscription? You will retain access until the end of your current billing period.",
+    "reason_label": "Why are you cancelling? (optional)",
+    "reason_placeholder": "Your feedback helps us improve...",
+    "keep_button": "Keep subscription",
+    "confirm_button": "Confirm cancellation",
+    "cancelling": "Cancelling..."
+  },
+  "alerts": {
+    "cancel_error": "Error cancelling subscription",
+    "reactivate_error": "Error reactivating subscription",
+    "invoice_success": "Invoice generated successfully",
+    "invoice_error": "Error generating invoice. Please verify your tax information."
+  },
+  "plans": {
+    "page_title": "Choose your plan",
+    "page_subtitle": "Protect your family with Sistema VIDA. Choose the plan that best fits your needs.",
+    "billing_monthly": "Monthly",
+    "billing_annual": "Annual",
+    "save_amount": "Save ${{amount}}",
+    "mxn_per_month": "MXN / month",
+    "billed_annually": "Billed annually (${{amount}} MXN)",
+    "trial_days": "{{count}} days free trial",
+    "includes_label": "Includes:",
+    "basico": {
+      "description": "Essential features to get started",
+      "feature_profile": "Complete digital medical profile",
+      "feature_qr": "Emergency QR code",
+      "feature_history": "Emergency access history",
+      "start_trial": "Start {{count}}-day trial",
+      "subscribe": "Subscribe",
+      "current_plan": "Current plan"
+    },
+    "premium": {
+      "description": "Complete protection for your family",
+      "badge": "RECOMMENDED",
+      "includes_basic": "Everything in Basic, plus:",
+      "subscribe": "Subscribe now",
+      "current_plan": "Current plan",
+      "processing": "Processing...",
+      "upgrade_note": "Upgrade your plan to get all features"
+    },
+    "comparison": {
+      "title": "Compare plans",
+      "col_feature": "Feature",
+      "col_basico": "Basic",
+      "col_premium": "Premium",
+      "row_price": "Monthly price",
+      "row_profile": "Digital medical profile",
+      "row_qr": "Emergency QR code",
+      "row_representatives": "Representatives",
+      "row_qr_downloads": "QR downloads",
+      "row_directives": "Advance Directives",
+      "row_donor": "Donor Preferences",
+      "row_nom151": "NOM-151 Seal",
+      "row_sms": "SMS Notifications",
+      "row_export": "Export data (PDF)",
+      "row_support": "Priority support",
+      "val_basico_reps": "Up to 2",
+      "val_premium_reps": "Up to 10",
+      "val_basico_qr": "5/month",
+      "val_premium_qr": "Unlimited"
+    },
+    "faq": {
+      "questions": "Have questions?",
+      "contact_us": "Contact us"
+    },
+    "upgrade_error": "Error processing upgrade. Please try again."
+  },
+  "success": {
+    "title": "Welcome to Premium!",
+    "message": "Your subscription has been activated successfully. You now have access to all Sistema VIDA features.",
+    "unlocked_title": "Unlocked features:",
+    "feature_directives": "Advance Directives",
+    "feature_donor": "Organ Donor Preferences",
+    "feature_nom151": "NOM-151 Seal for documents",
+    "feature_sms": "Unlimited SMS notifications",
+    "feature_representatives": "Up to 10 representatives",
+    "feature_support": "Priority support",
+    "trial_info": "Your {{count}}-day trial period has started. No charges will be made until it ends.",
+    "btn_dashboard": "Go to Dashboard",
+    "btn_directive": "Create my first directive",
+    "receipt_info": "You will receive a confirmation email with your subscription details."
+  },
+  "upgrade_prompt": {
+    "default_title": "Upgrade to Premium",
+    "default_description": "Unlock all Sistema VIDA features",
+    "btn_see_plans": "See plans",
+    "btn_compare": "Compare plans",
+    "btn_trial": "Start 7-day free trial",
+    "price": "$149",
+    "currency": "MXN / month",
+    "trial_days_left": "{{count}} days left in your trial",
+    "default_features": {
+      "directives": "Advance directives",
+      "donor": "Organ donor preferences",
+      "nom151": "NOM-151 seal for documents",
+      "sms": "Unlimited SMS notifications",
+      "representatives": "Up to 10 representatives",
+      "support": "Priority support"
+    }
+  },
+  "trial_banner": {
+    "expires_today": "Your trial ends today",
+    "expires_in": "Your trial ends in {{count}} days",
+    "subscribe_now": "Subscribe now"
+  },
+  "cancelling_banner": {
+    "message": "Your subscription will be cancelled on",
+    "reactivate": "Reactivate"
+  },
+  "gate": {
+    "premium_only": "This feature is exclusively available for Premium users.",
+    "upgrade_premium": "Upgrade to Premium",
+    "limit_reached": "Limit reached",
+    "limit_reached_description": "You have reached the limit of {{limit}} {{name}}.",
+    "upgrade_for_more": "Upgrade to Premium to get more.",
+    "view_premium_plans": "View Premium plans",
+    "unlimited": "Unlimited",
+    "increase_limit": "Increase limit"
+  },
+  "limitNames": {
+    "representativesLimit": "representatives",
+    "qrDownloadsPerMonth": "QR downloads per month"
+  }
+}

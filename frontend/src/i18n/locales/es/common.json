@@ -1,0 +1,74 @@
+{
+  "appName": "Sistema VIDA",
+  "nav": {
+    "home": "Inicio",
+    "profile": "Mi Perfil",
+    "directives": "Voluntad Anticipada",
+    "representatives": "Representantes",
+    "documents": "Mis Documentos",
+    "emergencyQR": "Mi Código QR",
+    "notifications": "Notificaciones",
+    "accessHistory": "Historial de Accesos",
+    "subscription": "Mi Suscripción"
+  },
+  "bottomNav": {
+    "home": "Inicio",
+    "profile": "Perfil",
+    "qr": "QR",
+    "contacts": "Contactos",
+    "docs": "Docs"
+  },
+  "buttons": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "close": "Cerrar",
+    "confirm": "Confirmar",
+    "back": "Volver",
+    "next": "Siguiente",
+    "loading": "Cargando...",
+    "saving": "Guardando...",
+    "retry": "Reintentar"
+  },
+  "status": {
+    "active": "Activa",
+    "inactive": "Inactivo",
+    "pending": "Pendiente",
+    "verified": "Verificado",
+    "notVerified": "No verificado"
+  },
+  "errors": {
+    "generic": "Error interno del servidor",
+    "notFound": "No encontrado",
+    "unauthorized": "No autorizado"
+  },
+  "footer": {
+    "encryption": "Protegido con cifrado AES-256",
+    "copyright": "© {{year}} Sistema VIDA. Todos los derechos reservados."
+  },
+  "logout": "Cerrar sesión",
+  "logoutTitle": "Cerrar sesión",
+  "time": {
+    "now": "Ahora",
+    "minutesAgo": "Hace {{count}} min",
+    "hoursAgo": "Hace {{count}}h",
+    "daysAgo": "Hace {{count}}d",
+    "today": "Hoy",
+    "yesterday": "Ayer"
+  },
+  "loading": "Cargando VIDA...",
+  "notFound": {
+    "title": "404",
+    "message": "Pagina no encontrada",
+    "backHome": "Volver al inicio"
+  },
+  "panicAlert": {
+    "title": "Error de alerta"
+  },
+  "errorBoundary": {
+    "title": "Algo salio mal",
+    "description": "Ha ocurrido un error inesperado. Por favor, intenta recargar la pagina.",
+    "reload": "Recargar pagina"
+  }
+}

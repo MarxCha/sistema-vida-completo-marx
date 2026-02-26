@@ -1,5 +1,7 @@
 // src/components/BiometricSettings.tsx
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from '../hooks/useLocale';
 import { startRegistration } from '@simplewebauthn/browser';
 import { webauthnApi, WebAuthnCredential } from '../services/api';
 
@@ -9,6 +11,8 @@ interface BiometricSettingsProps {
 }
 
 export default function BiometricSettings({ onError, onSuccess }: BiometricSettingsProps) {
+  const { t } = useTranslation('extras');
+  const { formatDateTime } = useLocale();
   const [credentials, setCredentials] = useState<WebAuthnCredential[]>([]);
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState(false);
@@ -48,7 +52,7 @@ export default function BiometricSettings({ onError, onSuccess }: BiometricSetti
       // 1. Obtener opciones de registro del servidor
       const optionsResponse = await webauthnApi.getRegistrationOptions();
       if (!optionsResponse.success || !optionsResponse.data) {
-        throw new Error('No se pudieron obtener las opciones de registro');
+        throw new Error(t('biometric.errors.getOptions'));
       }
 
       // 2. Iniciar el proceso de registro en el dispositivo
@@ -58,23 +62,22 @@ export default function BiometricSettings({ onError, onSuccess }: BiometricSetti
       const verifyResponse = await webauthnApi.verifyRegistration(credential);
 
       if (verifyResponse.success) {
-        onSuccess?.('Autenticación biométrica configurada exitosamente');
+        onSuccess?.(t('biometric.toast.success'));
         await loadCredentials();
       } else {
-        throw new Error('No se pudo verificar la credencial');
+        throw new Error(t('biometric.errors.verify'));
       }
     } catch (error: any) {
       console.error('Error registrando biometría:', error);
 
-      // Mensajes de error más amigables
-      let errorMessage = 'Error al configurar la autenticación biométrica';
+      let errorMessage = t('biometric.errors.configure');
 
       if (error.name === 'NotAllowedError') {
-        errorMessage = 'El registro fue cancelado o no se permitió el acceso';
+        errorMessage = t('biometric.errors.cancelled');
       } else if (error.name === 'NotSupportedError') {
-        errorMessage = 'Este dispositivo no soporta autenticación biométrica';
+        errorMessage = t('biometric.errors.notSupported');
       } else if (error.name === 'InvalidStateError') {
-        errorMessage = 'Esta credencial ya está registrada';
+        errorMessage = t('biometric.errors.alreadyRegistered');
       } else if (error.message) {
         errorMessage = error.message;
       }
@@ -86,7 +89,7 @@ export default function BiometricSettings({ onError, onSuccess }: BiometricSetti
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de eliminar esta credencial biométrica?')) {
+    if (!confirm(t('biometric.confirmDelete'))) {
       return;
     }
 
@@ -95,20 +98,20 @@ export default function BiometricSettings({ onError, onSuccess }: BiometricSetti
       const response = await webauthnApi.deleteCredential(id);
 
       if (response.success) {
-        onSuccess?.('Credencial eliminada exitosamente');
+        onSuccess?.(t('biometric.toast.deleted'));
         await loadCredentials();
       }
     } catch (error) {
       console.error('Error eliminando credencial:', error);
-      onError?.('Error al eliminar la credencial');
+      onError?.(t('biometric.errors.delete'));
     } finally {
       setDeletingId(null);
     }
   };
 
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return 'Nunca';
-    return new Date(dateStr).toLocaleDateString('es-MX', {
+  const formatCredentialDate = (dateStr: string | null) => {
+    if (!dateStr) return t('biometric.credential.never');
+    return formatDateTime(dateStr, {
       day: 'numeric',
       month: 'short',
       year: 'numeric',
@@ -141,12 +144,10 @@ export default function BiometricSettings({ onError, onSuccess }: BiometricSetti
           </svg>
           <div>
             <h4 className="text-sm font-medium text-yellow-800">
-              Autenticación biométrica no disponible
+              {t('biometric.notSupported.title')}
             </h4>
             <p className="mt-1 text-sm text-yellow-700">
-              Tu navegador o dispositivo no soporta autenticación biométrica (WebAuthn).
-              Intenta usar Chrome, Safari, Firefox o Edge en un dispositivo con Face ID,
-              Touch ID o Windows Hello.
+              {t('biometric.notSupported.description')}
             </p>
           </div>
         </div>
@@ -165,10 +166,10 @@ export default function BiometricSettings({ onError, onSuccess }: BiometricSetti
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-900">
-              Autenticación Biométrica
+              {t('biometric.sectionTitle')}
             </h3>
             <p className="text-sm text-gray-500">
-              Face ID, Touch ID o Windows Hello
+              {t('biometric.sectionSubtitle')}
             </p>
           </div>
         </div>
@@ -184,24 +185,23 @@ export default function BiometricSettings({ onError, onSuccess }: BiometricSetti
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
-              Configurando...
+              {t('biometric.configuring')}
             </>
           ) : (
             <>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              Agregar dispositivo
+              {t('biometric.addDevice')}
             </>
           )}
         </button>
       </div>
 
-      {/* Descripción */}
+      {/* Descripcion */}
       <div className="bg-gray-50 rounded-lg p-4 mb-6">
         <p className="text-sm text-gray-600">
-          Configura tu huella digital o reconocimiento facial para acceder de forma rápida y segura.
-          Puedes registrar múltiples dispositivos.
+          {t('biometric.description')}
         </p>
       </div>
 
@@ -218,9 +218,9 @@ export default function BiometricSettings({ onError, onSuccess }: BiometricSetti
           <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
-          <p className="text-gray-500">No tienes dispositivos biométricos configurados</p>
+          <p className="text-gray-500">{t('biometric.emptyState.title')}</p>
           <p className="text-sm text-gray-400 mt-1">
-            Haz clic en "Agregar dispositivo" para configurar Face ID o Touch ID
+            {t('biometric.emptyState.hint')}
           </p>
         </div>
       ) : (
@@ -234,14 +234,14 @@ export default function BiometricSettings({ onError, onSuccess }: BiometricSetti
                 {getDeviceIcon(credential.deviceType)}
                 <div className="ml-4">
                   <p className="font-medium text-gray-900">
-                    {credential.deviceName || 'Dispositivo biométrico'}
+                    {credential.deviceName || t('biometric.credential.defaultName')}
                   </p>
                   <div className="flex items-center text-sm text-gray-500 mt-1">
-                    <span>Registrado: {formatDate(credential.createdAt)}</span>
+                    <span>{t('biometric.credential.registered')}: {formatCredentialDate(credential.createdAt)}</span>
                     {credential.lastUsedAt && (
                       <>
                         <span className="mx-2">•</span>
-                        <span>Último uso: {formatDate(credential.lastUsedAt)}</span>
+                        <span>{t('biometric.credential.lastUsed')}: {formatCredentialDate(credential.lastUsedAt)}</span>
                       </>
                     )}
                   </div>
@@ -252,7 +252,7 @@ export default function BiometricSettings({ onError, onSuccess }: BiometricSetti
                 onClick={() => handleDelete(credential.id)}
                 disabled={deletingId === credential.id}
                 className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
-                title="Eliminar dispositivo"
+                title={t('biometric.credential.deleteTitle')}
               >
                 {deletingId === credential.id ? (
                   <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
@@ -270,7 +270,7 @@ export default function BiometricSettings({ onError, onSuccess }: BiometricSetti
         </div>
       )}
 
-      {/* Información de seguridad */}
+      {/* Informacion de seguridad */}
       <div className="mt-6 pt-6 border-t border-gray-100">
         <div className="flex items-start">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500 mt-0.5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -278,8 +278,7 @@ export default function BiometricSettings({ onError, onSuccess }: BiometricSetti
           </svg>
           <div>
             <p className="text-sm text-gray-600">
-              <strong className="text-gray-700">Tu seguridad es nuestra prioridad.</strong> Los datos biométricos nunca salen de tu dispositivo.
-              Solo se almacena una clave criptográfica que verifica tu identidad.
+              <strong className="text-gray-700">{t('biometric.security.title')}</strong> {t('biometric.security.description')}
             </p>
           </div>
         </div>

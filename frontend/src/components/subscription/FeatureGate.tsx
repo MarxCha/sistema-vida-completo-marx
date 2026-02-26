@@ -1,6 +1,7 @@
 // src/components/subscription/FeatureGate.tsx
 import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { usePremium } from '../../hooks/usePremium';
 import { PlanFeatures, PlanLimits } from '../../services/api';
 
@@ -11,13 +12,13 @@ interface FeatureGateProps {
   showUpgradePrompt?: boolean;
 }
 
-const featureNames: Record<keyof PlanFeatures, string> = {
-  advanceDirectives: 'Directivas de Voluntad Anticipada',
-  donorPreferences: 'Preferencias de Donación de Órganos',
-  nom151Seal: 'Sello NOM-151',
-  smsNotifications: 'Notificaciones SMS',
-  exportData: 'Exportar Datos',
-  prioritySupport: 'Soporte Prioritario',
+const featureKeys: Record<keyof PlanFeatures, string> = {
+  advanceDirectives: 'features.advanceDirectives',
+  donorPreferences: 'features.donorPreferences',
+  nom151Seal: 'features.nom151Seal',
+  smsNotifications: 'features.smsNotifications',
+  exportData: 'features.exportData',
+  prioritySupport: 'features.prioritySupport',
 };
 
 export function FeatureGate({
@@ -26,6 +27,7 @@ export function FeatureGate({
   fallback,
   showUpgradePrompt = true,
 }: FeatureGateProps) {
+  const { t } = useTranslation('subscription');
   const { hasFeature, loading } = usePremium();
 
   if (loading) {
@@ -66,10 +68,10 @@ export function FeatureGate({
         </svg>
       </div>
       <h3 className="text-lg font-semibold text-gray-900 mb-2">
-        {featureNames[feature]}
+        {t(featureKeys[feature])}
       </h3>
       <p className="text-gray-600 mb-4">
-        Esta función está disponible exclusivamente para usuarios Premium.
+        {t('gate.premium_only')}
       </p>
       <Link
         to="/subscription/plans"
@@ -88,7 +90,7 @@ export function FeatureGate({
             d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
           />
         </svg>
-        Actualizar a Premium
+        {t('gate.upgrade_premium')}
       </Link>
     </div>
   );
@@ -103,9 +105,9 @@ interface LimitGateProps {
   showUpgradePrompt?: boolean;
 }
 
-const limitNames: Record<keyof PlanLimits, string> = {
-  representativesLimit: 'representantes',
-  qrDownloadsPerMonth: 'descargas de QR por mes',
+const limitKeys: Record<keyof PlanLimits, string> = {
+  representativesLimit: 'limitNames.representativesLimit',
+  qrDownloadsPerMonth: 'limitNames.qrDownloadsPerMonth',
 };
 
 export function LimitGate({
@@ -115,6 +117,7 @@ export function LimitGate({
   fallback,
   showUpgradePrompt = true,
 }: LimitGateProps) {
+  const { t } = useTranslation('subscription');
   const { canCreateMore, getLimit, loading } = usePremium();
 
   if (loading) {
@@ -157,12 +160,12 @@ export function LimitGate({
         </svg>
       </div>
       <h3 className="text-lg font-semibold text-gray-900 mb-2">
-        Límite alcanzado
+        {t('gate.limit_reached')}
       </h3>
       <p className="text-gray-600 mb-4">
-        Has alcanzado el límite de {limitValue} {limitNames[limit]}.
+        {t('gate.limit_reached_description', { limit: limitValue, name: t(limitKeys[limit]) })}
         <br />
-        Actualiza a Premium para obtener más.
+        {t('gate.upgrade_for_more')}
       </p>
       <Link
         to="/subscription/plans"
@@ -181,7 +184,7 @@ export function LimitGate({
             d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
           />
         </svg>
-        Ver planes Premium
+        {t('gate.view_premium_plans')}
       </Link>
     </div>
   );
@@ -221,6 +224,7 @@ export function LimitIndicator({
   currentCount,
   showUpgradeLink = true,
 }: LimitIndicatorProps) {
+  const { t } = useTranslation('subscription');
   const { getLimit, loading } = usePremium();
 
   if (loading) {
@@ -235,7 +239,7 @@ export function LimitIndicator({
   if (isUnlimited) {
     return (
       <span className="text-green-600 text-sm font-medium">
-        Ilimitado
+        {t('gate.unlimited')}
       </span>
     );
   }
@@ -257,7 +261,7 @@ export function LimitIndicator({
           to="/subscription/plans"
           className="text-xs text-purple-600 hover:text-purple-800 underline"
         >
-          Aumentar límite
+          {t('gate.increase_limit')}
         </Link>
       )}
     </div>

@@ -1,37 +1,12 @@
 // src/components/pages/SubscriptionPlans.tsx
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePlans, useSubscription } from '../../hooks/useSubscription';
 import { usePremium } from '../../hooks/usePremium';
-import type { SubscriptionPlan, PlanFeatures } from '../../services/api';
-
-const featureLabels: Record<keyof PlanFeatures, { label: string; description: string }> = {
-  advanceDirectives: {
-    label: 'Directivas de Voluntad Anticipada',
-    description: 'Crea y gestiona tus directivas anticipadas',
-  },
-  donorPreferences: {
-    label: 'Preferencias de Donación',
-    description: 'Registra tu decisión sobre donación de órganos',
-  },
-  nom151Seal: {
-    label: 'Sello NOM-151',
-    description: 'Certificación oficial para tus documentos',
-  },
-  smsNotifications: {
-    label: 'Notificaciones SMS',
-    description: 'Alertas SMS a tus representantes',
-  },
-  exportData: {
-    label: 'Exportar Datos',
-    description: 'Descarga tu información en PDF',
-  },
-  prioritySupport: {
-    label: 'Soporte Prioritario',
-    description: 'Atención preferente por email y chat',
-  },
-};
+import type { SubscriptionPlan } from '../../services/api';
 
 export default function SubscriptionPlans() {
+  const { t } = useTranslation('subscription');
   const { plans, loading: loadingPlans } = usePlans();
   const { subscription, upgrade, upgrading } = useSubscription();
   const { isPremium } = usePremium();
@@ -44,7 +19,7 @@ export default function SubscriptionPlans() {
       await upgrade(planId, billingCycle);
     } catch (error) {
       console.error('Error al procesar upgrade:', error);
-      alert('Error al procesar el upgrade. Por favor intenta de nuevo.');
+      alert(t('plans.upgrade_error'));
     } finally {
       setSelectedPlan(null);
     }
@@ -89,11 +64,10 @@ export default function SubscriptionPlans() {
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            Elige tu plan
+            {t('plans.page_title')}
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Protege a tu familia con Sistema VIDA. Elige el plan que mejor se
-            adapte a tus necesidades.
+            {t('plans.page_subtitle')}
           </p>
         </div>
 
@@ -108,7 +82,7 @@ export default function SubscriptionPlans() {
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              Mensual
+              {t('plans.billing_monthly')}
             </button>
             <button
               onClick={() => setBillingCycle('ANNUAL')}
@@ -118,10 +92,10 @@ export default function SubscriptionPlans() {
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              Anual
+              {t('plans.billing_annual')}
               {premiumPlan && getSavings(premiumPlan) > 0 && (
                 <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
-                  Ahorra ${getSavings(premiumPlan)}
+                  {t('plans.save_amount', { amount: getSavings(premiumPlan) })}
                 </span>
               )}
             </button>
@@ -135,7 +109,7 @@ export default function SubscriptionPlans() {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
               <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">{basicoPlan.name}</h2>
-                <p className="text-gray-500 mt-1">Funciones esenciales para empezar</p>
+                <p className="text-gray-500 mt-1">{t('plans.basico.description')}</p>
               </div>
 
               <div className="mb-6">
@@ -143,52 +117,56 @@ export default function SubscriptionPlans() {
                   <span className="text-4xl font-bold text-gray-900">
                     ${getMonthlyEquivalent(basicoPlan)}
                   </span>
-                  <span className="text-gray-500 ml-2">MXN / mes</span>
+                  <span className="text-gray-500 ml-2">{t('plans.mxn_per_month')}</span>
                 </div>
                 {billingCycle === 'ANNUAL' && (
                   <p className="text-sm text-gray-500 mt-1">
-                    Facturado anualmente (${getPrice(basicoPlan)} MXN)
+                    {t('plans.billed_annually', { amount: getPrice(basicoPlan) })}
                   </p>
                 )}
                 {basicoPlan.trialDays > 0 && (
                   <p className="text-sm text-green-600 mt-2 font-medium">
-                    {basicoPlan.trialDays} días de prueba gratis
+                    {t('plans.trial_days', { count: basicoPlan.trialDays })}
                   </p>
                 )}
               </div>
 
               <div className="space-y-4 mb-8">
-                <p className="text-sm font-medium text-gray-700">Incluye:</p>
+                <p className="text-sm font-medium text-gray-700">{t('plans.includes_label')}</p>
                 <ul className="space-y-3">
                   <li className="flex items-start">
                     <svg className="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-600">Perfil médico digital completo</span>
+                    <span className="text-gray-600">{t('plans.basico.feature_profile')}</span>
                   </li>
                   <li className="flex items-start">
                     <svg className="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-600">Código QR de emergencia</span>
+                    <span className="text-gray-600">{t('plans.basico.feature_qr')}</span>
                   </li>
                   <li className="flex items-start">
                     <svg className="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-600">Hasta {basicoPlan.limits.representativesLimit} representantes</span>
+                    <span className="text-gray-600">
+                      {t('features.representatives_limited', { count: basicoPlan.limits.representativesLimit })}
+                    </span>
                   </li>
                   <li className="flex items-start">
                     <svg className="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-600">{basicoPlan.limits.qrDownloadsPerMonth} descargas QR/mes</span>
+                    <span className="text-gray-600">
+                      {t('features.qr_limited', { count: basicoPlan.limits.qrDownloadsPerMonth })}
+                    </span>
                   </li>
                   <li className="flex items-start">
                     <svg className="w-5 h-5 text-green-500 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-600">Historial de accesos de emergencia</span>
+                    <span className="text-gray-600">{t('plans.basico.feature_history')}</span>
                   </li>
                 </ul>
               </div>
@@ -198,7 +176,7 @@ export default function SubscriptionPlans() {
                   disabled
                   className="w-full py-3 px-6 bg-gray-100 text-gray-500 rounded-xl font-medium cursor-not-allowed"
                 >
-                  Plan actual
+                  {t('plans.basico.current_plan')}
                 </button>
               ) : (
                 <button
@@ -212,12 +190,12 @@ export default function SubscriptionPlans() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Procesando...
+                      {t('plans.premium.processing')}
                     </span>
                   ) : basicoPlan.trialDays > 0 ? (
-                    `Comenzar prueba de ${basicoPlan.trialDays} días`
+                    t('plans.basico.start_trial', { count: basicoPlan.trialDays })
                   ) : (
-                    'Suscribirse'
+                    t('plans.basico.subscribe')
                   )}
                 </button>
               )}
@@ -230,13 +208,13 @@ export default function SubscriptionPlans() {
               {/* Popular badge */}
               <div className="absolute top-4 right-4">
                 <span className="bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full">
-                  RECOMENDADO
+                  {t('plans.premium.badge')}
                 </span>
               </div>
 
               <div className="mb-6">
                 <h2 className="text-2xl font-bold">{premiumPlan.name}</h2>
-                <p className="text-purple-200 mt-1">Protección completa para tu familia</p>
+                <p className="text-purple-200 mt-1">{t('plans.premium.description')}</p>
               </div>
 
               <div className="mb-6">
@@ -244,26 +222,26 @@ export default function SubscriptionPlans() {
                   <span className="text-4xl font-bold">
                     ${getMonthlyEquivalent(premiumPlan)}
                   </span>
-                  <span className="text-purple-200 ml-2">MXN / mes</span>
+                  <span className="text-purple-200 ml-2">{t('plans.mxn_per_month')}</span>
                 </div>
                 {billingCycle === 'ANNUAL' && (
                   <p className="text-sm text-purple-200 mt-1">
-                    Facturado anualmente (${getPrice(premiumPlan)} MXN)
+                    {t('plans.billed_annually', { amount: getPrice(premiumPlan) })}
                   </p>
                 )}
               </div>
 
               <div className="space-y-4 mb-8">
-                <p className="text-sm font-medium text-purple-100">Todo lo del Plan Básico, más:</p>
+                <p className="text-sm font-medium text-purple-100">{t('plans.premium.includes_basic')}</p>
                 <ul className="space-y-3">
-                  {Object.entries(featureLabels).map(([key, { label }]) => {
-                    if (premiumPlan.features[key as keyof PlanFeatures]) {
+                  {Object.entries(premiumPlan.features).map(([key, value]) => {
+                    if (value) {
                       return (
                         <li key={key} className="flex items-start">
                           <svg className="w-5 h-5 text-green-400 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                           </svg>
-                          <span>{label}</span>
+                          <span>{t(`features.${key}`, { defaultValue: key })}</span>
                         </li>
                       );
                     }
@@ -273,13 +251,13 @@ export default function SubscriptionPlans() {
                     <svg className="w-5 h-5 text-green-400 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span>Hasta {premiumPlan.limits.representativesLimit} representantes</span>
+                    <span>{t('features.representatives_unlimited')}</span>
                   </li>
                   <li className="flex items-start">
                     <svg className="w-5 h-5 text-green-400 mr-3 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span>Descargas QR ilimitadas</span>
+                    <span>{t('features.qr_unlimited')}</span>
                   </li>
                 </ul>
               </div>
@@ -289,7 +267,7 @@ export default function SubscriptionPlans() {
                   disabled
                   className="w-full py-3 px-6 bg-white/20 text-white rounded-xl font-medium cursor-not-allowed"
                 >
-                  Plan actual
+                  {t('plans.premium.current_plan')}
                 </button>
               ) : (
                 <button
@@ -303,17 +281,17 @@ export default function SubscriptionPlans() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Procesando...
+                      {t('plans.premium.processing')}
                     </span>
                   ) : (
-                    'Suscribirse ahora'
+                    t('plans.premium.subscribe')
                   )}
                 </button>
               )}
 
               {subscription?.plan.slug === 'basico' && (
                 <p className="text-center text-purple-200 text-sm mt-3">
-                  Mejora tu plan y obtén todas las funciones
+                  {t('plans.premium.upgrade_note')}
                 </p>
               )}
             </div>
@@ -323,70 +301,70 @@ export default function SubscriptionPlans() {
         {/* Comparison Table */}
         <div className="mt-16 max-w-4xl mx-auto">
           <h3 className="text-2xl font-bold text-center text-gray-900 mb-8">
-            Compara los planes
+            {t('plans.comparison.title')}
           </h3>
           <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Característica</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">Básico</th>
-                  <th className="px-6 py-4 text-center text-sm font-semibold text-purple-600">Premium</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">{t('plans.comparison.col_feature')}</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">{t('plans.comparison.col_basico')}</th>
+                  <th className="px-6 py-4 text-center text-sm font-semibold text-purple-600">{t('plans.comparison.col_premium')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 <tr>
-                  <td className="px-6 py-4 text-sm text-gray-600">Precio mensual</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">{t('plans.comparison.row_price')}</td>
                   <td className="px-6 py-4 text-center text-sm font-medium text-gray-900">$49 MXN</td>
                   <td className="px-6 py-4 text-center text-sm font-medium text-purple-600">$149 MXN</td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 text-sm text-gray-600">Perfil médico digital</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">{t('plans.comparison.row_profile')}</td>
                   <td className="px-6 py-4 text-center"><CheckIcon /></td>
                   <td className="px-6 py-4 text-center"><CheckIcon className="text-purple-600" /></td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 text-sm text-gray-600">Código QR de emergencia</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">{t('plans.comparison.row_qr')}</td>
                   <td className="px-6 py-4 text-center"><CheckIcon /></td>
                   <td className="px-6 py-4 text-center"><CheckIcon className="text-purple-600" /></td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 text-sm text-gray-600">Representantes</td>
-                  <td className="px-6 py-4 text-center text-sm text-gray-900">Hasta 2</td>
-                  <td className="px-6 py-4 text-center text-sm text-purple-600">Hasta 10</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">{t('plans.comparison.row_representatives')}</td>
+                  <td className="px-6 py-4 text-center text-sm text-gray-900">{t('plans.comparison.val_basico_reps')}</td>
+                  <td className="px-6 py-4 text-center text-sm text-purple-600">{t('plans.comparison.val_premium_reps')}</td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 text-sm text-gray-600">Descargas QR</td>
-                  <td className="px-6 py-4 text-center text-sm text-gray-900">5/mes</td>
-                  <td className="px-6 py-4 text-center text-sm text-purple-600">Ilimitadas</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">{t('plans.comparison.row_qr_downloads')}</td>
+                  <td className="px-6 py-4 text-center text-sm text-gray-900">{t('plans.comparison.val_basico_qr')}</td>
+                  <td className="px-6 py-4 text-center text-sm text-purple-600">{t('plans.comparison.val_premium_qr')}</td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 text-sm text-gray-600">Directivas de Voluntad Anticipada</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">{t('plans.comparison.row_directives')}</td>
                   <td className="px-6 py-4 text-center"><XIcon /></td>
                   <td className="px-6 py-4 text-center"><CheckIcon className="text-purple-600" /></td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 text-sm text-gray-600">Preferencias de Donación</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">{t('plans.comparison.row_donor')}</td>
                   <td className="px-6 py-4 text-center"><XIcon /></td>
                   <td className="px-6 py-4 text-center"><CheckIcon className="text-purple-600" /></td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 text-sm text-gray-600">Sello NOM-151</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">{t('plans.comparison.row_nom151')}</td>
                   <td className="px-6 py-4 text-center"><XIcon /></td>
                   <td className="px-6 py-4 text-center"><CheckIcon className="text-purple-600" /></td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 text-sm text-gray-600">Notificaciones SMS</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">{t('plans.comparison.row_sms')}</td>
                   <td className="px-6 py-4 text-center"><XIcon /></td>
                   <td className="px-6 py-4 text-center"><CheckIcon className="text-purple-600" /></td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 text-sm text-gray-600">Exportar datos (PDF)</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">{t('plans.comparison.row_export')}</td>
                   <td className="px-6 py-4 text-center"><XIcon /></td>
                   <td className="px-6 py-4 text-center"><CheckIcon className="text-purple-600" /></td>
                 </tr>
                 <tr>
-                  <td className="px-6 py-4 text-sm text-gray-600">Soporte prioritario</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">{t('plans.comparison.row_support')}</td>
                   <td className="px-6 py-4 text-center"><XIcon /></td>
                   <td className="px-6 py-4 text-center"><CheckIcon className="text-purple-600" /></td>
                 </tr>
@@ -395,12 +373,12 @@ export default function SubscriptionPlans() {
           </div>
         </div>
 
-        {/* FAQ / Features */}
+        {/* FAQ */}
         <div className="mt-16 text-center">
           <p className="text-gray-500">
-            ¿Tienes preguntas?{' '}
+            {t('plans.faq.questions')}{' '}
             <a href="mailto:soporte@sistemavida.mx" className="text-purple-600 hover:underline">
-              Contáctanos
+              {t('plans.faq.contact_us')}
             </a>
           </p>
         </div>
