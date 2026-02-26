@@ -75,7 +75,7 @@
     "terms": "Terms of Use",
     "privacy": "Privacy Policy",
     "contact": "Contact",
-    "copyright": "© 2024 VIDA System. All rights reserved."
+    "copyright": "© {{year}} VIDA System. All rights reserved."
   },
   "toast": {
     "welcome": "Welcome {{name}}!",

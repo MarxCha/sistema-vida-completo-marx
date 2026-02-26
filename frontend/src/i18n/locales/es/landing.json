@@ -75,7 +75,7 @@
     "terms": "Términos de Uso",
     "privacy": "Política de Privacidad",
     "contact": "Contacto",
-    "copyright": "© 2024 Sistema VIDA. Todos los derechos reservados."
+    "copyright": "© {{year}} Sistema VIDA. Todos los derechos reservados."
   },
   "toast": {
     "welcome": "¡Bienvenido {{name}}!",

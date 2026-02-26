@@ -3,6 +3,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import { authApi } from '../services/api';
 import type { User, LoginForm, RegisterForm } from '../types';
 import i18n from '../i18n/config';
+import { t } from 'i18next';
 
 interface AuthTokens {
   accessToken: string;
@@ -82,7 +83,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(response.data.user);
       syncLanguageFromUser(response.data.user);
     } else {
-      throw new Error(response.error?.message || 'Error al iniciar sesión');
+      throw new Error(response.error?.message || t('toast.loginError', { ns: 'auth' }));
     }
   };
 
@@ -100,7 +101,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem('refreshToken', response.data.tokens.refreshToken);
       setUser(response.data.user);
     } else {
-      throw new Error(response.error?.message || 'Error al registrarse');
+      throw new Error(response.error?.message || t('toast.registerError', { ns: 'auth' }));
     }
   };
 

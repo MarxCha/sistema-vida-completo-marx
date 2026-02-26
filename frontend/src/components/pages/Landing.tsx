@@ -308,7 +308,7 @@ export default function Landing() {
               <a href="#" className="hover:text-white">{t('footer.contact')}</a>
             </div>
             <p className="text-gray-500 text-sm">
-              {t('footer.copyright')}
+              {t('footer.copyright', { year: new Date().getFullYear() })}
             </p>
           </div>
         </div>
