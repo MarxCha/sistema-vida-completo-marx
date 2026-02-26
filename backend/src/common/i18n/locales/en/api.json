@@ -14,7 +14,20 @@
     "invalidRefreshToken": "Invalid refresh token",
     "sessionExpired": "Session has expired",
     "tokenRequired": "Token required",
-    "refreshTokenRequired": "Refresh token required"
+    "refreshTokenRequired": "Refresh token required",
+    "userNotFound": "User not found",
+    "credentialRequired": "Credential required",
+    "emailRequired": "Email required",
+    "userIdAndCredentialRequired": "userId and credential are required",
+    "biometricAuthFailed": "Biometric authentication failed",
+    "biometricLoginSuccess": "Login successful",
+    "biometricRegistered": "Biometric credential registered successfully",
+    "credentialDeleted": "Credential deleted successfully",
+    "errorGeneratingOptions": "Error generating options",
+    "errorVerifyingCredential": "Error verifying credential",
+    "errorListingCredentials": "Error listing credentials",
+    "errorDeletingCredential": "Error deleting credential",
+    "authFailed": "Authentication failed"
   },
   "emergency": {
     "invalidQR": "Invalid QR token",
@@ -48,6 +61,7 @@
     "validated": "Directive validated and activated successfully",
     "revoked": "Directive revoked successfully",
     "draftDeleted": "Draft deleted successfully",
+    "sealed": "Document sealed with NOM-151 certificate",
     "notFound": "Directive not found"
   },
   "documents": {
@@ -60,9 +74,25 @@
   "payments": {
     "noActiveSubscription": "You don't have an active subscription",
     "subscriptionCancelled": "Subscription cancelled",
+    "subscriptionCancelledAtPeriodEnd": "Subscription scheduled to cancel at the end of the current period",
     "subscriptionReactivated": "Subscription reactivated",
+    "subscriptionNotFound": "Subscription not found",
+    "subscriptionUpdated": "Subscription updated",
     "paymentMethodSaved": "Payment method saved",
-    "invoiceGenerated": "Invoice generated successfully"
+    "paymentMethodDeleted": "Payment method deleted",
+    "paymentMethodSetDefault": "Payment method set as default",
+    "invoiceGenerated": "Invoice generated successfully",
+    "invoiceResent": "Invoice resent",
+    "invoiceCancelled": "Invoice cancelled",
+    "fiscalDataSaved": "Fiscal data saved",
+    "fiscalDataRequired": "RFC, business name, tax regime, postal code and email are required",
+    "planIdRequired": "planId is required",
+    "planFieldsRequired": "name, slug, features and limits are required",
+    "planCreated": "Plan created",
+    "planUpdated": "Plan updated",
+    "paymentMethodIdRequired": "stripePaymentMethodId is required",
+    "paymentIdRequired": "paymentId is required",
+    "refundProcessed": "Refund processed"
   },
   "generic": {
     "serverError": "Internal server error",
@@ -71,5 +101,107 @@
     "tokenNotProvided": "Authorization token not provided",
     "invalidTokenFormat": "Invalid token format",
     "premiumRequired": "This feature requires a Premium subscription"
+  },
+  "odoo": {
+    "notConfigured": "Odoo is not configured. Check environment variables.",
+    "connectionSuccess": "Successfully connected to Odoo",
+    "connectionError": "Error connecting to Odoo",
+    "syncNotConfigured": "Odoo is not configured",
+    "productsSyncCompleted": "Product synchronization completed",
+    "paymentsSyncCompleted": "Synchronization completed: {{success}}/{{total}} payments",
+    "unknownError": "Unknown error"
+  },
+  "wallet": {
+    "appleNotConfigured": "Apple Wallet is not configured on this server",
+    "googleNotConfigured": "Google Wallet is not configured on this server",
+    "userNotFound": "User not found",
+    "emergencyProfileNotConfigured": "Emergency profile not configured",
+    "downloadLimitReached": "You have reached the limit of {{limit}} QR downloads this month. Upgrade your plan for more downloads.",
+    "statusError": "Error getting wallet status",
+    "applePassError": "Error generating Apple Wallet pass",
+    "googlePassError": "Error generating Google Wallet URL"
+  },
+  "pup": {
+    "profileNotFound": "Profile not found",
+    "documentGenerationFailed": "Could not generate the document",
+    "documentGenerated": "Medical profile document generated successfully",
+    "invalidImageUrl": "Invalid image URL",
+    "qrNotFound": "QR code not found",
+    "qrRegenerated": "QR code regenerated successfully. The previous code is no longer valid.",
+    "invalidQrFormat": "Invalid format. Use png or svg",
+    "downloadLimitReached": "You have reached the QR download limit for this month. Upgrade your plan for more downloads."
+  },
+  "insurance": {
+    "notFound": "Insurance provider not found",
+    "networkSeeded": "Hospital networks linked successfully",
+    "forbiddenInProduction": "Not available in production",
+    "fetchError": "Error retrieving insurance providers list",
+    "networkFetchError": "Error retrieving hospital network",
+    "detailFetchError": "Error retrieving insurance provider details",
+    "seedError": "Error linking networks"
+  },
+  "admin": {
+    "login": {
+      "missingFields": "Email and password are required",
+      "mfaRequired": "Two-factor authentication code is required",
+      "error": "Error signing in",
+      "rateLimitMessage": "Too many login attempts. Please wait a moment.",
+      "mfa": {
+        "missingFields": "mfaToken and code are required",
+        "invalidToken": "Invalid or expired MFA token. Please sign in again.",
+        "tokenExpired": "MFA token has expired. Please sign in again.",
+        "error": "Error during MFA verification",
+        "rateLimitMessage": "Too many MFA verification attempts. Please wait a few minutes."
+      }
+    },
+    "logout": {
+      "missingToken": "Refresh token required",
+      "success": "Session closed successfully",
+      "error": "Error closing session"
+    },
+    "refresh": {
+      "missingToken": "Refresh token required",
+      "error": "Error refreshing tokens"
+    },
+    "me": {
+      "error": "Error fetching data"
+    },
+    "changePassword": {
+      "missingFields": "Current and new passwords are required",
+      "success": "Password changed successfully. Please sign in again.",
+      "error": "Error changing password"
+    },
+    "mfa": {
+      "statusError": "Error fetching MFA status",
+      "setupMessage": "Scan the QR code with your authenticator app and verify with a code",
+      "setupError": "Error setting up MFA",
+      "missingCode": "Verification code required",
+      "verifySuccess": "MFA enabled successfully. A code will be required on every sign in from now on.",
+      "verifyError": "Error verifying MFA",
+      "disableMissingCode": "Verification code required to disable MFA",
+      "disableSuccess": "MFA disabled successfully.",
+      "disableError": "Error disabling MFA",
+      "backupCodesMissingCode": "Verification code required to regenerate backup codes",
+      "backupCodesSuccess": "New backup codes generated. Store them in a safe place.",
+      "backupCodesError": "Error regenerating backup codes",
+      "adminNotFound": "Administrator not found",
+      "alreadyEnabled": "MFA is already enabled",
+      "notSetup": "You must start the MFA setup first or the session has expired",
+      "invalidCode": "Invalid verification code",
+      "notEnabled": "MFA is not enabled for this administrator"
+    },
+    "admins": {
+      "listError": "Error listing administrators",
+      "missingFields": "Email, password, name and role are required",
+      "createError": "Error creating administrator",
+      "updateError": "Error updating administrator"
+    },
+    "audit": {
+      "csv": {
+        "userHeaders": "ID,User,Email,Action,Resource,Resource ID,IP,Date",
+        "adminHeaders": "ID,Admin,Email,Role,Action,Resource,Resource ID,IP,Date",
+        "emergencyHeaders": "ID,Patient,CURP,Professional,Role,Institution,Data Accessed,Location,Date"
+      }
+    }
   }
 }

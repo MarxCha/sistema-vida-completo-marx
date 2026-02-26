@@ -14,7 +14,20 @@
     "invalidRefreshToken": "Token de refresco inválido",
     "sessionExpired": "La sesión ha expirado",
     "tokenRequired": "Token requerido",
-    "refreshTokenRequired": "Refresh token requerido"
+    "refreshTokenRequired": "Refresh token requerido",
+    "userNotFound": "Usuario no encontrado",
+    "credentialRequired": "Credencial requerida",
+    "emailRequired": "Email requerido",
+    "userIdAndCredentialRequired": "userId y credential son requeridos",
+    "biometricAuthFailed": "Autenticación biométrica fallida",
+    "biometricLoginSuccess": "Inicio de sesión exitoso",
+    "biometricRegistered": "Credencial biométrica registrada exitosamente",
+    "credentialDeleted": "Credencial eliminada exitosamente",
+    "errorGeneratingOptions": "Error generando opciones",
+    "errorVerifyingCredential": "Error verificando credencial",
+    "errorListingCredentials": "Error listando credenciales",
+    "errorDeletingCredential": "Error eliminando credencial",
+    "authFailed": "Autenticación fallida"
   },
   "emergency": {
     "invalidQR": "Token QR inválido",
@@ -48,6 +61,7 @@
     "validated": "Directiva validada y activada exitosamente",
     "revoked": "Directiva revocada exitosamente",
     "draftDeleted": "Borrador eliminado exitosamente",
+    "sealed": "Documento sellado con constancia NOM-151",
     "notFound": "Directiva no encontrada"
   },
   "documents": {
@@ -60,9 +74,25 @@
   "payments": {
     "noActiveSubscription": "No tienes una suscripción activa",
     "subscriptionCancelled": "Suscripción cancelada",
+    "subscriptionCancelledAtPeriodEnd": "Suscripción programada para cancelarse al final del período",
     "subscriptionReactivated": "Suscripción reactivada",
+    "subscriptionNotFound": "Suscripción no encontrada",
+    "subscriptionUpdated": "Suscripción actualizada",
     "paymentMethodSaved": "Método de pago guardado",
-    "invoiceGenerated": "Factura generada exitosamente"
+    "paymentMethodDeleted": "Método de pago eliminado",
+    "paymentMethodSetDefault": "Método de pago establecido como predeterminado",
+    "invoiceGenerated": "Factura generada exitosamente",
+    "invoiceResent": "Factura reenviada",
+    "invoiceCancelled": "Factura cancelada",
+    "fiscalDataSaved": "Datos fiscales guardados",
+    "fiscalDataRequired": "RFC, razón social, régimen fiscal, código postal y email son requeridos",
+    "planIdRequired": "planId es requerido",
+    "planFieldsRequired": "name, slug, features y limits son requeridos",
+    "planCreated": "Plan creado",
+    "planUpdated": "Plan actualizado",
+    "paymentMethodIdRequired": "stripePaymentMethodId es requerido",
+    "paymentIdRequired": "paymentId es requerido",
+    "refundProcessed": "Reembolso procesado"
   },
   "generic": {
     "serverError": "Error interno del servidor",
@@ -71,5 +101,107 @@
     "tokenNotProvided": "Token de autorización no proporcionado",
     "invalidTokenFormat": "Formato de token inválido",
     "premiumRequired": "Esta función requiere una suscripción Premium"
+  },
+  "odoo": {
+    "notConfigured": "Odoo no está configurado. Verificar variables de entorno.",
+    "connectionSuccess": "Conexión exitosa con Odoo",
+    "connectionError": "Error conectando a Odoo",
+    "syncNotConfigured": "Odoo no está configurado",
+    "productsSyncCompleted": "Sincronización de productos completada",
+    "paymentsSyncCompleted": "Sincronización completada: {{success}}/{{total}} pagos",
+    "unknownError": "Error desconocido"
+  },
+  "wallet": {
+    "appleNotConfigured": "Apple Wallet no está configurado en este servidor",
+    "googleNotConfigured": "Google Wallet no está configurado en este servidor",
+    "userNotFound": "Usuario no encontrado",
+    "emergencyProfileNotConfigured": "Perfil de emergencia no configurado",
+    "downloadLimitReached": "Has alcanzado el límite de {{limit}} descargas QR este mes. Actualiza tu plan para más descargas.",
+    "statusError": "Error obteniendo estado de wallet",
+    "applePassError": "Error generando pase de Apple Wallet",
+    "googlePassError": "Error generando URL de Google Wallet"
+  },
+  "pup": {
+    "profileNotFound": "Perfil no encontrado",
+    "documentGenerationFailed": "No se pudo generar el documento",
+    "documentGenerated": "Documento de perfil médico generado exitosamente",
+    "invalidImageUrl": "URL de imagen inválido",
+    "qrNotFound": "Código QR no encontrado",
+    "qrRegenerated": "Código QR regenerado exitosamente. El código anterior ya no es válido.",
+    "invalidQrFormat": "Formato inválido. Use png o svg",
+    "downloadLimitReached": "Has alcanzado el límite de descargas QR este mes. Actualiza tu plan para más descargas."
+  },
+  "insurance": {
+    "notFound": "Aseguradora no encontrada",
+    "networkSeeded": "Redes de hospitales vinculadas exitosamente",
+    "forbiddenInProduction": "No disponible en producción",
+    "fetchError": "Error al obtener lista de aseguradoras",
+    "networkFetchError": "Error al obtener red de hospitales",
+    "detailFetchError": "Error al obtener detalles de aseguradora",
+    "seedError": "Error al vincular redes"
+  },
+  "admin": {
+    "login": {
+      "missingFields": "Email y contraseña son requeridos",
+      "mfaRequired": "Se requiere código de autenticación de dos factores",
+      "error": "Error al iniciar sesión",
+      "rateLimitMessage": "Demasiados intentos de inicio de sesión. Espere un momento.",
+      "mfa": {
+        "missingFields": "mfaToken y code son requeridos",
+        "invalidToken": "Token MFA inválido o expirado. Inicie sesión nuevamente.",
+        "tokenExpired": "Token MFA expirado. Inicie sesión nuevamente.",
+        "error": "Error en verificación MFA",
+        "rateLimitMessage": "Demasiados intentos de verificación MFA. Espere unos minutos."
+      }
+    },
+    "logout": {
+      "missingToken": "Refresh token requerido",
+      "success": "Sesión cerrada correctamente",
+      "error": "Error al cerrar sesión"
+    },
+    "refresh": {
+      "missingToken": "Refresh token requerido",
+      "error": "Error al renovar tokens"
+    },
+    "me": {
+      "error": "Error al obtener datos"
+    },
+    "changePassword": {
+      "missingFields": "Contraseña actual y nueva son requeridas",
+      "success": "Contraseña cambiada correctamente. Inicie sesión nuevamente.",
+      "error": "Error al cambiar contraseña"
+    },
+    "mfa": {
+      "statusError": "Error al obtener estado de MFA",
+      "setupMessage": "Escanee el código QR con su aplicación de autenticación y verifique con un código",
+      "setupError": "Error al configurar MFA",
+      "missingCode": "Código de verificación requerido",
+      "verifySuccess": "MFA activado correctamente. A partir de ahora se requerirá código al iniciar sesión.",
+      "verifyError": "Error al verificar MFA",
+      "disableMissingCode": "Código de verificación requerido para deshabilitar MFA",
+      "disableSuccess": "MFA deshabilitado correctamente.",
+      "disableError": "Error al deshabilitar MFA",
+      "backupCodesMissingCode": "Código de verificación requerido para regenerar códigos de respaldo",
+      "backupCodesSuccess": "Nuevos códigos de respaldo generados. Guárdelos en un lugar seguro.",
+      "backupCodesError": "Error al regenerar códigos de respaldo",
+      "adminNotFound": "Administrador no encontrado",
+      "alreadyEnabled": "MFA ya está habilitado",
+      "notSetup": "Primero debe iniciar la configuración de MFA o el tiempo expiró",
+      "invalidCode": "Código de verificación inválido",
+      "notEnabled": "MFA no está habilitado para este administrador"
+    },
+    "admins": {
+      "listError": "Error al listar administradores",
+      "missingFields": "Email, password, nombre y rol son requeridos",
+      "createError": "Error al crear administrador",
+      "updateError": "Error al actualizar administrador"
+    },
+    "audit": {
+      "csv": {
+        "userHeaders": "ID,Usuario,Email,Accion,Recurso,ID Recurso,IP,Fecha",
+        "adminHeaders": "ID,Admin,Email,Rol,Accion,Recurso,ID Recurso,IP,Fecha",
+        "emergencyHeaders": "ID,Paciente,CURP,Profesional,Rol,Institucion,Datos Accedidos,Ubicacion,Fecha"
+      }
+    }
   }
 }

@@ -183,5 +183,8 @@
   "limitNames": {
     "representativesLimit": "representatives",
     "qrDownloadsPerMonth": "QR downloads per month"
+  },
+  "errors": {
+    "loadPremiumStatus": "Error loading premium status"
   }
 }

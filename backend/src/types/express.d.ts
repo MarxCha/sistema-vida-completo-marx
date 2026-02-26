@@ -11,8 +11,8 @@ declare global {
         name: string;
         preferredLanguage?: string;
       };
-      locale?: string;
-      t?: TFunction;
+      locale: string;
+      t: TFunction;
     }
   }
 }

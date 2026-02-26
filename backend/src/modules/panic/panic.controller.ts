@@ -25,7 +25,7 @@ router.post('/', async (req: Request, res: Response) => {
         success: false,
         error: {
           code: 'MISSING_LOCATION',
-          message: 'Se requiere ubicacion (latitude, longitude) para activar la alerta',
+          message: req.t('api:panic.locationRequired'),
         },
       });
     }
@@ -35,7 +35,7 @@ router.post('/', async (req: Request, res: Response) => {
         success: false,
         error: {
           code: 'INVALID_LOCATION',
-          message: 'Las coordenadas proporcionadas no son validas',
+          message: req.t('api:panic.invalidCoordinates'),
         },
       });
     }
@@ -52,7 +52,7 @@ router.post('/', async (req: Request, res: Response) => {
     return res.status(201).json({
       success: true,
       data: result,
-      message: 'Alerta de panico activada. Tus representantes han sido notificados.',
+      message: req.t('api:panic.activated'),
     });
   } catch (error: any) {
     logger.error('Error activando alerta de panico:', error);
@@ -60,7 +60,7 @@ router.post('/', async (req: Request, res: Response) => {
       success: false,
       error: {
         code: 'PANIC_ERROR',
-        message: error.message || 'Error al activar la alerta de panico',
+        message: error.message || req.t('api:generic.serverError'),
       },
     });
   }
@@ -79,7 +79,7 @@ router.delete('/:alertId', async (req: Request, res: Response) => {
 
     return res.json({
       success: true,
-      message: 'Alerta de panico cancelada exitosamente',
+      message: req.t('api:panic.cancelled'),
     });
   } catch (error: any) {
     logger.error('Error cancelando alerta de panico:', error);
@@ -89,7 +89,7 @@ router.delete('/:alertId', async (req: Request, res: Response) => {
         success: false,
         error: {
           code: 'NOT_FOUND',
-          message: error.message,
+          message: req.t('api:panic.notActive'),
         },
       });
     }
@@ -98,7 +98,7 @@ router.delete('/:alertId', async (req: Request, res: Response) => {
       success: false,
       error: {
         code: 'CANCEL_ERROR',
-        message: 'Error al cancelar la alerta',
+        message: req.t('api:generic.serverError'),
       },
     });
   }
@@ -127,7 +127,7 @@ router.get('/active', async (req: Request, res: Response) => {
       success: false,
       error: {
         code: 'FETCH_ERROR',
-        message: 'Error al obtener alertas activas',
+        message: req.t('api:generic.serverError'),
       },
     });
   }
@@ -157,7 +157,7 @@ router.get('/history', async (req: Request, res: Response) => {
       success: false,
       error: {
         code: 'FETCH_ERROR',
-        message: 'Error al obtener historial de alertas',
+        message: req.t('api:generic.serverError'),
       },
     });
   }
@@ -179,7 +179,7 @@ router.get('/:alertId', async (req: Request, res: Response) => {
         success: false,
         error: {
           code: 'NOT_FOUND',
-          message: 'Alerta no encontrada',
+          message: req.t('api:panic.notFound'),
         },
       });
     }
@@ -194,7 +194,7 @@ router.get('/:alertId', async (req: Request, res: Response) => {
       success: false,
       error: {
         code: 'FETCH_ERROR',
-        message: 'Error al obtener la alerta',
+        message: req.t('api:generic.serverError'),
       },
     });
   }

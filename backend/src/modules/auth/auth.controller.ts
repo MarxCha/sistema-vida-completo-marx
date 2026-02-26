@@ -10,10 +10,34 @@ import { logger } from '../../common/services/logger.service';
 const router = Router();
 
 // ═══════════════════════════════════════════════════════════════════════════
+// HELPER: Map AuthError codes to i18n keys
+// ═══════════════════════════════════════════════════════════════════════════
+
+const AUTH_ERROR_KEY_MAP: Record<string, string> = {
+  EMAIL_EXISTS: 'api:auth.emailAlreadyRegistered',
+  CURP_EXISTS: 'api:auth.curpAlreadyRegistered',
+  INVALID_CURP: 'api:auth.curpInvalid',
+  INVALID_CREDENTIALS: 'api:auth.invalidCredentials',
+  ACCOUNT_DISABLED: 'api:auth.accountDisabled',
+  INVALID_TOKEN: 'api:auth.invalidRefreshToken',
+  SESSION_EXPIRED: 'api:auth.sessionExpired',
+  USER_NOT_FOUND: 'api:auth.userNotFound',
+};
+
+function getAuthErrorMessage(req: Request, code: string, fallback: string): string {
+  const key = AUTH_ERROR_KEY_MAP[code];
+  if (key && req.t) {
+    return req.t(key);
+  }
+  return fallback;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // RATE LIMITERS ESPECÍFICOS PARA AUTH
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Rate limiter para login: 20 intentos por minuto (más permisivo para desarrollo)
+// TODO: i18n - rate limiting fires before i18n middleware, message is static
 const loginLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minuto
   max: 20,
@@ -36,6 +60,7 @@ const loginLimiter = rateLimit({
 });
 
 // Rate limiter para registro: 3 intentos por 5 minutos
+// TODO: i18n - rate limiting fires before i18n middleware, message is static
 const registerLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutos
   max: 3,
@@ -54,6 +79,7 @@ const registerLimiter = rateLimit({
 });
 
 // Rate limiter para password reset: 3 por 15 minutos
+// TODO: i18n - rate limiting fires before i18n middleware, message is static
 const passwordResetLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 3,
@@ -132,7 +158,7 @@ router.post('/register', registerLimiter, registerValidation, handleValidation, 
     
     res.status(201).json({
       success: true,
-      message: 'Usuario registrado exitosamente. Verifica tu correo electrónico.',
+      message: req.t!('api:auth.registerSuccess'),
       data: {
         user: {
           id: result.user.id,
@@ -150,14 +176,14 @@ router.post('/register', registerLimiter, registerValidation, handleValidation, 
         success: false,
         error: {
           code: error.code,
-          message: error.message,
+          message: getAuthErrorMessage(req, error.code, error.message),
         },
       });
     }
     logger.error('Error en registro', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: { code: 'SERVER_ERROR', message: req.t!('api:generic.serverError') },
     });
   }
 });
@@ -203,7 +229,7 @@ router.post('/login', loginLimiter, loginValidation, handleValidation, async (re
         success: false,
         error: {
           code: error.code,
-          message: error.message,
+          message: getAuthErrorMessage(req, error.code, error.message),
         },
       });
     }
@@ -213,7 +239,7 @@ router.post('/login', loginLimiter, loginValidation, handleValidation, async (re
     logger.error('Error en login', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: { code: 'SERVER_ERROR', message: req.t!('api:generic.serverError') },
     });
   }
 });
@@ -229,12 +255,12 @@ router.post('/refresh', async (req: Request, res: Response) => {
     if (!refreshToken) {
       return res.status(400).json({
         success: false,
-        error: { code: 'MISSING_TOKEN', message: 'Refresh token requerido' },
+        error: { code: 'MISSING_TOKEN', message: req.t!('api:auth.refreshTokenRequired') },
       });
     }
-    
+
     const tokens = await authService.refreshTokens(refreshToken);
-    
+
     res.json({
       success: true,
       data: { tokens },
@@ -245,14 +271,14 @@ router.post('/refresh', async (req: Request, res: Response) => {
         success: false,
         error: {
           code: error.code,
-          message: error.message,
+          message: getAuthErrorMessage(req, error.code, error.message),
         },
       });
     }
     logger.error('Error en refresh', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: { code: 'SERVER_ERROR', message: req.t!('api:generic.serverError') },
     });
   }
 });
@@ -271,13 +297,13 @@ router.post('/logout', async (req: Request, res: Response) => {
     
     res.json({
       success: true,
-      message: 'Sesión cerrada exitosamente',
+      message: req.t!('api:auth.logoutSuccess'),
     });
   } catch (error) {
     logger.error('Error en logout', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: { code: 'SERVER_ERROR', message: req.t!('api:generic.serverError') },
     });
   }
 });
@@ -292,13 +318,13 @@ router.post('/logout-all', authMiddleware, async (req: Request, res: Response) =
     
     res.json({
       success: true,
-      message: 'Todas las sesiones han sido cerradas',
+      message: req.t!('api:auth.allSessionsClosed'),
     });
   } catch (error) {
     logger.error('Error en logout-all', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: { code: 'SERVER_ERROR', message: req.t!('api:generic.serverError') },
     });
   }
 });
@@ -314,15 +340,15 @@ router.post('/verify-email', async (req: Request, res: Response) => {
     if (!token) {
       return res.status(400).json({
         success: false,
-        error: { code: 'MISSING_TOKEN', message: 'Token requerido' },
+        error: { code: 'MISSING_TOKEN', message: req.t!('api:auth.tokenRequired') },
       });
     }
-    
+
     await authService.verifyEmail(token);
-    
+
     res.json({
       success: true,
-      message: 'Email verificado exitosamente',
+      message: req.t!('api:auth.emailVerified'),
     });
   } catch (error) {
     if (error instanceof AuthError) {
@@ -330,14 +356,14 @@ router.post('/verify-email', async (req: Request, res: Response) => {
         success: false,
         error: {
           code: error.code,
-          message: error.message,
+          message: getAuthErrorMessage(req, error.code, error.message),
         },
       });
     }
     logger.error('Error en verify-email', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: { code: 'SERVER_ERROR', message: req.t!('api:generic.serverError') },
     });
   }
 });
@@ -363,13 +389,13 @@ router.post('/forgot-password',
       // Siempre responder éxito para no revelar si el email existe
       res.json({
         success: true,
-        message: 'Si el email existe, recibirás instrucciones para restablecer tu contraseña',
+        message: req.t!('api:auth.passwordResetSent'),
       });
     } catch (error) {
       logger.error('Error en forgot-password', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t!('api:generic.serverError') },
       });
     }
   }
@@ -393,7 +419,7 @@ router.post('/reset-password',
       
       res.json({
         success: true,
-        message: 'Contraseña restablecida exitosamente',
+        message: req.t!('api:auth.passwordResetSuccess'),
       });
     } catch (error) {
       if (error instanceof AuthError) {
@@ -401,14 +427,14 @@ router.post('/reset-password',
           success: false,
           error: {
             code: error.code,
-            message: error.message,
+            message: getAuthErrorMessage(req, error.code, error.message),
           },
         });
       }
       logger.error('Error en reset-password', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t!('api:generic.serverError') },
       });
     }
   }
@@ -431,10 +457,10 @@ router.get('/me', authMiddleware, async (req: Request, res: Response) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: { code: 'USER_NOT_FOUND', message: 'Usuario no encontrado' },
+        error: { code: 'USER_NOT_FOUND', message: req.t!('api:auth.userNotFound') },
       });
     }
-    
+
     res.json({
       success: true,
       data: {
@@ -455,7 +481,7 @@ router.get('/me', authMiddleware, async (req: Request, res: Response) => {
     logger.error('Error en /me', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: { code: 'SERVER_ERROR', message: req.t!('api:generic.serverError') },
     });
   }
 });

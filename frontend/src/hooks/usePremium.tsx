@@ -1,5 +1,6 @@
 // src/hooks/usePremium.ts
 import { useState, useEffect, useCallback, createContext, useContext, ReactNode } from 'react';
+import i18next from 'i18next';
 import { paymentsApi, PremiumStatus, PlanFeatures, PlanLimits } from '../services/api';
 
 interface PremiumContextType {
@@ -16,7 +17,7 @@ interface PremiumContextType {
 
 const defaultStatus: PremiumStatus = {
   isPremium: false,
-  planName: 'Plan Básico',
+  planName: i18next.t('subscription:plan.defaultName'),
   planSlug: 'basico',
   status: null,
   features: {
@@ -57,7 +58,7 @@ export function PremiumProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       console.error('Error fetching premium status:', err);
       setStatus(defaultStatus);
-      setError('Error al cargar estado premium');
+      setError(i18next.t('subscription:errors.loadPremiumStatus'));
     } finally {
       setLoading(false);
     }

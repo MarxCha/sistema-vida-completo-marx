@@ -1,9 +1,10 @@
 # STATUS - Sistema VIDA
 
-**Actualizado:** 2026-02-26 (Sesion 2)
+**Actualizado:** 2026-02-26 (Sesion 3)
 **Fase:** MVP Fase 1 - Funcional
 **Branch:** main
-**Plan Activo:** Migración Twilio → WABA (COMPLETADA - Fases 1-4)
+**Plan Activo:** i18n (Español + Inglés) — Ver PLAN-i18n.md
+**Plan Anterior:** Migración Twilio → WABA (COMPLETADA - Fases 1-4)
 
 ## Estado General
 
@@ -48,9 +49,23 @@ Feature flags: `WHATSAPP_PROVIDER=waba|twilio`, `WABA_FALLBACK_TO_TWILIO=true|fa
 8. 18/18 tests unitarios pasando
 9. Auditoría interna con 12 archivos revisados
 
-## Pendiente para Deploy
+## Sesion 3 — WABA Tests + Plan i18n
+
+1. Template emergencia WABA: **APPROVED** y probado (5 números, todos recibieron)
+2. Template acceso QR: **PENDING** aprobación Meta
+3. Plan i18n generado: `.context/PLAN-i18n.md` (5 sprints, 12-16 días, 13 agentes)
+4. Diagnóstico completo: 42 archivos frontend, 20+ backend, ~850 strings total
+
+## Pendiente para Deploy (WABA)
 
 1. Ejecutar migración SQL: `prisma/migrations/add_whatsapp_channel.sql`
 2. Configurar variables WABA en Coolify (ver .env.example)
 3. Activar `WHATSAPP_PROVIDER=waba` en producción
 4. Fix BLOCKER-002: representantes con notifyOnEmergency=false
+
+## Próximo: i18n Sprint 1
+
+1. Instalar react-i18next + i18next + plugins
+2. Crear estructura de locales (13 namespaces × 2 idiomas)
+3. Backend middleware Accept-Language
+4. Migración Prisma: preferredLanguage

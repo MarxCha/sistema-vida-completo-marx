@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
  * GET /api/v1/admin/odoo/status
  * Verifica el estado de conexión con Odoo
  */
-router.get('/status', adminAuthMiddleware, async (_req: Request, res: Response) => {
+router.get('/status', adminAuthMiddleware, async (req: Request, res: Response) => {
   try {
     const isConfigured = odooService.isConfigured();
 
@@ -19,7 +19,7 @@ router.get('/status', adminAuthMiddleware, async (_req: Request, res: Response) 
       return res.json({
         configured: false,
         connected: false,
-        message: 'Odoo no está configurado. Verificar variables de entorno.',
+        message: req.t('api:odoo.notConfigured'),
       });
     }
 
@@ -28,13 +28,13 @@ router.get('/status', adminAuthMiddleware, async (_req: Request, res: Response) 
     res.json({
       configured: true,
       connected,
-      message: connected ? 'Conexión exitosa con Odoo' : 'Error conectando a Odoo',
+      message: connected ? req.t('api:odoo.connectionSuccess') : req.t('api:odoo.connectionError'),
     });
   } catch (error) {
     res.status(500).json({
       configured: odooService.isConfigured(),
       connected: false,
-      message: error instanceof Error ? error.message : 'Error desconocido',
+      message: error instanceof Error ? error.message : req.t('api:odoo.unknownError'),
     });
   }
 });
@@ -43,10 +43,10 @@ router.get('/status', adminAuthMiddleware, async (_req: Request, res: Response) 
  * POST /api/v1/admin/odoo/sync/products
  * Sincroniza los planes de suscripción como productos en Odoo
  */
-router.post('/sync/products', adminAuthMiddleware, async (_req: Request, res: Response) => {
+router.post('/sync/products', adminAuthMiddleware, async (req: Request, res: Response) => {
   try {
     if (!odooService.isConfigured()) {
-      return res.status(400).json({ error: 'Odoo no está configurado' });
+      return res.status(400).json({ error: req.t('api:odoo.syncNotConfigured') });
     }
 
     const plans = await prisma.subscriptionPlan.findMany({
@@ -74,18 +74,18 @@ router.post('/sync/products', adminAuthMiddleware, async (_req: Request, res: Re
           planId: plan.id,
           planName: plan.name,
           status: 'error',
-          error: error instanceof Error ? error.message : 'Error desconocido',
+          error: error instanceof Error ? error.message : req.t('api:odoo.unknownError'),
         });
       }
     }
 
     res.json({
-      message: 'Sincronización de productos completada',
+      message: req.t('api:odoo.productsSyncCompleted'),
       results,
     });
   } catch (error) {
     res.status(500).json({
-      error: error instanceof Error ? error.message : 'Error desconocido',
+      error: error instanceof Error ? error.message : req.t('api:odoo.unknownError'),
     });
   }
 });
@@ -94,10 +94,10 @@ router.post('/sync/products', adminAuthMiddleware, async (_req: Request, res: Re
  * POST /api/v1/admin/odoo/sync/payments
  * Sincroniza pagos pendientes a Odoo (últimos 30 días)
  */
-router.post('/sync/payments', adminAuthMiddleware, async (_req: Request, res: Response) => {
+router.post('/sync/payments', adminAuthMiddleware, async (req: Request, res: Response) => {
   try {
     if (!odooService.isConfigured()) {
-      return res.status(400).json({ error: 'Odoo no está configurado' });
+      return res.status(400).json({ error: req.t('api:odoo.syncNotConfigured') });
     }
 
     const thirtyDaysAgo = new Date();
@@ -142,18 +142,19 @@ router.post('/sync/payments', adminAuthMiddleware, async (_req: Request, res: Re
           paymentId: payment.id,
           amount: payment.amount,
           status: 'error',
-          error: error instanceof Error ? error.message : 'Error desconocido',
+          error: error instanceof Error ? error.message : req.t('api:odoo.unknownError'),
         });
       }
     }
 
+    const successCount = results.filter(r => r.status === 'success').length;
     res.json({
-      message: `Sincronización completada: ${results.filter(r => r.status === 'success').length}/${results.length} pagos`,
+      message: req.t('api:odoo.paymentsSyncCompleted', { success: successCount, total: results.length }),
       results,
     });
   } catch (error) {
     res.status(500).json({
-      error: error instanceof Error ? error.message : 'Error desconocido',
+      error: error instanceof Error ? error.message : req.t('api:odoo.unknownError'),
     });
   }
 });

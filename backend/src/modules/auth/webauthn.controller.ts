@@ -29,7 +29,7 @@ router.post('/register/options', authMiddleware, async (req: Request, res: Respo
     logger.error('Error generando opciones de registro WebAuthn:', error);
     res.status(400).json({
       success: false,
-      error: error instanceof Error ? error.message : 'Error generando opciones',
+      error: error instanceof Error ? error.message : req.t!('api:auth.errorGeneratingOptions'),
     });
   }
 });
@@ -50,7 +50,7 @@ router.post('/register/verify', authMiddleware, async (req: Request, res: Respon
     if (!credential) {
       return res.status(400).json({
         success: false,
-        error: 'Credencial requerida',
+        error: req.t!('api:auth.credentialRequired'),
       });
     }
 
@@ -59,13 +59,13 @@ router.post('/register/verify', authMiddleware, async (req: Request, res: Respon
     res.json({
       success: true,
       data: result,
-      message: 'Credencial biométrica registrada exitosamente',
+      message: req.t!('api:auth.biometricRegistered'),
     });
   } catch (error) {
     logger.error('Error verificando registro WebAuthn:', error);
     res.status(400).json({
       success: false,
-      error: error instanceof Error ? error.message : 'Error verificando credencial',
+      error: error instanceof Error ? error.message : req.t!('api:auth.errorVerifyingCredential'),
     });
   }
 });
@@ -82,7 +82,7 @@ router.post('/login/options', async (req: Request, res: Response) => {
     if (!email) {
       return res.status(400).json({
         success: false,
-        error: 'Email requerido',
+        error: req.t!('api:auth.emailRequired'),
       });
     }
 
@@ -99,7 +99,7 @@ router.post('/login/options', async (req: Request, res: Response) => {
     logger.error('Error generando opciones de autenticación WebAuthn:', error);
     res.status(400).json({
       success: false,
-      error: error instanceof Error ? error.message : 'Error generando opciones',
+      error: error instanceof Error ? error.message : req.t!('api:auth.errorGeneratingOptions'),
     });
   }
 });
@@ -119,7 +119,7 @@ router.post('/login/verify', async (req: Request, res: Response) => {
     if (!userId || !credential) {
       return res.status(400).json({
         success: false,
-        error: 'userId y credential son requeridos',
+        error: req.t!('api:auth.userIdAndCredentialRequired'),
       });
     }
 
@@ -128,7 +128,7 @@ router.post('/login/verify', async (req: Request, res: Response) => {
     if (!result.verified) {
       return res.status(401).json({
         success: false,
-        error: 'Autenticación biométrica fallida',
+        error: req.t!('api:auth.biometricAuthFailed'),
       });
     }
 
@@ -144,13 +144,13 @@ router.post('/login/verify', async (req: Request, res: Response) => {
         user: result.user,
         ...tokens,
       },
-      message: 'Inicio de sesión exitoso',
+      message: req.t!('api:auth.biometricLoginSuccess'),
     });
   } catch (error) {
     logger.error('Error verificando autenticación WebAuthn:', error);
     res.status(401).json({
       success: false,
-      error: error instanceof Error ? error.message : 'Autenticación fallida',
+      error: error instanceof Error ? error.message : req.t!('api:auth.authFailed'),
     });
   }
 });
@@ -173,7 +173,7 @@ router.get('/credentials', authMiddleware, async (req: Request, res: Response) =
     logger.error('Error listando credenciales WebAuthn:', error);
     res.status(400).json({
       success: false,
-      error: error instanceof Error ? error.message : 'Error listando credenciales',
+      error: error instanceof Error ? error.message : req.t!('api:auth.errorListingCredentials'),
     });
   }
 });
@@ -192,13 +192,13 @@ router.delete('/credentials/:id', authMiddleware, async (req: Request, res: Resp
 
     res.json({
       success: true,
-      message: 'Credencial eliminada exitosamente',
+      message: req.t!('api:auth.credentialDeleted'),
     });
   } catch (error) {
     logger.error('Error eliminando credencial WebAuthn:', error);
     res.status(400).json({
       success: false,
-      error: error instanceof Error ? error.message : 'Error eliminando credencial',
+      error: error instanceof Error ? error.message : req.t!('api:auth.errorDeletingCredential'),
     });
   }
 });

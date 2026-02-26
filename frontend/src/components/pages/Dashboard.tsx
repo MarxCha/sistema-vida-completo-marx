@@ -2,6 +2,7 @@
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../../context/AuthContext';
+import { useLocale } from '../../hooks/useLocale';
 import { profileApi, directivesApi, representativesApi, emergencyApi, documentsApi } from '../../services/api';
 import {
   User,
@@ -22,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function Dashboard() {
   const { t } = useTranslation('dashboard');
+  const { locale } = useLocale();
   const { user } = useAuth();
 
   // Queries
@@ -335,7 +337,7 @@ export default function Dashboard() {
                     </p>
                   </div>
                   <span className="text-xs text-gray-400 whitespace-nowrap">
-                    {new Date(access.accessedAt).toLocaleDateString('es-MX', {
+                    {new Date(access.accessedAt).toLocaleDateString(locale, {
                       day: 'numeric',
                       month: 'short'
                     })}

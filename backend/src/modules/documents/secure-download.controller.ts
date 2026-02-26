@@ -87,7 +87,7 @@ router.get('/:token', async (req: Request, res: Response) => {
     if (!tokenData) {
       return res.status(404).json({
         success: false,
-        error: { code: 'TOKEN_NOT_FOUND', message: 'Token de descarga no válido o expirado' }
+        error: { code: 'TOKEN_NOT_FOUND', message: req.t('api:documents.notFound') }
       });
     }
 
@@ -96,7 +96,7 @@ router.get('/:token', async (req: Request, res: Response) => {
       await cacheService.delete(token, { prefix: CACHE_PREFIXES.DOWNLOAD_TOKEN });
       return res.status(410).json({
         success: false,
-        error: { code: 'TOKEN_EXPIRED', message: 'El enlace de descarga ha expirado' }
+        error: { code: 'TOKEN_EXPIRED', message: req.t('api:documents.notFound') }
       });
     }
 
@@ -110,7 +110,7 @@ router.get('/:token', async (req: Request, res: Response) => {
       logger.error(`[SECURITY] Intento de path traversal detectado: ${tokenData.s3Key}`);
       return res.status(403).json({
         success: false,
-        error: { code: 'FORBIDDEN', message: 'Acceso no permitido' }
+        error: { code: 'FORBIDDEN', message: req.t('api:generic.notAuthorized') }
       });
     }
 
@@ -118,7 +118,7 @@ router.get('/:token', async (req: Request, res: Response) => {
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({
         success: false,
-        error: { code: 'FILE_NOT_FOUND', message: 'Archivo no encontrado' }
+        error: { code: 'FILE_NOT_FOUND', message: req.t('api:documents.notFound') }
       });
     }
 
@@ -245,7 +245,7 @@ router.get('/:token', async (req: Request, res: Response) => {
     logger.error('Error en descarga segura:', error);
     res.status(500).json({
       success: false,
-      error: { code: 'DOWNLOAD_ERROR', message: 'Error al descargar el archivo' }
+      error: { code: 'DOWNLOAD_ERROR', message: req.t('api:generic.serverError') }
     });
   }
 });
@@ -270,7 +270,7 @@ router.get('/document/:documentId', authMiddleware, async (req: Request, res: Re
     if (!document) {
       return res.status(404).json({
         success: false,
-        error: { code: 'DOCUMENT_NOT_FOUND', message: 'Documento no encontrado' }
+        error: { code: 'DOCUMENT_NOT_FOUND', message: req.t('api:documents.notFound') }
       });
     }
 
@@ -284,7 +284,7 @@ router.get('/document/:documentId', authMiddleware, async (req: Request, res: Re
     logger.error('Error obteniendo documento:', error);
     res.status(500).json({
       success: false,
-      error: { code: 'ERROR', message: 'Error al obtener el documento' }
+      error: { code: 'ERROR', message: req.t('api:generic.serverError') }
     });
   }
 });

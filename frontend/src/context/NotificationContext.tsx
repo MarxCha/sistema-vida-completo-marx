@@ -1,5 +1,7 @@
 // src/context/NotificationContext.tsx
-import { createContext, useContext, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useEffect } from 'react';
+import type { ReactNode } from 'react';
+import i18next from 'i18next';
 import { usePushNotifications, VidaNotification } from '../hooks/usePushNotifications';
 import { useWebSocket } from '../hooks/useWebSocket';
 
@@ -35,19 +37,20 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
   useEffect(() => {
     if (!socket || !isConnected) return;
 
+    const t = i18next.t.bind(i18next);
+
     // Alerta de pánico
     const handlePanicAlert = (data: any) => {
       pushNotifications.addNotification({
         type: 'PANIC_ALERT',
-        title: 'Alerta de Panico Activada',
-        body: `Se ha activado una alerta de panico. ${data.nearbyHospitals?.[0]?.name ? `Hospital mas cercano: ${data.nearbyHospitals[0].name}` : ''}`,
+        title: t('notifications:ws.panicAlert.title'),
+        body: `${t('notifications:ws.panicAlert.body')} ${data.nearbyHospitals?.[0]?.name ? `${t('notifications:ws.panicAlert.nearestHospital', { name: data.nearbyHospitals[0].name })}` : ''}`,
         data
       });
 
-      // Mostrar notificación del sistema si hay permiso
       if (pushNotifications.permission === 'granted') {
-        pushNotifications.showNotification('Alerta de Panico - Sistema VIDA', {
-          body: 'Se ha activado una alerta de panico. Toca para ver detalles.',
+        pushNotifications.showNotification(t('notifications:ws.panicAlert.systemTitle'), {
+          body: t('notifications:ws.panicAlert.systemBody'),
           type: 'PANIC_ALERT',
           tag: `panic-${data.alertId}`,
           requireInteraction: true,
@@ -60,8 +63,8 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
     const handlePanicCancelled = (data: any) => {
       pushNotifications.addNotification({
         type: 'PANIC_ALERT',
-        title: 'Alerta Cancelada',
-        body: 'La alerta de panico ha sido cancelada.',
+        title: t('notifications:ws.panicCancelled.title'),
+        body: t('notifications:ws.panicCancelled.body'),
         data
       });
     };
@@ -70,14 +73,14 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
     const handleQRAccess = (data: any) => {
       pushNotifications.addNotification({
         type: 'QR_ACCESS',
-        title: 'Acceso a tus Datos Medicos',
-        body: `${data.accessorName} (${data.accessorRole}) ha accedido a tu informacion medica.`,
+        title: t('notifications:ws.qrAccess.title'),
+        body: t('notifications:ws.qrAccess.body', { name: data.accessorName, role: data.accessorRole }),
         data
       });
 
       if (pushNotifications.permission === 'granted') {
-        pushNotifications.showNotification('Acceso a Datos - Sistema VIDA', {
-          body: `${data.accessorName} ha accedido a tu informacion medica.`,
+        pushNotifications.showNotification(t('notifications:ws.qrAccess.systemTitle'), {
+          body: t('notifications:ws.qrAccess.systemBody', { name: data.accessorName }),
           type: 'QR_ACCESS',
           tag: `qr-access-${Date.now()}`,
           data
@@ -89,14 +92,14 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
     const handleQRNotification = (data: any) => {
       pushNotifications.addNotification({
         type: 'QR_ACCESS',
-        title: 'Tu QR fue Escaneado',
-        body: `${data.accessorName} escaneo tu codigo QR desde ${data.location || 'ubicacion desconocida'}.`,
+        title: t('notifications:ws.qrScanned.title'),
+        body: t('notifications:ws.qrScanned.body', { name: data.accessorName, location: data.location || t('notifications:ws.qrScanned.unknownLocation') }),
         data
       });
 
       if (pushNotifications.permission === 'granted') {
-        pushNotifications.showNotification('QR Escaneado - Sistema VIDA', {
-          body: `${data.accessorName} escaneo tu codigo QR.`,
+        pushNotifications.showNotification(t('notifications:ws.qrScanned.systemTitle'), {
+          body: t('notifications:ws.qrScanned.systemBody', { name: data.accessorName }),
           type: 'QR_ACCESS',
           tag: `qr-scan-${Date.now()}`,
           data
@@ -127,7 +130,7 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
 export function useNotifications(): NotificationContextType {
   const context = useContext(NotificationContext);
   if (!context) {
-    throw new Error('useNotifications debe usarse dentro de NotificationProvider');
+    throw new Error('useNotifications must be used within a NotificationProvider');
   }
   return context;
 }

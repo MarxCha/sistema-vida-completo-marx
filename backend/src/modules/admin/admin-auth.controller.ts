@@ -21,6 +21,8 @@ const adminLoginLimiter = rateLimit({
   max: 3, // Más estricto para admins
   standardHeaders: true,
   legacyHeaders: false,
+  // NOTE: static message object — rate limiter fires before req.t is available
+  // The handler below uses req.t when possible
   message: {
     success: false,
     error: {
@@ -28,11 +30,17 @@ const adminLoginLimiter = rateLimit({
       message: 'Demasiados intentos de inicio de sesión. Espere un momento.',
     },
   },
-  handler: (req, res, _next, options) => {
+  handler: (req, res, _next, _options) => {
     const ip = req.ip || 'unknown';
     securityMetrics.recordRateLimitHit(ip, '/admin/auth/login');
     logger.security('Admin login rate limit hit', { ip, path: '/admin/auth/login' });
-    res.status(429).json(options.message);
+    res.status(429).json({
+      success: false,
+      error: {
+        code: 'ADMIN_LOGIN_RATE_LIMIT',
+        message: (req as any).t('api:admin.login.rateLimitMessage'),
+      },
+    });
   },
   keyGenerator: (req) => req.ip || 'unknown',
 });
@@ -41,6 +49,8 @@ const adminLoginLimiter = rateLimit({
 const mfaLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutos
   max: 5,
+  // NOTE: static message object — rate limiter fires before req.t is available
+  // The handler below uses req.t when possible
   message: {
     success: false,
     error: {
@@ -48,11 +58,17 @@ const mfaLimiter = rateLimit({
       message: 'Demasiados intentos de verificación MFA. Espere unos minutos.',
     },
   },
-  handler: (req, res, _next, options) => {
+  handler: (req, res, _next, _options) => {
     const ip = req.ip || 'unknown';
     securityMetrics.recordRateLimitHit(ip, '/admin/auth/login/mfa');
     logger.security('MFA rate limit hit', { ip, path: '/admin/auth/login/mfa' });
-    res.status(429).json(options.message);
+    res.status(429).json({
+      success: false,
+      error: {
+        code: 'MFA_RATE_LIMIT',
+        message: (req as any).t('api:admin.login.mfa.rateLimitMessage'),
+      },
+    });
   },
 });
 
@@ -95,7 +111,7 @@ router.post('/login', adminLoginLimiter, async (req: Request, res: Response) => 
         success: false,
         error: {
           code: 'MISSING_FIELDS',
-          message: 'Email y contrasena son requeridos',
+          message: req.t('api:admin.login.missingFields'),
         },
       });
     }
@@ -126,7 +142,7 @@ router.post('/login', adminLoginLimiter, async (req: Request, res: Response) => 
         success: true,
         mfaRequired: true,
         mfaToken,
-        message: 'Se requiere código de autenticación de dos factores',
+        message: req.t('api:admin.login.mfaRequired'),
       });
     }
 
@@ -148,7 +164,7 @@ router.post('/login', adminLoginLimiter, async (req: Request, res: Response) => 
       success: false,
       error: {
         code: error.code || 'LOGIN_ERROR',
-        message: error.message || 'Error al iniciar sesion',
+        message: error.message || req.t('api:admin.login.error'),
       },
     });
   }
@@ -169,7 +185,7 @@ router.post('/login/mfa', mfaLimiter, async (req: Request, res: Response) => {
         success: false,
         error: {
           code: 'MISSING_FIELDS',
-          message: 'mfaToken y code son requeridos',
+          message: req.t('api:admin.login.mfa.missingFields'),
         },
       });
     }
@@ -183,7 +199,7 @@ router.post('/login/mfa', mfaLimiter, async (req: Request, res: Response) => {
         success: false,
         error: {
           code: 'INVALID_MFA_TOKEN',
-          message: 'Token MFA inválido o expirado. Inicie sesión nuevamente.',
+          message: req.t('api:admin.login.mfa.invalidToken'),
         },
       });
     }
@@ -195,7 +211,7 @@ router.post('/login/mfa', mfaLimiter, async (req: Request, res: Response) => {
         success: false,
         error: {
           code: 'MFA_TOKEN_EXPIRED',
-          message: 'Token MFA expirado. Inicie sesión nuevamente.',
+          message: req.t('api:admin.login.mfa.tokenExpired'),
         },
       });
     }
@@ -258,7 +274,7 @@ router.post('/login/mfa', mfaLimiter, async (req: Request, res: Response) => {
       success: false,
       error: {
         code: error.code || 'MFA_ERROR',
-        message: error.message || 'Error en verificación MFA',
+        message: error.message || req.t('api:admin.login.mfa.error'),
       },
     });
   }
@@ -277,7 +293,7 @@ router.post('/logout', adminAuthMiddleware, async (req: Request, res: Response) 
         success: false,
         error: {
           code: 'MISSING_TOKEN',
-          message: 'Refresh token requerido',
+          message: req.t('api:admin.logout.missingToken'),
         },
       });
     }
@@ -286,7 +302,7 @@ router.post('/logout', adminAuthMiddleware, async (req: Request, res: Response) 
 
     res.json({
       success: true,
-      message: 'Sesion cerrada correctamente',
+      message: req.t('api:admin.logout.success'),
     });
   } catch (error: any) {
     logger.error('Admin logout error', error);
@@ -294,7 +310,7 @@ router.post('/logout', adminAuthMiddleware, async (req: Request, res: Response) 
       success: false,
       error: {
         code: error.code || 'LOGOUT_ERROR',
-        message: error.message || 'Error al cerrar sesion',
+        message: error.message || req.t('api:admin.logout.error'),
       },
     });
   }
@@ -313,7 +329,7 @@ router.post('/refresh', async (req: Request, res: Response) => {
         success: false,
         error: {
           code: 'MISSING_TOKEN',
-          message: 'Refresh token requerido',
+          message: req.t('api:admin.refresh.missingToken'),
         },
       });
     }
@@ -333,7 +349,7 @@ router.post('/refresh', async (req: Request, res: Response) => {
       success: false,
       error: {
         code: error.code || 'REFRESH_ERROR',
-        message: error.message || 'Error al renovar tokens',
+        message: error.message || req.t('api:admin.refresh.error'),
       },
     });
   }
@@ -357,7 +373,7 @@ router.get('/me', adminAuthMiddleware, async (req: Request, res: Response) => {
       success: false,
       error: {
         code: error.code || 'ERROR',
-        message: error.message || 'Error al obtener datos',
+        message: error.message || req.t('api:admin.me.error'),
       },
     });
   }
@@ -376,7 +392,7 @@ router.post('/change-password', adminAuthMiddleware, async (req: Request, res: R
         success: false,
         error: {
           code: 'MISSING_FIELDS',
-          message: 'Contrasena actual y nueva son requeridas',
+          message: req.t('api:admin.changePassword.missingFields'),
         },
       });
     }
@@ -387,7 +403,7 @@ router.post('/change-password', adminAuthMiddleware, async (req: Request, res: R
 
     res.json({
       success: true,
-      message: 'Contrasena cambiada correctamente. Inicie sesion nuevamente.',
+      message: req.t('api:admin.changePassword.success'),
     });
   } catch (error: any) {
     logger.error('Admin change password error', error);
@@ -395,7 +411,7 @@ router.post('/change-password', adminAuthMiddleware, async (req: Request, res: R
       success: false,
       error: {
         code: error.code || 'ERROR',
-        message: error.message || 'Error al cambiar contrasena',
+        message: error.message || req.t('api:admin.changePassword.error'),
       },
     });
   }
@@ -421,7 +437,7 @@ router.get('/mfa/status', adminAuthMiddleware, async (req: Request, res: Respons
       success: false,
       error: {
         code: error.code || 'ERROR',
-        message: error.message || 'Error al obtener estado de MFA',
+        message: error.message || req.t('api:admin.mfa.statusError'),
       },
     });
   }
@@ -442,7 +458,7 @@ router.post('/mfa/setup', adminAuthMiddleware, async (req: Request, res: Respons
         manualEntryKey: result.manualEntryKey,
         backupCodes: result.backupCodes,
       },
-      message: 'Escanee el código QR con su aplicación de autenticación y verifique con un código',
+      message: req.t('api:admin.mfa.setupMessage'),
     });
   } catch (error: any) {
     logger.error('MFA setup error', error);
@@ -450,7 +466,7 @@ router.post('/mfa/setup', adminAuthMiddleware, async (req: Request, res: Respons
       success: false,
       error: {
         code: error.code || 'ERROR',
-        message: error.message || 'Error al configurar MFA',
+        message: error.message || req.t('api:admin.mfa.setupError'),
       },
     });
   }
@@ -469,7 +485,7 @@ router.post('/mfa/verify', adminAuthMiddleware, async (req: Request, res: Respon
         success: false,
         error: {
           code: 'MISSING_CODE',
-          message: 'Código de verificación requerido',
+          message: req.t('api:admin.mfa.missingCode'),
         },
       });
     }
@@ -478,7 +494,7 @@ router.post('/mfa/verify', adminAuthMiddleware, async (req: Request, res: Respon
 
     res.json({
       success: true,
-      message: 'MFA activado correctamente. A partir de ahora se requerirá código al iniciar sesión.',
+      message: req.t('api:admin.mfa.verifySuccess'),
     });
   } catch (error: any) {
     logger.error('MFA verify error', error);
@@ -486,7 +502,7 @@ router.post('/mfa/verify', adminAuthMiddleware, async (req: Request, res: Respon
       success: false,
       error: {
         code: error.code || 'ERROR',
-        message: error.message || 'Error al verificar MFA',
+        message: error.message || req.t('api:admin.mfa.verifyError'),
       },
     });
   }
@@ -505,7 +521,7 @@ router.post('/mfa/disable', adminAuthMiddleware, async (req: Request, res: Respo
         success: false,
         error: {
           code: 'MISSING_CODE',
-          message: 'Código de verificación requerido para deshabilitar MFA',
+          message: req.t('api:admin.mfa.disableMissingCode'),
         },
       });
     }
@@ -514,7 +530,7 @@ router.post('/mfa/disable', adminAuthMiddleware, async (req: Request, res: Respo
 
     res.json({
       success: true,
-      message: 'MFA deshabilitado correctamente.',
+      message: req.t('api:admin.mfa.disableSuccess'),
     });
   } catch (error: any) {
     logger.error('MFA disable error', error);
@@ -522,7 +538,7 @@ router.post('/mfa/disable', adminAuthMiddleware, async (req: Request, res: Respo
       success: false,
       error: {
         code: error.code || 'ERROR',
-        message: error.message || 'Error al deshabilitar MFA',
+        message: error.message || req.t('api:admin.mfa.disableError'),
       },
     });
   }
@@ -541,7 +557,7 @@ router.post('/mfa/backup-codes', adminAuthMiddleware, async (req: Request, res: 
         success: false,
         error: {
           code: 'MISSING_CODE',
-          message: 'Código de verificación requerido para regenerar códigos de respaldo',
+          message: req.t('api:admin.mfa.backupCodesMissingCode'),
         },
       });
     }
@@ -551,7 +567,7 @@ router.post('/mfa/backup-codes', adminAuthMiddleware, async (req: Request, res: 
     res.json({
       success: true,
       data: { backupCodes },
-      message: 'Nuevos códigos de respaldo generados. Guárdelos en un lugar seguro.',
+      message: req.t('api:admin.mfa.backupCodesSuccess'),
     });
   } catch (error: any) {
     logger.error('MFA backup codes error', error);
@@ -559,7 +575,7 @@ router.post('/mfa/backup-codes', adminAuthMiddleware, async (req: Request, res: 
       success: false,
       error: {
         code: error.code || 'ERROR',
-        message: error.message || 'Error al regenerar códigos de respaldo',
+        message: error.message || req.t('api:admin.mfa.backupCodesError'),
       },
     });
   }
@@ -585,7 +601,7 @@ router.get('/admins', adminAuthMiddleware, requireSuperAdmin, async (req: Reques
       success: false,
       error: {
         code: error.code || 'ERROR',
-        message: error.message || 'Error al listar administradores',
+        message: error.message || req.t('api:admin.admins.listError'),
       },
     });
   }
@@ -604,7 +620,7 @@ router.post('/admins', adminAuthMiddleware, requireSuperAdmin, async (req: Reque
         success: false,
         error: {
           code: 'MISSING_FIELDS',
-          message: 'Email, password, name y role son requeridos',
+          message: req.t('api:admin.admins.missingFields'),
         },
       });
     }
@@ -627,7 +643,7 @@ router.post('/admins', adminAuthMiddleware, requireSuperAdmin, async (req: Reque
       success: false,
       error: {
         code: error.code || 'ERROR',
-        message: error.message || 'Error al crear administrador',
+        message: error.message || req.t('api:admin.admins.createError'),
       },
     });
   }
@@ -661,7 +677,7 @@ router.put('/admins/:id', adminAuthMiddleware, requireSuperAdmin, async (req: Re
       success: false,
       error: {
         code: error.code || 'ERROR',
-        message: error.message || 'Error al actualizar administrador',
+        message: error.message || req.t('api:admin.admins.updateError'),
       },
     });
   }

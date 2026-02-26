@@ -48,6 +48,32 @@
     "confirm": "Yes, delete",
     "cancel": "Cancel"
   },
+  "ws": {
+    "panicAlert": {
+      "title": "Panic Alert Activated",
+      "body": "A panic alert has been activated.",
+      "nearestHospital": "Nearest hospital: {{name}}",
+      "systemTitle": "Panic Alert - VIDA System",
+      "systemBody": "A panic alert has been activated. Tap to see details."
+    },
+    "panicCancelled": {
+      "title": "Alert Cancelled",
+      "body": "The panic alert has been cancelled."
+    },
+    "qrAccess": {
+      "title": "Access to Your Medical Data",
+      "body": "{{name}} ({{role}}) has accessed your medical information.",
+      "systemTitle": "Data Access - VIDA System",
+      "systemBody": "{{name}} has accessed your medical information."
+    },
+    "qrScanned": {
+      "title": "Your QR Was Scanned",
+      "body": "{{name}} scanned your QR code from {{location}}.",
+      "unknownLocation": "unknown location",
+      "systemTitle": "QR Scanned - VIDA System",
+      "systemBody": "{{name}} scanned your QR code."
+    }
+  },
   "settings": {
     "title": "Notification Settings",
     "subtitle": "Customize how and when to receive alerts",

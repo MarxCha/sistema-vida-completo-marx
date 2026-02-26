@@ -71,7 +71,7 @@ router.post('/plans', async (req: Request, res: Response) => {
     if (!name || !slug || !features || !limits) {
       return res.status(400).json({
         success: false,
-        error: 'name, slug, features y limits son requeridos',
+        error: req.t('api:payments.planFieldsRequired'),
       });
     }
 
@@ -102,7 +102,7 @@ router.post('/plans', async (req: Request, res: Response) => {
         priceMonthly: plan.priceMonthly ? Number(plan.priceMonthly) : null,
         priceAnnual: plan.priceAnnual ? Number(plan.priceAnnual) : null,
       },
-      message: 'Plan creado',
+      message: req.t('api:payments.planCreated'),
     });
   } catch (error) {
     logger.error('Error creando plan:', error);
@@ -137,7 +137,7 @@ router.put('/plans/:id', async (req: Request, res: Response) => {
         priceMonthly: plan.priceMonthly ? Number(plan.priceMonthly) : null,
         priceAnnual: plan.priceAnnual ? Number(plan.priceAnnual) : null,
       },
-      message: 'Plan actualizado',
+      message: req.t('api:payments.planUpdated'),
     });
   } catch (error) {
     logger.error('Error actualizando plan:', error);
@@ -217,7 +217,7 @@ router.get('/subscriptions/:id', async (req: Request, res: Response) => {
     if (!subscription) {
       return res.status(404).json({
         success: false,
-        error: 'Suscripción no encontrada',
+        error: req.t('api:payments.subscriptionNotFound'),
       });
     }
 
@@ -260,7 +260,7 @@ router.put('/subscriptions/:id', async (req: Request, res: Response) => {
     res.json({
       success: true,
       data: subscription,
-      message: 'Suscripción actualizada',
+      message: req.t('api:payments.subscriptionUpdated'),
     });
   } catch (error) {
     logger.error('Error actualizando suscripción:', error);
@@ -321,7 +321,7 @@ router.post('/payments/:id/refund', async (req: Request, res: Response) => {
     res.json({
       success: true,
       data: payment,
-      message: 'Reembolso procesado',
+      message: req.t('api:payments.refundProcessed'),
     });
   } catch (error) {
     logger.error('Error procesando reembolso:', error);
@@ -381,7 +381,7 @@ router.post('/invoices/:id/cancel', async (req: Request, res: Response) => {
     res.json({
       success: true,
       data: invoice,
-      message: 'Factura cancelada',
+      message: req.t('api:payments.invoiceCancelled'),
     });
   } catch (error) {
     logger.error('Error cancelando factura:', error);

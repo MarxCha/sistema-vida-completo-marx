@@ -35,7 +35,7 @@ router.get('/options', async (req: Request, res: Response) => {
       success: false,
       error: {
         code: 'INTERNAL_ERROR',
-        message: 'Error al obtener lista de aseguradoras',
+        message: req.t('api:insurance.fetchError'),
       },
     });
   }
@@ -56,7 +56,7 @@ router.get('/:shortName/network', async (req: Request, res: Response) => {
         success: false,
         error: {
           code: 'NOT_FOUND',
-          message: 'Aseguradora no encontrada',
+          message: req.t('api:insurance.notFound'),
         },
       });
     }
@@ -71,7 +71,7 @@ router.get('/:shortName/network', async (req: Request, res: Response) => {
       success: false,
       error: {
         code: 'INTERNAL_ERROR',
-        message: 'Error al obtener red de hospitales',
+        message: req.t('api:insurance.networkFetchError'),
       },
     });
   }
@@ -92,7 +92,7 @@ router.get('/:shortName', async (req: Request, res: Response) => {
         success: false,
         error: {
           code: 'NOT_FOUND',
-          message: 'Aseguradora no encontrada',
+          message: req.t('api:insurance.notFound'),
         },
       });
     }
@@ -107,7 +107,7 @@ router.get('/:shortName', async (req: Request, res: Response) => {
       success: false,
       error: {
         code: 'INTERNAL_ERROR',
-        message: 'Error al obtener detalles de aseguradora',
+        message: req.t('api:insurance.detailFetchError'),
       },
     });
   }
@@ -123,7 +123,7 @@ router.post('/seed-networks', async (req: Request, res: Response) => {
     if (process.env.NODE_ENV === 'production') {
       return res.status(403).json({
         success: false,
-        error: { code: 'FORBIDDEN', message: 'No disponible en producción' },
+        error: { code: 'FORBIDDEN', message: req.t('api:insurance.forbiddenInProduction') },
       });
     }
 
@@ -131,14 +131,14 @@ router.post('/seed-networks', async (req: Request, res: Response) => {
 
     res.json({
       success: true,
-      message: 'Redes de hospitales vinculadas exitosamente',
+      message: req.t('api:insurance.networkSeeded'),
       data: result,
     });
   } catch (error) {
     logger.error('Error seeding insurance networks:', error);
     res.status(500).json({
       success: false,
-      error: { code: 'INTERNAL_ERROR', message: 'Error al vincular redes' },
+      error: { code: 'INTERNAL_ERROR', message: req.t('api:insurance.seedError') },
     });
   }
 });

@@ -15,7 +15,7 @@ const prisma = new PrismaClient();
  * GET /api/v1/wallet/status
  * Obtiene el estado de configuración de los wallets
  */
-router.get('/status', authMiddleware, async (_req: Request, res: Response) => {
+router.get('/status', authMiddleware, async (req: Request, res: Response) => {
   try {
     const status = walletService.getStatus();
     res.json({
@@ -25,7 +25,7 @@ router.get('/status', authMiddleware, async (_req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: { message: 'Error obteniendo estado de wallet' },
+      error: { message: req.t('api:wallet.statusError') },
     });
   }
 });
@@ -44,7 +44,7 @@ router.get('/apple-pass', authMiddleware, async (req: Request, res: Response) =>
         success: false,
         error: {
           code: 'APPLE_WALLET_NOT_CONFIGURED',
-          message: 'Apple Wallet no está configurado en este servidor',
+          message: req.t('api:wallet.appleNotConfigured'),
         },
       });
     }
@@ -64,7 +64,7 @@ router.get('/apple-pass', authMiddleware, async (req: Request, res: Response) =>
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: { message: 'Usuario no encontrado' },
+        error: { message: req.t('api:wallet.userNotFound') },
       });
     }
 
@@ -74,7 +74,7 @@ router.get('/apple-pass', authMiddleware, async (req: Request, res: Response) =>
     if (!profile?.qrToken) {
       return res.status(400).json({
         success: false,
-        error: { message: 'Perfil de emergencia no configurado' },
+        error: { message: req.t('api:wallet.emergencyProfileNotConfigured') },
       });
     }
 
@@ -88,7 +88,7 @@ router.get('/apple-pass', authMiddleware, async (req: Request, res: Response) =>
         success: false,
         error: {
           code: 'DOWNLOAD_LIMIT_REACHED',
-          message: `Has alcanzado el límite de ${canDownload.limit} descargas QR este mes. Actualiza tu plan para más descargas.`,
+          message: req.t('api:wallet.downloadLimitReached', { limit: canDownload.limit }),
           limit: canDownload.limit,
           current: canDownload.current,
         },
@@ -131,7 +131,7 @@ router.get('/apple-pass', authMiddleware, async (req: Request, res: Response) =>
       success: false,
       error: {
         code: 'APPLE_PASS_GENERATION_ERROR',
-        message: error.message || 'Error generando pase de Apple Wallet',
+        message: error.message || req.t('api:wallet.applePassError'),
       },
     });
   }
@@ -151,7 +151,7 @@ router.get('/google-pass-url', authMiddleware, async (req: Request, res: Respons
         success: false,
         error: {
           code: 'GOOGLE_WALLET_NOT_CONFIGURED',
-          message: 'Google Wallet no está configurado en este servidor',
+          message: req.t('api:wallet.googleNotConfigured'),
         },
       });
     }
@@ -171,7 +171,7 @@ router.get('/google-pass-url', authMiddleware, async (req: Request, res: Respons
     if (!user) {
       return res.status(404).json({
         success: false,
-        error: { message: 'Usuario no encontrado' },
+        error: { message: req.t('api:wallet.userNotFound') },
       });
     }
 
@@ -181,7 +181,7 @@ router.get('/google-pass-url', authMiddleware, async (req: Request, res: Respons
     if (!profile?.qrToken) {
       return res.status(400).json({
         success: false,
-        error: { message: 'Perfil de emergencia no configurado' },
+        error: { message: req.t('api:wallet.emergencyProfileNotConfigured') },
       });
     }
 
@@ -195,7 +195,7 @@ router.get('/google-pass-url', authMiddleware, async (req: Request, res: Respons
         success: false,
         error: {
           code: 'DOWNLOAD_LIMIT_REACHED',
-          message: `Has alcanzado el límite de ${canDownload.limit} descargas QR este mes. Actualiza tu plan para más descargas.`,
+          message: req.t('api:wallet.downloadLimitReached', { limit: canDownload.limit }),
           limit: canDownload.limit,
           current: canDownload.current,
         },
@@ -236,7 +236,7 @@ router.get('/google-pass-url', authMiddleware, async (req: Request, res: Respons
       success: false,
       error: {
         code: 'GOOGLE_PASS_GENERATION_ERROR',
-        message: error.message || 'Error generando URL de Google Wallet',
+        message: error.message || req.t('api:wallet.googlePassError'),
       },
     });
   }

@@ -1,5 +1,6 @@
 // src/modules/emergency/emergency.controller.ts
 import { logger } from '../../common/services/logger.service';
+import i18next from '../../common/i18n/config';
 import { Router, Request, Response } from 'express';
 import { body, param, validationResult } from 'express-validator';
 import rateLimit from 'express-rate-limit';
@@ -33,7 +34,7 @@ const emergencyAccessLimiter = rateLimit({
     success: false,
     error: {
       code: 'RATE_LIMIT_EXCEEDED',
-      message: 'Demasiados intentos de acceso. Por favor espere un momento antes de intentar nuevamente.',
+      message: i18next.t('api:emergency.tooManyAttempts'),
     },
   },
   standardHeaders: true,
@@ -60,7 +61,7 @@ const emergencyVerifyLimiter = rateLimit({
     success: false,
     error: {
       code: 'RATE_LIMIT_EXCEEDED',
-      message: 'Demasiadas solicitudes. Por favor espere.',
+      message: i18next.t('api:generic.tooManyRequests'),
     },
   },
   standardHeaders: true,
@@ -258,7 +259,7 @@ router.post('/access',
           success: false,
           error: {
             code: 'PATIENT_NOT_FOUND',
-            message: 'No se encontró paciente con este código QR'
+            message: req.t('api:emergency.patientNotFound')
           },
         });
       }
@@ -266,7 +267,7 @@ router.post('/access',
       // Incluir nivel de confianza y verificación SEP en la respuesta
       res.json({
         success: true,
-        message: 'Acceso de emergencia autorizado',
+        message: req.t('api:emergency.accessGranted'),
         data: {
           ...result,
           accessTrustLevel: trustLevel,
@@ -285,7 +286,7 @@ router.post('/access',
       logger.error('Error en acceso de emergencia:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -312,7 +313,7 @@ router.get('/verify/:accessToken',
           success: false,
           error: { 
             code: 'INVALID_TOKEN', 
-            message: 'Token de acceso inválido o expirado' 
+            message: req.t('api:emergency.invalidAccessToken') 
           },
         });
       }
@@ -329,7 +330,7 @@ router.get('/verify/:accessToken',
       logger.error('Error verificando token:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -363,7 +364,7 @@ router.get('/history', authMiddleware, async (req: Request, res: Response) => {
       success: false,
       error: { 
         code: 'SERVER_ERROR', 
-        message: error.message || 'Error interno del servidor',
+        message: error.message || req.t('api:generic.serverError'),
         details: process.env.NODE_ENV === 'development' ? error : undefined
       },
     });

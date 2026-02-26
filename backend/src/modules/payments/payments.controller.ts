@@ -55,7 +55,7 @@ router.get('/subscription', authMiddleware, async (req: Request, res: Response) 
       return res.json({
         success: true,
         data: null,
-        message: 'No tienes una suscripción activa',
+        message: req.t('api:payments.noActiveSubscription'),
       });
     }
 
@@ -106,7 +106,7 @@ router.post('/subscription/upgrade', authMiddleware, async (req: Request, res: R
     if (!planId) {
       return res.status(400).json({
         success: false,
-        error: 'planId es requerido',
+        error: req.t('api:payments.planIdRequired'),
       });
     }
 
@@ -154,8 +154,8 @@ router.post('/subscription/cancel', authMiddleware, async (req: Request, res: Re
       success: true,
       data: subscription,
       message: immediately
-        ? 'Suscripción cancelada'
-        : 'Suscripción programada para cancelarse al final del período',
+        ? req.t('api:payments.subscriptionCancelled')
+        : req.t('api:payments.subscriptionCancelledAtPeriodEnd'),
     });
   } catch (error) {
     logger.error('Error cancelando suscripción:', error);
@@ -181,7 +181,7 @@ router.post('/subscription/reactivate', authMiddleware, async (req: Request, res
     res.json({
       success: true,
       data: subscription,
-      message: 'Suscripción reactivada',
+      message: req.t('api:payments.subscriptionReactivated'),
     });
   } catch (error) {
     logger.error('Error reactivando suscripción:', error);
@@ -250,7 +250,7 @@ router.post('/payment-methods', authMiddleware, async (req: Request, res: Respon
     if (!input.stripePaymentMethodId) {
       return res.status(400).json({
         success: false,
-        error: 'stripePaymentMethodId es requerido',
+        error: req.t('api:payments.paymentMethodIdRequired'),
       });
     }
 
@@ -259,7 +259,7 @@ router.post('/payment-methods', authMiddleware, async (req: Request, res: Respon
     res.json({
       success: true,
       data: method,
-      message: 'Método de pago guardado',
+      message: req.t('api:payments.paymentMethodSaved'),
     });
   } catch (error) {
     logger.error('Error guardando método de pago:', error);
@@ -283,7 +283,7 @@ router.delete('/payment-methods/:id', authMiddleware, async (req: Request, res: 
 
     res.json({
       success: true,
-      message: 'Método de pago eliminado',
+      message: req.t('api:payments.paymentMethodDeleted'),
     });
   } catch (error) {
     logger.error('Error eliminando método de pago:', error);
@@ -307,7 +307,7 @@ router.post('/payment-methods/:id/default', authMiddleware, async (req: Request,
 
     res.json({
       success: true,
-      message: 'Método de pago establecido como predeterminado',
+      message: req.t('api:payments.paymentMethodSetDefault'),
     });
   } catch (error) {
     logger.error('Error estableciendo método de pago:', error);
@@ -389,7 +389,7 @@ router.post('/fiscal-data', authMiddleware, async (req: Request, res: Response) 
     if (!input.rfc || !input.razonSocial || !input.regimenFiscal || !input.codigoPostal || !input.emailFacturacion) {
       return res.status(400).json({
         success: false,
-        error: 'RFC, razón social, régimen fiscal, código postal y email son requeridos',
+        error: req.t('api:payments.fiscalDataRequired'),
       });
     }
 
@@ -398,7 +398,7 @@ router.post('/fiscal-data', authMiddleware, async (req: Request, res: Response) 
     res.json({
       success: true,
       data: fiscalData,
-      message: 'Datos fiscales guardados',
+      message: req.t('api:payments.fiscalDataSaved'),
     });
   } catch (error) {
     logger.error('Error guardando datos fiscales:', error);
@@ -455,7 +455,7 @@ router.post('/invoices/generate', authMiddleware, async (req: Request, res: Resp
     if (!input.paymentId) {
       return res.status(400).json({
         success: false,
-        error: 'paymentId es requerido',
+        error: req.t('api:payments.paymentIdRequired'),
       });
     }
 
@@ -464,7 +464,7 @@ router.post('/invoices/generate', authMiddleware, async (req: Request, res: Resp
     res.json({
       success: true,
       data: invoice,
-      message: 'Factura generada exitosamente',
+      message: req.t('api:payments.invoiceGenerated'),
     });
   } catch (error) {
     logger.error('Error generando factura:', error);
@@ -488,7 +488,7 @@ router.post('/invoices/:id/resend', authMiddleware, async (req: Request, res: Re
 
     res.json({
       success: true,
-      message: 'Factura reenviada',
+      message: req.t('api:payments.invoiceResent'),
     });
   } catch (error) {
     logger.error('Error reenviando factura:', error);

@@ -17,7 +17,7 @@ router.use(authMiddleware);
 router.get('/', async (req: Request, res: Response) => {
   try {
     const directives = await directivesService.listDirectives(req.userId!);
-    
+
     res.json({
       success: true,
       data: { directives },
@@ -26,7 +26,7 @@ router.get('/', async (req: Request, res: Response) => {
     logger.error('Error listando directivas:', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
     });
   }
 });
@@ -38,19 +38,19 @@ router.get('/', async (req: Request, res: Response) => {
 router.get('/active', async (req: Request, res: Response) => {
   try {
     const directive = await directivesService.getActiveDirective(req.userId!);
-    
+
     res.json({
       success: true,
-      data: { 
+      data: {
         hasActiveDirective: !!directive,
-        directive 
+        directive
       },
     });
   } catch (error) {
     logger.error('Error obteniendo directiva activa:', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
     });
   }
 });
@@ -67,16 +67,16 @@ router.get('/:id',
       if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
       }
-      
+
       const directive = await directivesService.getDirective(req.userId!, req.params.id);
-      
+
       if (!directive) {
         return res.status(404).json({
           success: false,
-          error: { code: 'NOT_FOUND', message: 'Directiva no encontrada' },
+          error: { code: 'NOT_FOUND', message: req.t('api:directives.notFound') },
         });
       }
-      
+
       res.json({
         success: true,
         data: { directive },
@@ -85,7 +85,7 @@ router.get('/:id',
       logger.error('Error obteniendo directiva:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -110,19 +110,19 @@ router.post('/draft',
       if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
       }
-      
+
       const directive = await directivesService.createDraft(req.userId!, req.body);
-      
+
       res.status(201).json({
         success: true,
-        message: 'Borrador de voluntad anticipada creado exitosamente',
+        message: req.t('api:directives.draftCreated'),
         data: { directive },
       });
     } catch (error) {
       logger.error('Error creando borrador:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -142,23 +142,23 @@ router.post('/upload',
       if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
       }
-      
+
       const directive = await directivesService.uploadDocument(req.userId!, {
         documentUrl: req.body.documentUrl,
         originalFileName: req.body.originalFileName,
         originState: req.body.originState,
       });
-      
+
       res.status(201).json({
         success: true,
-        message: 'Documento de voluntad anticipada cargado exitosamente',
+        message: req.t('api:directives.documentUploaded'),
         data: { directive },
       });
     } catch (error) {
       logger.error('Error cargando documento:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -184,26 +184,26 @@ router.put('/:id',
       if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
       }
-      
+
       const directive = await directivesService.updateDraft(req.userId!, req.params.id, req.body);
-      
+
       if (!directive) {
         return res.status(404).json({
           success: false,
-          error: { code: 'NOT_FOUND', message: 'Borrador no encontrado o no se puede modificar' },
+          error: { code: 'NOT_FOUND', message: req.t('api:directives.notFound') },
         });
       }
-      
+
       res.json({
         success: true,
-        message: 'Borrador actualizado exitosamente',
+        message: req.t('api:directives.draftUpdated'),
         data: { directive },
       });
     } catch (error) {
       logger.error('Error actualizando borrador:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -222,30 +222,30 @@ router.post('/:id/validate',
       if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
       }
-      
+
       const directive = await directivesService.validateDirective(
-        req.userId!, 
-        req.params.id, 
+        req.userId!,
+        req.params.id,
         req.body.method
       );
-      
+
       if (!directive) {
         return res.status(404).json({
           success: false,
-          error: { code: 'NOT_FOUND', message: 'Directiva no encontrada o no se puede validar' },
+          error: { code: 'NOT_FOUND', message: req.t('api:directives.notFound') },
         });
       }
-      
+
       res.json({
         success: true,
-        message: 'Directiva validada y activada exitosamente',
+        message: req.t('api:directives.validated'),
         data: { directive },
       });
     } catch (error) {
       logger.error('Error validando directiva:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -263,26 +263,26 @@ router.post('/:id/seal',
       if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
       }
-      
+
       const directive = await directivesService.requestNOM151Seal(req.userId!, req.params.id);
-      
+
       if (!directive) {
         return res.status(404).json({
           success: false,
-          error: { code: 'NOT_FOUND', message: 'Directiva no encontrada o no tiene documento para sellar' },
+          error: { code: 'NOT_FOUND', message: req.t('api:directives.notFound') },
         });
       }
-      
+
       res.json({
         success: true,
-        message: 'Documento sellado con constancia NOM-151',
+        message: req.t('api:directives.sealed'),
         data: { directive },
       });
     } catch (error) {
       logger.error('Error sellando documento:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -300,26 +300,26 @@ router.post('/:id/revoke',
       if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
       }
-      
+
       const directive = await directivesService.revokeDirective(req.userId!, req.params.id);
-      
+
       if (!directive) {
         return res.status(404).json({
           success: false,
-          error: { code: 'NOT_FOUND', message: 'Directiva no encontrada o ya está revocada' },
+          error: { code: 'NOT_FOUND', message: req.t('api:directives.notFound') },
         });
       }
-      
+
       res.json({
         success: true,
-        message: 'Directiva revocada exitosamente',
+        message: req.t('api:directives.revoked'),
         data: { directive },
       });
     } catch (error) {
       logger.error('Error revocando directiva:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -337,25 +337,25 @@ router.delete('/:id',
       if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
       }
-      
+
       const deleted = await directivesService.deleteDirective(req.userId!, req.params.id);
-      
+
       if (!deleted) {
         return res.status(404).json({
           success: false,
-          error: { code: 'NOT_FOUND', message: 'Borrador no encontrado o no se puede eliminar' },
+          error: { code: 'NOT_FOUND', message: req.t('api:directives.notFound') },
         });
       }
-      
+
       res.json({
         success: true,
-        message: 'Borrador eliminado exitosamente',
+        message: req.t('api:directives.draftDeleted'),
       });
     } catch (error) {
       logger.error('Error eliminando borrador:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }

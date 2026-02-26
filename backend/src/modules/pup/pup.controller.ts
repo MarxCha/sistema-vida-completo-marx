@@ -24,7 +24,7 @@ router.get('/', async (req: Request, res: Response) => {
     if (!profile) {
       return res.status(404).json({
         success: false,
-        error: { code: 'PROFILE_NOT_FOUND', message: 'Perfil no encontrado' },
+        error: { code: 'PROFILE_NOT_FOUND', message: req.t('api:pup.profileNotFound') },
       });
     }
     
@@ -36,7 +36,7 @@ router.get('/', async (req: Request, res: Response) => {
     logger.error('Error obteniendo perfil:', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
     });
   }
 });
@@ -80,7 +80,7 @@ router.put('/',
       logger.error('Error actualizando perfil:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -97,20 +97,20 @@ router.post('/generate-document', async (req: Request, res: Response) => {
     if (!result) {
       return res.status(500).json({
         success: false,
-        error: { code: 'GENERATION_FAILED', message: 'No se pudo generar el documento' },
+        error: { code: 'GENERATION_FAILED', message: req.t('api:pup.documentGenerationFailed') },
       });
     }
 
     res.json({
       success: true,
-      message: 'Documento de perfil médico generado exitosamente',
+      message: req.t('api:pup.documentGenerated'),
       data: result,
     });
   } catch (error) {
     logger.error('Error generando documento de perfil:', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
     });
   }
 });
@@ -142,7 +142,7 @@ router.post('/photo',
       logger.error('Error actualizando foto:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -159,7 +159,7 @@ router.get('/qr', async (req: Request, res: Response) => {
     if (!qrData) {
       return res.status(404).json({
         success: false,
-        error: { code: 'QR_NOT_FOUND', message: 'Código QR no encontrado' },
+        error: { code: 'QR_NOT_FOUND', message: req.t('api:pup.qrNotFound') },
       });
     }
     
@@ -171,7 +171,7 @@ router.get('/qr', async (req: Request, res: Response) => {
     logger.error('Error obteniendo QR:', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
     });
   }
 });
@@ -186,14 +186,14 @@ router.post('/qr/regenerate', async (req: Request, res: Response) => {
     
     res.json({
       success: true,
-      message: 'Código QR regenerado exitosamente. El código anterior ya no es válido.',
+      message: req.t('api:pup.qrRegenerated'),
       data: qrData,
     });
   } catch (error) {
     logger.error('Error regenerando QR:', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
     });
   }
 });
@@ -211,7 +211,7 @@ router.get('/qr/download/:format', async (req: Request, res: Response) => {
     if (!['png', 'svg'].includes(format)) {
       return res.status(400).json({
         success: false,
-        error: { code: 'INVALID_FORMAT', message: 'Formato inválido. Use png o svg' },
+        error: { code: 'INVALID_FORMAT', message: req.t('api:pup.invalidQrFormat') },
       });
     }
 
@@ -222,7 +222,7 @@ router.get('/qr/download/:format', async (req: Request, res: Response) => {
         success: false,
         error: {
           code: 'DOWNLOAD_LIMIT_REACHED',
-          message: `Has alcanzado el límite de ${canDownload.limit} descargas QR este mes. Actualiza tu plan para más descargas.`,
+          message: req.t('api:pup.downloadLimitReached'),
           limit: canDownload.limit,
           current: canDownload.current,
         },
@@ -234,7 +234,7 @@ router.get('/qr/download/:format', async (req: Request, res: Response) => {
     if (!qrData) {
       return res.status(404).json({
         success: false,
-        error: { code: 'QR_NOT_FOUND', message: 'Código QR no encontrado' },
+        error: { code: 'QR_NOT_FOUND', message: req.t('api:pup.qrNotFound') },
       });
     }
 
@@ -266,7 +266,7 @@ router.get('/qr/download/:format', async (req: Request, res: Response) => {
     logger.error('Error descargando QR:', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
     });
   }
 });
@@ -287,7 +287,7 @@ router.get('/qr/stats', async (req: Request, res: Response) => {
     logger.error('Error obteniendo stats QR:', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
     });
   }
 });

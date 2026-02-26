@@ -17,7 +17,7 @@ router.use(authMiddleware);
 router.get('/', async (req: Request, res: Response) => {
   try {
     const representatives = await representativesService.listRepresentatives(req.userId!);
-    
+
     res.json({
       success: true,
       data: { representatives },
@@ -26,7 +26,7 @@ router.get('/', async (req: Request, res: Response) => {
     logger.error('Error listando representantes:', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
     });
   }
 });
@@ -43,19 +43,19 @@ router.get('/:id',
       if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
       }
-      
+
       const representative = await representativesService.getRepresentative(
-        req.userId!, 
+        req.userId!,
         req.params.id
       );
-      
+
       if (!representative) {
         return res.status(404).json({
           success: false,
-          error: { code: 'NOT_FOUND', message: 'Representante no encontrado' },
+          error: { code: 'NOT_FOUND', message: req.t('api:representatives.notFound') },
         });
       }
-      
+
       res.json({
         success: true,
         data: { representative },
@@ -64,7 +64,7 @@ router.get('/:id',
       logger.error('Error obteniendo representante:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -98,22 +98,22 @@ router.post('/',
       if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
       }
-      
+
       const representative = await representativesService.createRepresentative(
         req.userId!,
         req.body
       );
-      
+
       res.status(201).json({
         success: true,
-        message: 'Representante creado exitosamente',
+        message: req.t('api:representatives.created'),
         data: { representative },
       });
     } catch (error) {
       logger.error('Error creando representante:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -140,30 +140,30 @@ router.put('/:id',
       if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
       }
-      
+
       const representative = await representativesService.updateRepresentative(
         req.userId!,
         req.params.id,
         req.body
       );
-      
+
       if (!representative) {
         return res.status(404).json({
           success: false,
-          error: { code: 'NOT_FOUND', message: 'Representante no encontrado' },
+          error: { code: 'NOT_FOUND', message: req.t('api:representatives.notFound') },
         });
       }
-      
+
       res.json({
         success: true,
-        message: 'Representante actualizado exitosamente',
+        message: req.t('api:representatives.updated'),
         data: { representative },
       });
     } catch (error) {
       logger.error('Error actualizando representante:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -181,28 +181,28 @@ router.delete('/:id',
       if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
       }
-      
+
       const deleted = await representativesService.deleteRepresentative(
         req.userId!,
         req.params.id
       );
-      
+
       if (!deleted) {
         return res.status(404).json({
           success: false,
-          error: { code: 'NOT_FOUND', message: 'Representante no encontrado' },
+          error: { code: 'NOT_FOUND', message: req.t('api:representatives.notFound') },
         });
       }
-      
+
       res.json({
         success: true,
-        message: 'Representante eliminado exitosamente',
+        message: req.t('api:representatives.deleted'),
       });
     } catch (error) {
       logger.error('Error eliminando representante:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -221,22 +221,22 @@ router.post('/reorder',
       if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
       }
-      
+
       const representatives = await representativesService.reorderPriorities(
         req.userId!,
         req.body.orderedIds
       );
-      
+
       res.json({
         success: true,
-        message: 'Prioridades actualizadas exitosamente',
+        message: req.t('api:representatives.prioritiesUpdated'),
         data: { representatives },
       });
     } catch (error) {
       logger.error('Error reordenando representantes:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -254,29 +254,29 @@ router.post('/:id/donor-spokesperson',
       if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
       }
-      
+
       const representative = await representativesService.setDonorSpokesperson(
         req.userId!,
         req.params.id
       );
-      
+
       if (!representative) {
         return res.status(404).json({
           success: false,
-          error: { code: 'NOT_FOUND', message: 'Representante no encontrado' },
+          error: { code: 'NOT_FOUND', message: req.t('api:representatives.notFound') },
         });
       }
-      
+
       res.json({
         success: true,
-        message: 'Portavoz de donación establecido exitosamente',
+        message: req.t('api:representatives.spokespersonSet'),
         data: { representative },
       });
     } catch (error) {
       logger.error('Error estableciendo portavoz:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }

@@ -21,6 +21,9 @@ import * as crypto from 'crypto';
 import config from '../../config';
 import { cacheService, CACHE_PREFIXES } from '../../common/services/cache.service';
 import { logger } from '../../common/services/logger.service';
+// TODO: Service-level translations use the default (server) locale, not the per-request locale.
+// To respect per-request locale, pass the locale or req.t into each method.
+import i18next from '../../common/i18n/config';
 
 const prisma = new PrismaClient();
 
@@ -109,12 +112,12 @@ class AdminMFAService {
     });
 
     if (!admin) {
-      throw { code: 'ADMIN_NOT_FOUND', message: 'Administrador no encontrado', status: 404 };
+      throw { code: 'ADMIN_NOT_FOUND', message: i18next.t('api:admin.mfa.adminNotFound'), status: 404 };
     }
 
     // Si ya tiene MFA habilitado, no permitir nuevo setup
     if (admin.mfaEnabled) {
-      throw { code: 'MFA_ALREADY_ENABLED', message: 'MFA ya está habilitado', status: 400 };
+      throw { code: 'MFA_ALREADY_ENABLED', message: i18next.t('api:admin.mfa.alreadyEnabled'), status: 400 };
     }
 
     // Generar nuevo secreto TOTP
@@ -175,7 +178,7 @@ class AdminMFAService {
     if (!pendingMFA) {
       throw {
         code: 'MFA_NOT_SETUP',
-        message: 'Primero debe iniciar la configuración de MFA o el tiempo expiró',
+        message: i18next.t('api:admin.mfa.notSetup'),
         status: 400,
       };
     }
@@ -192,7 +195,7 @@ class AdminMFAService {
       logger.warn('MFA verificación fallida', { adminId });
       throw {
         code: 'INVALID_MFA_CODE',
-        message: 'Código de verificación inválido',
+        message: i18next.t('api:admin.mfa.invalidCode'),
         status: 400,
       };
     }
@@ -237,7 +240,7 @@ class AdminMFAService {
     if (!admin || !admin.mfaEnabled || !admin.mfaSecret) {
       throw {
         code: 'MFA_NOT_ENABLED',
-        message: 'MFA no está habilitado para este administrador',
+        message: i18next.t('api:admin.mfa.notEnabled'),
         status: 400,
       };
     }
@@ -283,7 +286,7 @@ class AdminMFAService {
 
     throw {
       code: 'INVALID_MFA_CODE',
-      message: 'Código de verificación inválido',
+      message: i18next.t('api:admin.mfa.invalidCode'),
       status: 401,
     };
   }

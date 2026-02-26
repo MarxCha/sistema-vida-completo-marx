@@ -1,6 +1,8 @@
 // src/modules/admin/admin-audit.service.ts
 import { PrismaClient } from '@prisma/client';
 import { adminAuthService } from './admin-auth.service';
+// TODO: CSV headers use the server default locale. To localise per-request, pass locale into exportAuditLogs.
+import i18next from '../../common/i18n/config';
 
 const prisma = new PrismaClient();
 
@@ -420,7 +422,7 @@ export class AdminAuditService {
 
     switch (type) {
       case 'user':
-        headers = ['ID', 'Usuario', 'Email', 'Accion', 'Recurso', 'ID Recurso', 'IP', 'Fecha'];
+        headers = i18next.t('api:admin.audit.csv.userHeaders').split(',');
         rows = data.map(log => [
           log.id,
           log.user?.name || '',
@@ -434,7 +436,7 @@ export class AdminAuditService {
         break;
 
       case 'admin':
-        headers = ['ID', 'Admin', 'Email', 'Rol', 'Accion', 'Recurso', 'ID Recurso', 'IP', 'Fecha'];
+        headers = i18next.t('api:admin.audit.csv.adminHeaders').split(',');
         rows = data.map(log => [
           log.id,
           log.admin?.name || '',
@@ -449,7 +451,7 @@ export class AdminAuditService {
         break;
 
       case 'emergency':
-        headers = ['ID', 'Paciente', 'CURP', 'Profesional', 'Rol', 'Institucion', 'Datos Accedidos', 'Ubicacion', 'Fecha'];
+        headers = i18next.t('api:admin.audit.csv.emergencyHeaders').split(',');
         rows = data.map(access => [
           access.id,
           access.patient?.name || '',

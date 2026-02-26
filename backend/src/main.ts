@@ -159,7 +159,7 @@ const globalLimiter = rateLimit({
     success: false,
     error: {
       code: 'RATE_LIMIT_EXCEEDED',
-      message: 'Demasiadas solicitudes. Por favor, intente más tarde.',
+      message: i18next.t('api:generic.tooManyRequests'),
     },
   },
   standardHeaders: true,
@@ -174,7 +174,7 @@ const globalLimiter = rateLimit({
       success: false,
       error: {
         code: 'RATE_LIMIT_EXCEEDED',
-        message: 'Demasiadas solicitudes. Por favor, intente más tarde.',
+        message: i18next.t('api:generic.tooManyRequests'),
       },
     });
   },
@@ -189,7 +189,7 @@ const authLimiter = rateLimit({
     success: false,
     error: {
       code: 'AUTH_RATE_LIMIT',
-      message: 'Demasiados intentos de autenticación. Por favor, espere 15 minutos.',
+      message: i18next.t('api:generic.tooManyRequests'),
     },
   },
 });

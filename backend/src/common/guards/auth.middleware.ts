@@ -1,6 +1,7 @@
 // src/common/guards/auth.middleware.ts
 import { Request, Response, NextFunction } from 'express';
 import { authService, AuthError } from '../../modules/auth/auth.service';
+import i18next from '../i18n/config';
 
 // Extender el tipo Request para incluir userId
 declare global {
@@ -19,29 +20,35 @@ declare global {
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization;
-    
+
     if (!authHeader) {
       return res.status(401).json({
         success: false,
-        error: { code: 'NO_TOKEN', message: 'Token de autorización no proporcionado' },
+        error: {
+          code: 'NO_TOKEN',
+          message: (req as any).t?.('api:generic.tokenNotProvided') || i18next.t('api:generic.tokenNotProvided'),
+        },
       });
     }
-    
+
     // Formato esperado: "Bearer <token>"
     const parts = authHeader.split(' ');
     if (parts.length !== 2 || parts[0] !== 'Bearer') {
       return res.status(401).json({
         success: false,
-        error: { code: 'INVALID_TOKEN_FORMAT', message: 'Formato de token inválido' },
+        error: {
+          code: 'INVALID_TOKEN_FORMAT',
+          message: (req as any).t?.('api:generic.invalidTokenFormat') || i18next.t('api:generic.invalidTokenFormat'),
+        },
       });
     }
-    
+
     const token = parts[1];
     const payload = authService.verifyAccessToken(token);
-    
+
     req.userId = payload.userId;
     req.userEmail = payload.email;
-    
+
     next();
   } catch (error) {
     if (error instanceof AuthError) {
@@ -53,10 +60,13 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
         },
       });
     }
-    
+
     return res.status(401).json({
       success: false,
-      error: { code: 'UNAUTHORIZED', message: 'No autorizado' },
+      error: {
+        code: 'UNAUTHORIZED',
+        message: (req as any).t?.('api:generic.notAuthorized') || i18next.t('api:generic.notAuthorized'),
+      },
     });
   }
 };
@@ -68,22 +78,22 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
 export const optionalAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization;
-    
+
     if (!authHeader) {
       return next();
     }
-    
+
     const parts = authHeader.split(' ');
     if (parts.length !== 2 || parts[0] !== 'Bearer') {
       return next();
     }
-    
+
     const token = parts[1];
     const payload = authService.verifyAccessToken(token);
-    
+
     req.userId = payload.userId;
     req.userEmail = payload.email;
-    
+
     next();
   } catch (error) {
     // En caso de error, simplemente continuar sin autenticación

@@ -48,6 +48,32 @@
     "confirm": "Si, eliminar",
     "cancel": "Cancelar"
   },
+  "ws": {
+    "panicAlert": {
+      "title": "Alerta de Pánico Activada",
+      "body": "Se ha activado una alerta de pánico.",
+      "nearestHospital": "Hospital más cercano: {{name}}",
+      "systemTitle": "Alerta de Pánico - Sistema VIDA",
+      "systemBody": "Se ha activado una alerta de pánico. Toca para ver detalles."
+    },
+    "panicCancelled": {
+      "title": "Alerta Cancelada",
+      "body": "La alerta de pánico ha sido cancelada."
+    },
+    "qrAccess": {
+      "title": "Acceso a tus Datos Médicos",
+      "body": "{{name}} ({{role}}) ha accedido a tu información médica.",
+      "systemTitle": "Acceso a Datos - Sistema VIDA",
+      "systemBody": "{{name}} ha accedido a tu información médica."
+    },
+    "qrScanned": {
+      "title": "Tu QR fue Escaneado",
+      "body": "{{name}} escaneó tu código QR desde {{location}}.",
+      "unknownLocation": "ubicación desconocida",
+      "systemTitle": "QR Escaneado - Sistema VIDA",
+      "systemBody": "{{name}} escaneó tu código QR."
+    }
+  },
   "settings": {
     "title": "Configuracion de Notificaciones",
     "subtitle": "Personaliza como y cuando recibir alertas",
