@@ -1,6 +1,6 @@
 {
   "view": {
-    "title": "Sistema VIDA",
+    "title": "VIDA System",
     "subtitle": "Emergency Access",
     "loading": "Verifying access...",
     "warning": {
@@ -118,14 +118,14 @@
     },
     "footer": {
       "access_registered": "This access has been logged and the patient's representatives have been notified.",
-      "consulted_at": "Sistema VIDA - Information accessed on"
+      "consulted_at": "VIDA System - Information accessed on"
     }
   },
   "qr": {
     "title": "My Emergency QR Code",
     "subtitle": "This code allows medical personnel to access your information in case of emergency",
     "card": {
-      "header_title": "Sistema VIDA",
+      "header_title": "VIDA System",
       "header_subtitle": "Emergency Access Code",
       "token_label": "Token:",
       "generated_label": "Generated:"

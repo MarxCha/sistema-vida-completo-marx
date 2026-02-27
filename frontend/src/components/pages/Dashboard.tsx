@@ -388,7 +388,7 @@ export default function Dashboard() {
                       </div>
                     </div>
                     <span className="text-xs text-gray-400 whitespace-nowrap">
-                      {new Date(doc.createdAt).toLocaleDateString('es-MX', {
+                      {new Date(doc.createdAt).toLocaleDateString(locale, {
                         day: 'numeric',
                         month: 'short'
                       })}

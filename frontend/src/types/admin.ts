@@ -464,15 +464,6 @@ export const ADMIN_PERMISSIONS = {
   CONFIG_WRITE: 'config:write',
 } as const;
 
-// Labels para roles
-export const ADMIN_ROLE_LABELS: Record<AdminRole, string> = {
-  SUPER_ADMIN: 'Super Administrador',
-  ADMIN: 'Administrador',
-  MODERATOR: 'Moderador',
-  VIEWER: 'Visor',
-  SUPPORT: 'Soporte',
-};
-
 // Colores para roles
 export const ADMIN_ROLE_COLORS: Record<AdminRole, string> = {
   SUPER_ADMIN: 'bg-red-100 text-red-800',

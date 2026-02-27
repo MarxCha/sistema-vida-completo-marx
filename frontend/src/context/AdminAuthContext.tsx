@@ -1,5 +1,6 @@
 // src/context/AdminAuthContext.tsx
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AdminUser } from '../types/admin';
 import {
   adminLogin,
@@ -143,6 +144,7 @@ export const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
   requiredPermissions,
   requireAll = false,
 }) => {
+  const { t } = useTranslation('admin');
   const { isAuthenticated, isLoading, hasPermission, hasAnyPermission, hasAllPermissions } =
     useAdminAuth();
 
@@ -151,7 +153,7 @@ export const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Verificando sesion...</p>
+          <p className="mt-4 text-gray-600">{t('access.verifying')}</p>
         </div>
       </div>
     );
@@ -172,15 +174,15 @@ export const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Acceso Denegado</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('access.denied_title')}</h2>
           <p className="text-gray-600 mb-4">
-            No tienes los permisos necesarios para acceder a esta seccion.
+            {t('access.denied_message')}
           </p>
           <button
             onClick={() => window.location.href = '/admin/dashboard'}
             className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition"
           >
-            Volver al Dashboard
+            {t('access.back_to_dashboard')}
           </button>
         </div>
       </div>
@@ -202,15 +204,15 @@ export const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Acceso Denegado</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('access.denied_title')}</h2>
             <p className="text-gray-600 mb-4">
-              No tienes los permisos necesarios para acceder a esta seccion.
+              {t('access.denied_message')}
             </p>
             <button
               onClick={() => window.location.href = '/admin/dashboard'}
               className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700 transition"
             >
-              Volver al Dashboard
+              {t('access.back_to_dashboard')}
             </button>
           </div>
         </div>

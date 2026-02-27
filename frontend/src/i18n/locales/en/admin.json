@@ -23,7 +23,7 @@
     "error_default": "Error signing in",
     "demo_section": "Demo Access",
     "user_login_link": "Go to user login",
-    "footer": "Sistema VIDA © {{year}} - Restricted access",
+    "footer": "VIDA System © {{year}} - Restricted access",
     "demo_admins": {
       "super_admin_desc": "Full system access",
       "admin_desc": "User and institution management",
@@ -32,7 +32,7 @@
   },
   "dashboard": {
     "welcome": "Welcome, {{name}}",
-    "subtitle": "Sistema VIDA Control Panel",
+    "subtitle": "VIDA System Control Panel",
     "loading": "Loading metrics...",
     "error": "Error loading metrics. Please try again.",
     "retry": "Retry",
@@ -311,5 +311,18 @@
     "service_configured": "Configured",
     "service_not_configured": "Not configured",
     "service_not_required": "Not required in development"
+  },
+  "roles": {
+    "SUPER_ADMIN": "Super Administrator",
+    "ADMIN": "Administrator",
+    "MODERATOR": "Moderator",
+    "VIEWER": "Viewer",
+    "SUPPORT": "Support"
+  },
+  "access": {
+    "verifying": "Verifying administrator access...",
+    "denied_title": "Access Denied",
+    "denied_message": "You do not have administrator permissions to access this section.",
+    "back_to_dashboard": "Back to Dashboard"
   }
 }

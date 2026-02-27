@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAdminAuth } from '../../../context/AdminAuthContext';
-import { ADMIN_ROLE_LABELS, ADMIN_ROLE_COLORS, ADMIN_PERMISSIONS } from '../../../types/admin';
+import { ADMIN_ROLE_COLORS, ADMIN_PERMISSIONS } from '../../../types/admin';
 
 const AdminLayout: React.FC = () => {
   const { t } = useTranslation('admin');
@@ -157,7 +157,7 @@ const AdminLayout: React.FC = () => {
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-sm truncate">{admin?.name}</p>
                 <span className={`inline-block px-2 py-0.5 rounded text-xs ${ADMIN_ROLE_COLORS[admin?.role || 'VIEWER']}`}>
-                  {ADMIN_ROLE_LABELS[admin?.role || 'VIEWER']}
+                  {t(`roles.${admin?.role || 'VIEWER'}`)}
                 </span>
               </div>
             </div>

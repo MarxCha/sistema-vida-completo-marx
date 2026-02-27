@@ -31,7 +31,7 @@ router.get('/nearby', async (req: Request, res: Response) => {
         success: false,
         error: {
           code: 'MISSING_COORDINATES',
-          message: 'Se requieren las coordenadas (lat, lng)',
+          message: req.t('api:hospital.missingCoordinates'),
         },
       });
     }
@@ -45,7 +45,7 @@ router.get('/nearby', async (req: Request, res: Response) => {
         success: false,
         error: {
           code: 'INVALID_COORDINATES',
-          message: 'Las coordenadas proporcionadas no son validas',
+          message: req.t('api:hospital.invalidCoordinates'),
         },
       });
     }
@@ -88,7 +88,7 @@ router.get('/nearby', async (req: Request, res: Response) => {
       success: false,
       error: {
         code: 'SEARCH_ERROR',
-        message: 'Error al buscar hospitales cercanos',
+        message: req.t('api:hospital.nearbyError'),
       },
     });
   }
@@ -109,7 +109,7 @@ router.post('/nearby/smart', async (req: Request, res: Response) => {
         success: false,
         error: {
           code: 'MISSING_COORDINATES',
-          message: 'Se requieren las coordenadas (latitude, longitude)',
+          message: req.t('api:hospital.missingCoordinatesPost'),
         },
       });
     }
@@ -119,7 +119,7 @@ router.post('/nearby/smart', async (req: Request, res: Response) => {
         success: false,
         error: {
           code: 'INVALID_COORDINATES',
-          message: 'Las coordenadas proporcionadas no son validas',
+          message: req.t('api:hospital.invalidCoordinates'),
         },
       });
     }
@@ -162,7 +162,7 @@ router.post('/nearby/smart', async (req: Request, res: Response) => {
       success: false,
       error: {
         code: 'SMART_SEARCH_ERROR',
-        message: 'Error en la busqueda inteligente de hospitales',
+        message: req.t('api:hospital.smartSearchError'),
       },
     });
   }
@@ -172,7 +172,7 @@ router.post('/nearby/smart', async (req: Request, res: Response) => {
  * GET /api/v1/hospitals/conditions
  * Lista las condiciones medicas conocidas para el filtro
  */
-router.get('/conditions', async (_req: Request, res: Response) => {
+router.get('/conditions', async (req: Request, res: Response) => {
   try {
     const conditions = hospitalService.getKnownConditions();
 
@@ -189,7 +189,7 @@ router.get('/conditions', async (_req: Request, res: Response) => {
       success: false,
       error: {
         code: 'CONDITIONS_ERROR',
-        message: 'Error al obtener las condiciones medicas',
+        message: req.t('api:hospital.conditionsError'),
       },
     });
   }
@@ -210,7 +210,7 @@ router.get('/:id', async (req: Request, res: Response) => {
         success: false,
         error: {
           code: 'NOT_FOUND',
-          message: 'Hospital no encontrado',
+          message: req.t('api:hospital.notFound'),
         },
       });
     }
@@ -225,7 +225,7 @@ router.get('/:id', async (req: Request, res: Response) => {
       success: false,
       error: {
         code: 'FETCH_ERROR',
-        message: 'Error al obtener el hospital',
+        message: req.t('api:hospital.fetchError'),
       },
     });
   }
@@ -258,7 +258,7 @@ router.get('/', async (req: Request, res: Response) => {
       success: false,
       error: {
         code: 'LIST_ERROR',
-        message: 'Error al listar hospitales',
+        message: req.t('api:hospital.listError'),
       },
     });
   }

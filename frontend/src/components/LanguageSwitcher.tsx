@@ -51,7 +51,7 @@ export default function LanguageSwitcher({ className = '', compact = false }: La
         <button
           onClick={() => setOpen(!open)}
           className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-sm font-medium transition-all hover:bg-gray-100 ${justChanged ? 'ring-2 ring-vida-400 ring-opacity-50' : ''} ${className}`}
-          aria-label={currentLang === 'es' ? 'Change language' : 'Cambiar idioma'}
+          aria-label={currentLang === 'es' ? 'Switch to English' : 'Cambiar a español'}
           aria-expanded={open}
         >
           <Globe className="w-4 h-4" />
@@ -91,7 +91,7 @@ export default function LanguageSwitcher({ className = '', compact = false }: La
       <button
         onClick={() => setOpen(!open)}
         className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium border transition-all hover:bg-gray-50 ${justChanged ? 'ring-2 ring-vida-400 ring-opacity-50' : ''} ${className}`}
-        aria-label={currentLang === 'es' ? 'Change language' : 'Cambiar idioma'}
+        aria-label={currentLang === 'es' ? 'Switch to English' : 'Cambiar a español'}
         aria-expanded={open}
       >
         <Globe className="w-4 h-4" />

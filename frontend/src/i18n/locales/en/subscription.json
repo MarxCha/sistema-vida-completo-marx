@@ -14,7 +14,7 @@
     "REFUNDED": "Refunded"
   },
   "plan": {
-    "access_all": "You have access to all Sistema VIDA features",
+    "access_all": "You have access to all VIDA System features",
     "upgrade_prompt": "Upgrade to unlock all features",
     "billing_cycle_label": "Billing cycle:",
     "billing_annual": "Annual",
@@ -75,7 +75,7 @@
   },
   "plans": {
     "page_title": "Choose your plan",
-    "page_subtitle": "Protect your family with Sistema VIDA. Choose the plan that best fits your needs.",
+    "page_subtitle": "Protect your family with VIDA System. Choose the plan that best fits your needs.",
     "billing_monthly": "Monthly",
     "billing_annual": "Annual",
     "save_amount": "Save ${{amount}}",
@@ -130,7 +130,7 @@
   },
   "success": {
     "title": "Welcome to Premium!",
-    "message": "Your subscription has been activated successfully. You now have access to all Sistema VIDA features.",
+    "message": "Your subscription has been activated successfully. You now have access to all VIDA System features.",
     "unlocked_title": "Unlocked features:",
     "feature_directives": "Advance Directives",
     "feature_donor": "Organ Donor Preferences",
@@ -145,7 +145,7 @@
   },
   "upgrade_prompt": {
     "default_title": "Upgrade to Premium",
-    "default_description": "Unlock all Sistema VIDA features",
+    "default_description": "Unlock all VIDA System features",
     "btn_see_plans": "See plans",
     "btn_compare": "Compare plans",
     "btn_trial": "Start 7-day free trial",
@@ -185,6 +185,12 @@
     "qrDownloadsPerMonth": "QR downloads per month"
   },
   "errors": {
-    "loadPremiumStatus": "Error loading premium status"
+    "loadPremiumStatus": "Error loading premium status",
+    "loadPlans": "Error loading plans",
+    "loadSubscription": "Error loading subscription",
+    "loadPaymentHistory": "Error loading payment history",
+    "loadPaymentMethods": "Error loading payment methods",
+    "loadFiscalData": "Error loading tax information",
+    "loadInvoices": "Error loading invoices"
   }
 }

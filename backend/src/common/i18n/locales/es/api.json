@@ -69,7 +69,9 @@
     "updated": "Documento actualizado exitosamente",
     "deleted": "Documento eliminado exitosamente",
     "notFound": "Documento no encontrado",
-    "invalidFileType": "Tipo de archivo no permitido. Use PDF, imágenes (JPG, PNG) o documentos Word."
+    "invalidFileType": "Tipo de archivo no permitido. Use PDF, imágenes (JPG, PNG) o documentos Word.",
+    "fileRequired": "Se requiere un archivo",
+    "uploadError": "Error al subir el archivo"
   },
   "payments": {
     "noActiveSubscription": "No tienes una suscripción activa",
@@ -100,7 +102,19 @@
     "notAuthorized": "No autorizado",
     "tokenNotProvided": "Token de autorización no proporcionado",
     "invalidTokenFormat": "Formato de token inválido",
-    "premiumRequired": "Esta función requiere una suscripción Premium"
+    "premiumRequired": "Esta función requiere una suscripción Premium",
+    "routeNotFound": "Ruta {{method}} {{path}} no encontrada"
+  },
+  "hospital": {
+    "missingCoordinates": "Se requieren las coordenadas (latitud y longitud)",
+    "invalidCoordinates": "Las coordenadas proporcionadas no son válidas",
+    "nearbyError": "Error al buscar hospitales cercanos",
+    "smartSearchError": "Error en la búsqueda inteligente de hospitales",
+    "conditionsError": "Error al obtener las condiciones",
+    "notFound": "Hospital no encontrado",
+    "fetchError": "Error al obtener el hospital",
+    "listError": "Error al listar hospitales",
+    "missingCoordinatesPost": "Se requieren las coordenadas para esta operación"
   },
   "odoo": {
     "notConfigured": "Odoo no está configurado. Verificar variables de entorno.",

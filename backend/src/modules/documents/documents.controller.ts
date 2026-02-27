@@ -69,9 +69,9 @@ router.get(
       logger.error('Error listando documentos:', error);
       res.status(500).json({
         success: false,
-        error: { 
-          code: 'SERVER_ERROR', 
-          message: error.message || 'Error interno del servidor',
+        error: {
+          code: 'SERVER_ERROR',
+          message: error.message || req.t('api:generic.serverError'),
           details: process.env.NODE_ENV === 'development' ? error : undefined
         },
       });
@@ -95,7 +95,7 @@ router.get('/stats', async (req: Request, res: Response) => {
     logger.error('Error obteniendo estadísticas:', error);
     res.status(500).json({
       success: false,
-      error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+      error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
     });
   }
 });
@@ -135,7 +135,7 @@ router.get(
       if (!document) {
         return res.status(404).json({
           success: false,
-          error: { code: 'NOT_FOUND', message: 'Documento no encontrado' },
+          error: { code: 'NOT_FOUND', message: req.t('api:documents.notFound') },
         });
       }
 
@@ -147,7 +147,7 @@ router.get(
       logger.error('Error obteniendo documento:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -172,7 +172,7 @@ router.get(
       if (!downloadUrl) {
         return res.status(404).json({
           success: false,
-          error: { code: 'NOT_FOUND', message: 'Documento no encontrado' },
+          error: { code: 'NOT_FOUND', message: req.t('api:documents.notFound') },
         });
       }
 
@@ -184,7 +184,7 @@ router.get(
       logger.error('Error obteniendo URL de descarga:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -214,7 +214,7 @@ router.post(
       if (!req.file) {
         return res.status(400).json({
           success: false,
-          error: { code: 'NO_FILE', message: 'Archivo requerido' },
+          error: { code: 'NO_FILE', message: req.t('api:documents.fileRequired') },
         });
       }
 
@@ -239,14 +239,14 @@ router.post(
 
       res.status(201).json({
         success: true,
-        message: 'Documento subido exitosamente',
+        message: req.t('api:documents.uploaded'),
         data: { document },
       });
     } catch (error: any) {
       logger.error('Error subiendo documento:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'UPLOAD_ERROR', message: error.message || 'Error al subir documento' },
+        error: { code: 'UPLOAD_ERROR', message: error.message || req.t('api:documents.uploadError') },
       });
     }
   }
@@ -286,20 +286,20 @@ router.put(
       if (!document) {
         return res.status(404).json({
           success: false,
-          error: { code: 'NOT_FOUND', message: 'Documento no encontrado' },
+          error: { code: 'NOT_FOUND', message: req.t('api:documents.notFound') },
         });
       }
 
       res.json({
         success: true,
-        message: 'Documento actualizado exitosamente',
+        message: req.t('api:documents.updated'),
         data: { document },
       });
     } catch (error) {
       logger.error('Error actualizando documento:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }
@@ -324,19 +324,19 @@ router.delete(
       if (!deleted) {
         return res.status(404).json({
           success: false,
-          error: { code: 'NOT_FOUND', message: 'Documento no encontrado' },
+          error: { code: 'NOT_FOUND', message: req.t('api:documents.notFound') },
         });
       }
 
       res.json({
         success: true,
-        message: 'Documento eliminado exitosamente',
+        message: req.t('api:documents.deleted'),
       });
     } catch (error) {
       logger.error('Error eliminando documento:', error);
       res.status(500).json({
         success: false,
-        error: { code: 'SERVER_ERROR', message: 'Error interno del servidor' },
+        error: { code: 'SERVER_ERROR', message: req.t('api:generic.serverError') },
       });
     }
   }

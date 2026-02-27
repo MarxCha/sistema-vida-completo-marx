@@ -41,7 +41,13 @@
     },
     "errors": {
       "noEmergencyId": "You do not have an emergency ID configured",
-      "writeError": "Error writing tag"
+      "writeError": "Error writing tag",
+      "notSupported": "NFC is not supported on this device",
+      "cancelled": "NFC operation cancelled",
+      "permissionDenied": "NFC permission denied",
+      "writeError2": "Error writing NFC tag",
+      "readError": "Error reading NFC tag",
+      "readStartError": "Error starting NFC read"
     },
     "status": {
       "approaching": "Bring the NFC tag close to the phone...",

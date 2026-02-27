@@ -13,7 +13,6 @@ import {
   DashboardMetrics,
   UserMetrics,
   EmergencyMetrics,
-  ADMIN_ROLE_LABELS,
 } from '../../../types/admin';
 
 // Metric Card Component
@@ -51,7 +50,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon, col
           {subtitle && <p className="text-sm text-gray-400 mt-1">{subtitle}</p>}
           {change !== undefined && (
             <p className={`text-sm mt-2 ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {change >= 0 ? '+' : ''}{change}% vs ayer
+              {change >= 0 ? '+' : ''}{change}{tAdmin('dashboard.vs_yesterday')}
             </p>
           )}
         </div>
@@ -274,7 +273,7 @@ const AdminDashboard: React.FC = () => {
           {t('dashboard.welcome', { name: admin?.name?.split(' ')[0] })}
         </h1>
         <p className="text-sky-100">
-          {ADMIN_ROLE_LABELS[admin?.role || 'VIEWER']} - {t('dashboard.subtitle')}
+          {t(`roles.${admin?.role || 'VIEWER'}`)} - {t('dashboard.subtitle')}
         </p>
       </div>
 

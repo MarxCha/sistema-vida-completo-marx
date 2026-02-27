@@ -60,15 +60,15 @@
   "loading": "Cargando VIDA...",
   "notFound": {
     "title": "404",
-    "message": "Pagina no encontrada",
+    "message": "Página no encontrada",
     "backHome": "Volver al inicio"
   },
   "panicAlert": {
     "title": "Error de alerta"
   },
   "errorBoundary": {
-    "title": "Algo salio mal",
-    "description": "Ha ocurrido un error inesperado. Por favor, intenta recargar la pagina.",
-    "reload": "Recargar pagina"
+    "title": "Algo salió mal",
+    "description": "Ha ocurrido un error inesperado. Por favor, intenta recargar la página.",
+    "reload": "Recargar página"
   }
 }

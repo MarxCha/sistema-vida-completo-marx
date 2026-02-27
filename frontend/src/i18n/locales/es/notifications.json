@@ -1,12 +1,12 @@
 {
   "title": "Notificaciones",
-  "unreadCount_one": "{{count}} notificacion sin leer",
+  "unreadCount_one": "{{count}} notificación sin leer",
   "unreadCount_other": "{{count}} notificaciones sin leer",
-  "allRead": "Todas las notificaciones leidas",
+  "allRead": "Todas las notificaciones leídas",
   "configure": "Configurar",
-  "markAllRead": "Marcar todas leidas",
+  "markAllRead": "Marcar todas leídas",
   "types": {
-    "PANIC_ALERT": "Alerta de Panico",
+    "PANIC_ALERT": "Alerta de Pánico",
     "QR_ACCESS": "Acceso QR",
     "SYSTEM": "Sistema",
     "REPRESENTATIVE": "Representante",
@@ -25,23 +25,23 @@
   },
   "permissionBanner": {
     "title": "Notificaciones deshabilitadas",
-    "description": "Activa las notificaciones para recibir alertas importantes sobre accesos a tu informacion y alertas de emergencia, incluso cuando no estes usando la app.",
+    "description": "Activa las notificaciones para recibir alertas importantes sobre accesos a tu información y alertas de emergencia, incluso cuando no estés usando la app.",
     "enable": "Activar notificaciones"
   },
   "empty": {
     "all": "No tienes notificaciones",
     "unread": "No tienes notificaciones sin leer",
     "filtered": "No hay notificaciones de este tipo",
-    "description": "Las notificaciones apareceran aqui cuando recibas alertas o accesos a tu informacion."
+    "description": "Las notificaciones aparecerán aquí cuando recibas alertas o accesos a tu información."
   },
   "actions": {
-    "markRead": "Marcar como leida",
+    "markRead": "Marcar como leída",
     "delete": "Eliminar",
     "deleteAll": "Eliminar todas las notificaciones"
   },
   "data": {
     "role": "Rol",
-    "location": "Ubicacion"
+    "location": "Ubicación"
   },
   "confirmClear": {
     "question": "Eliminar todas?",
@@ -75,18 +75,18 @@
     }
   },
   "settings": {
-    "title": "Configuracion de Notificaciones",
-    "subtitle": "Personaliza como y cuando recibir alertas",
+    "title": "Configuración de Notificaciones",
+    "subtitle": "Personaliza cómo y cuándo recibir alertas",
     "types": {
       "sectionTitle": "Tipos de Notificaciones",
-      "sectionSubtitle": "Elige que notificaciones deseas recibir",
+      "sectionSubtitle": "Elige qué notificaciones deseas recibir",
       "panicAlerts": {
-        "title": "Alertas de Panico",
+        "title": "Alertas de Pánico",
         "description": "Notificaciones cuando se activa una alerta de emergencia"
       },
       "qrAccess": {
-        "title": "Accesos a tu Informacion",
-        "description": "Cuando alguien escanea tu codigo QR de emergencia"
+        "title": "Accesos a tu Información",
+        "description": "Cuando alguien escanea tu código QR de emergencia"
       },
       "representatives": {
         "title": "Actualizaciones de Representantes",
@@ -102,19 +102,19 @@
       }
     },
     "channels": {
-      "sectionTitle": "Canales de Notificacion",
-      "sectionSubtitle": "Como deseas recibir las notificaciones",
+      "sectionTitle": "Canales de Notificación",
+      "sectionSubtitle": "Cómo deseas recibir las notificaciones",
       "push": {
         "title": "Notificaciones Push",
-        "description": "Alertas instantaneas en tu dispositivo"
+        "description": "Alertas instantáneas en tu dispositivo"
       },
       "email": {
-        "title": "Correo Electronico",
+        "title": "Correo Electrónico",
         "description": "Resumen de actividad y alertas importantes"
       },
       "sms": {
         "title": "SMS",
-        "description": "Mensajes de texto para alertas criticas",
+        "description": "Mensajes de texto para alertas críticas",
         "premiumBadge": "Requiere plan Premium"
       }
     },
@@ -123,7 +123,7 @@
       "subtitle": "Silenciar notificaciones durante cierto horario",
       "from": "Desde",
       "to": "Hasta",
-      "note": "Las alertas de panico siempre se mostraran, incluso en horario de no molestar."
+      "note": "Las alertas de pánico siempre se mostrarán, incluso en horario de no molestar."
     },
     "sound": {
       "title": "Sonido de Notificaciones",
@@ -137,7 +137,7 @@
       },
       "granted": {
         "title": "Notificaciones push activas",
-        "description": "Recibiras alertas incluso cuando no estes en la app"
+        "description": "Recibirás alertas incluso cuando no estés en la app"
       }
     },
     "save": "Guardar cambios",
@@ -146,7 +146,7 @@
       "saved": "Preferencias guardadas",
       "saveError": "Error al guardar preferencias",
       "permissionGranted": "Notificaciones activadas",
-      "permissionDenied": "Permisos denegados. Activalos desde la configuracion del navegador."
+      "permissionDenied": "Permisos denegados. Actívalos desde la configuración del navegador."
     }
   }
 }

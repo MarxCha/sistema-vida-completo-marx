@@ -2,14 +2,14 @@
   "title": "Funciones Adicionales",
   "nfc": {
     "pageTitle": "NFC de Emergencia",
-    "pageDescription": "Graba tu informacion medica en tags NFC para brazaletes, tarjetas o stickers",
+    "pageDescription": "Graba tu información médica en tags NFC para brazaletes, tarjetas o stickers",
     "notSupported": {
       "title": "NFC no disponible",
       "description": "Tu navegador no soporta Web NFC. Para grabar tags NFC necesitas:",
       "requirements": {
         "android": "Dispositivo Android con NFC",
-        "chrome": "Google Chrome version 89 o superior",
-        "https": "Conexion HTTPS"
+        "chrome": "Google Chrome versión 89 o superior",
+        "https": "Conexión HTTPS"
       },
       "alternative": "Alternativa: Usa una app de escritura NFC como \"NFC Tools\" y copia la URL de emergencia."
     },
@@ -18,14 +18,14 @@
       "copySuccess": "URL copiada al portapapeles"
     },
     "writeMode": {
-      "label": "Tipo de grabacion",
+      "label": "Tipo de grabación",
       "urlOnly": {
         "title": "Solo URL",
         "description": "Graba solo el enlace. Al escanear, abre el perfil completo en el navegador."
       },
       "fullData": {
         "title": "Datos completos",
-        "description": "Incluye nombre, tipo de sangre, alergias y contacto de emergencia. Util sin internet."
+        "description": "Incluye nombre, tipo de sangre, alergias y contacto de emergencia. Útil sin internet."
       }
     },
     "dataPreview": {
@@ -41,19 +41,25 @@
     },
     "errors": {
       "noEmergencyId": "No tienes un ID de emergencia configurado",
-      "writeError": "Error grabando tag"
+      "writeError": "Error grabando tag",
+      "notSupported": "NFC no está soportado en este dispositivo",
+      "cancelled": "Operación NFC cancelada",
+      "permissionDenied": "Permiso de NFC denegado",
+      "writeError2": "Error al escribir tag NFC",
+      "readError": "Error al leer tag NFC",
+      "readStartError": "Error al iniciar lectura NFC"
     },
     "status": {
-      "approaching": "Acerca el tag NFC al telefono...",
+      "approaching": "Acerca el tag NFC al teléfono...",
       "success": "Tag NFC grabado exitosamente!"
     },
     "instructions": {
       "title": "Instrucciones",
       "step1": "Consigue un tag NFC (brazalete, tarjeta o sticker)",
-      "step2": "Selecciona el tipo de grabacion",
+      "step2": "Selecciona el tipo de grabación",
       "step3": "Presiona \"Grabar Tag NFC\"",
-      "step4": "Acerca el tag a la parte trasera de tu telefono",
-      "step5": "Espera la confirmacion"
+      "step4": "Acerca el tag a la parte trasera de tu teléfono",
+      "step5": "Espera la confirmación"
     },
     "products": {
       "title": "Tags NFC Recomendados",
@@ -67,7 +73,7 @@
       },
       "sticker": {
         "name": "Sticker NFC",
-        "description": "Para pegar en casco, telefono o equipo medico"
+        "description": "Para pegar en casco, teléfono o equipo médico"
       }
     },
     "walletPromo": {
@@ -80,15 +86,15 @@
     "pageTitle": "Tarjeta Digital",
     "pageDescription": "Agrega tu tarjeta de emergencia a Apple Wallet o Google Wallet",
     "whyUse": {
-      "title": "Por que usar la tarjeta digital?",
-      "reason1": "Acceso rapido desde la pantalla de bloqueo",
-      "reason2": "Los paramedicos pueden escanear tu telefono",
+      "title": "¿Por qué usar la tarjeta digital?",
+      "reason1": "Acceso rápido desde la pantalla de bloqueo",
+      "reason2": "Los paramédicos pueden escanear tu teléfono",
       "reason3": "No necesitas desbloquear el dispositivo",
       "reason4": "Funciona con NFC en iPhones modernos"
     },
     "notAvailable": {
-      "title": "No disponible aun",
-      "description": "Los pases de wallet aun no estan configurados en este servidor. Mientras tanto, puedes usar el codigo QR o tags NFC."
+      "title": "No disponible aún",
+      "description": "Los pases de wallet aún no están configurados en este servidor. Mientras tanto, puedes usar el código QR o tags NFC."
     },
     "apple": {
       "title": "Apple Wallet",
@@ -105,11 +111,11 @@
       "loading": "Cargando..."
     },
     "howItWorks": {
-      "title": "Como funciona?",
-      "step1": "Agrega la tarjeta a tu wallet tocando el boton",
-      "step2": "La tarjeta aparecera en tu app de Wallet",
-      "step3": "En emergencia, el personal medico puede escanear el codigo QR de la tarjeta",
-      "step4": "En iPhones, tambien pueden usar NFC (sin desbloquear)"
+      "title": "¿Cómo funciona?",
+      "step1": "Agrega la tarjeta a tu wallet tocando el botón",
+      "step2": "La tarjeta aparecerá en tu app de Wallet",
+      "step3": "En emergencia, el personal médico puede escanear el código QR de la tarjeta",
+      "step4": "En iPhones, también pueden usar NFC (sin desbloquear)"
     },
     "requirements": "Apple Wallet requiere iOS 9+ • Google Wallet requiere Android 5+",
     "errors": {
@@ -120,42 +126,42 @@
     }
   },
   "biometric": {
-    "sectionTitle": "Autenticacion Biometrica",
+    "sectionTitle": "Autenticación Biométrica",
     "sectionSubtitle": "Face ID, Touch ID o Windows Hello",
-    "description": "Configura tu huella digital o reconocimiento facial para acceder de forma rapida y segura. Puedes registrar multiples dispositivos.",
+    "description": "Configura tu huella digital o reconocimiento facial para acceder de forma rápida y segura. Puedes registrar múltiples dispositivos.",
     "addDevice": "Agregar dispositivo",
     "configuring": "Configurando...",
     "emptyState": {
-      "title": "No tienes dispositivos biometricos configurados",
+      "title": "No tienes dispositivos biométricos configurados",
       "hint": "Haz clic en \"Agregar dispositivo\" para configurar Face ID o Touch ID"
     },
     "credential": {
-      "defaultName": "Dispositivo biometrico",
+      "defaultName": "Dispositivo biométrico",
       "registered": "Registrado",
-      "lastUsed": "Ultimo uso",
+      "lastUsed": "Último uso",
       "never": "Nunca",
       "deleteTitle": "Eliminar dispositivo"
     },
     "notSupported": {
-      "title": "Autenticacion biometrica no disponible",
-      "description": "Tu navegador o dispositivo no soporta autenticacion biometrica (WebAuthn). Intenta usar Chrome, Safari, Firefox o Edge en un dispositivo con Face ID, Touch ID o Windows Hello."
+      "title": "Autenticación biométrica no disponible",
+      "description": "Tu navegador o dispositivo no soporta autenticación biométrica (WebAuthn). Intenta usar Chrome, Safari, Firefox o Edge en un dispositivo con Face ID, Touch ID o Windows Hello."
     },
     "security": {
       "title": "Tu seguridad es nuestra prioridad.",
-      "description": "Los datos biometricos nunca salen de tu dispositivo. Solo se almacena una clave criptografica que verifica tu identidad."
+      "description": "Los datos biométricos nunca salen de tu dispositivo. Solo se almacena una clave criptográfica que verifica tu identidad."
     },
-    "confirmDelete": "Estas seguro de eliminar esta credencial biometrica?",
+    "confirmDelete": "¿Estás seguro de eliminar esta credencial biométrica?",
     "errors": {
       "getOptions": "No se pudieron obtener las opciones de registro",
       "verify": "No se pudo verificar la credencial",
-      "cancelled": "El registro fue cancelado o no se permitio el acceso",
-      "notSupported": "Este dispositivo no soporta autenticacion biometrica",
-      "alreadyRegistered": "Esta credencial ya esta registrada",
-      "configure": "Error al configurar la autenticacion biometrica",
+      "cancelled": "El registro fue cancelado o no se permitió el acceso",
+      "notSupported": "Este dispositivo no soporta autenticación biométrica",
+      "alreadyRegistered": "Esta credencial ya está registrada",
+      "configure": "Error al configurar la autenticación biométrica",
       "delete": "Error al eliminar la credencial"
     },
     "toast": {
-      "success": "Autenticacion biometrica configurada exitosamente",
+      "success": "Autenticación biométrica configurada exitosamente",
       "deleted": "Credencial eliminada exitosamente"
     }
   }

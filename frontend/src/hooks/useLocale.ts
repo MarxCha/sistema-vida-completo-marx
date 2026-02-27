@@ -21,7 +21,7 @@ export function useLocale() {
 
   const formatDateTime = useCallback((date: Date | string, options?: Intl.DateTimeFormatOptions) => {
     const d = typeof date === 'string' ? new Date(date) : date;
-    return d.toLocaleDateString(locale, options || {
+    return d.toLocaleString(locale, options || {
       year: 'numeric',
       month: 'short',
       day: 'numeric',

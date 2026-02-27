@@ -185,6 +185,12 @@
     "qrDownloadsPerMonth": "descargas de QR por mes"
   },
   "errors": {
-    "loadPremiumStatus": "Error al cargar estado premium"
+    "loadPremiumStatus": "Error al cargar estado premium",
+    "loadPlans": "Error al cargar planes",
+    "loadSubscription": "Error al cargar suscripción",
+    "loadPaymentHistory": "Error al cargar historial de pagos",
+    "loadPaymentMethods": "Error al cargar métodos de pago",
+    "loadFiscalData": "Error al cargar datos fiscales",
+    "loadInvoices": "Error al cargar facturas"
   }
 }

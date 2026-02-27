@@ -296,7 +296,7 @@ app.use((req: Request, res: Response) => {
     success: false,
     error: {
       code: 'NOT_FOUND',
-      message: `Ruta ${req.method} ${req.path} no encontrada`,
+      message: req.t('api:generic.routeNotFound', { method: req.method, path: req.path }),
     },
   });
 });
@@ -310,7 +310,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     error: {
       code: 'INTERNAL_ERROR',
       message: config.env === 'production'
-        ? 'Error interno del servidor'
+        ? (req.t ? req.t('api:generic.serverError') : 'Internal server error')
         : err.message,
     },
   });

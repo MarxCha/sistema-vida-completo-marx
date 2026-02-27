@@ -1,5 +1,6 @@
 // src/hooks/useNFC.ts
 import { useState, useCallback } from 'react';
+import i18next from 'i18next';
 
 interface NFCWriteResult {
   success: boolean;
@@ -58,7 +59,7 @@ export function useNFC(): UseNFCReturn {
    */
   const writeUrl = useCallback(async (url: string): Promise<NFCWriteResult> => {
     if (!isSupported) {
-      return { success: false, error: 'NFC no soportado en este dispositivo' };
+      return { success: false, error: i18next.t('extras:nfc.errors.notSupported') };
     }
 
     setIsWriting(true);
@@ -83,15 +84,15 @@ export function useNFC(): UseNFCReturn {
       return { success: true };
     } catch (error: any) {
       if (error.name === 'AbortError') {
-        return { success: false, error: 'Operación cancelada' };
+        return { success: false, error: i18next.t('extras:nfc.errors.cancelled') };
       }
       if (error.name === 'NotAllowedError') {
-        return { success: false, error: 'Permiso NFC denegado. Habilita NFC en configuración.' };
+        return { success: false, error: i18next.t('extras:nfc.errors.permissionDenied') };
       }
       if (error.name === 'NotSupportedError') {
-        return { success: false, error: 'Este dispositivo no soporta escritura NFC' };
+        return { success: false, error: i18next.t('extras:nfc.errors.notSupported') };
       }
-      return { success: false, error: error.message || 'Error escribiendo tag NFC' };
+      return { success: false, error: error.message || i18next.t('extras:nfc.errors.writeError2') };
     } finally {
       setIsWriting(false);
       setAbortController(null);
@@ -104,7 +105,7 @@ export function useNFC(): UseNFCReturn {
    */
   const writeEmergencyData = useCallback(async (data: EmergencyNFCData): Promise<NFCWriteResult> => {
     if (!isSupported) {
-      return { success: false, error: 'NFC no soportado en este dispositivo' };
+      return { success: false, error: i18next.t('extras:nfc.errors.notSupported') };
     }
 
     setIsWriting(true);
@@ -163,12 +164,12 @@ export function useNFC(): UseNFCReturn {
       return { success: true };
     } catch (error: any) {
       if (error.name === 'AbortError') {
-        return { success: false, error: 'Operación cancelada' };
+        return { success: false, error: i18next.t('extras:nfc.errors.cancelled') };
       }
       if (error.name === 'NotAllowedError') {
-        return { success: false, error: 'Permiso NFC denegado. Habilita NFC en configuración.' };
+        return { success: false, error: i18next.t('extras:nfc.errors.permissionDenied') };
       }
-      return { success: false, error: error.message || 'Error escribiendo tag NFC' };
+      return { success: false, error: error.message || i18next.t('extras:nfc.errors.writeError2') };
     } finally {
       setIsWriting(false);
       setAbortController(null);
@@ -180,7 +181,7 @@ export function useNFC(): UseNFCReturn {
    */
   const readTag = useCallback(async (): Promise<NFCReadResult> => {
     if (!isSupported) {
-      return { success: false, error: 'NFC no soportado en este dispositivo' };
+      return { success: false, error: i18next.t('extras:nfc.errors.notSupported') };
     }
 
     setIsReading(true);
@@ -216,7 +217,7 @@ export function useNFC(): UseNFCReturn {
         ndef.addEventListener('readingerror', () => {
           setIsReading(false);
           setAbortController(null);
-          resolve({ success: false, error: 'Error leyendo tag NFC' });
+          resolve({ success: false, error: i18next.t('extras:nfc.errors.readError') });
         });
 
         ndef.scan({ signal: controller.signal }).catch((error: any) => {
@@ -228,7 +229,7 @@ export function useNFC(): UseNFCReturn {
     } catch (error: any) {
       setIsReading(false);
       setAbortController(null);
-      return { success: false, error: error.message || 'Error iniciando lectura NFC' };
+      return { success: false, error: error.message || i18next.t('extras:nfc.errors.readStartError') };
     }
   }, [isSupported]);
 

@@ -1,5 +1,6 @@
 // src/hooks/useSubscription.ts
 import { useState, useEffect, useCallback } from 'react';
+import i18next from 'i18next';
 import {
   paymentsApi,
   Subscription,
@@ -24,7 +25,7 @@ export function usePlans() {
         setPlans(response.data);
       }
     } catch (err) {
-      setError('Error al cargar planes');
+      setError(i18next.t('subscription:errors.loadPlans'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -53,7 +54,7 @@ export function useSubscription() {
         setSubscription(response.data);
       }
     } catch (err) {
-      setError('Error al cargar suscripción');
+      setError(i18next.t('subscription:errors.loadSubscription'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -155,7 +156,7 @@ export function usePaymentHistory(initialLimit = 10) {
         setTotal(paginationData?.total || 0);
       }
     } catch (err) {
-      setError('Error al cargar historial de pagos');
+      setError(i18next.t('subscription:errors.loadPaymentHistory'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -183,7 +184,7 @@ export function usePaymentMethods() {
         setMethods(response.data);
       }
     } catch (err) {
-      setError('Error al cargar métodos de pago');
+      setError(i18next.t('subscription:errors.loadPaymentMethods'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -245,7 +246,7 @@ export function useFiscalData() {
         setFiscalData(response.data ?? null);
       }
     } catch (err) {
-      setError('Error al cargar datos fiscales');
+      setError(i18next.t('subscription:errors.loadFiscalData'));
       console.error(err);
     } finally {
       setLoading(false);
@@ -294,7 +295,7 @@ export function useInvoices(initialLimit = 10) {
         setTotal(paginationData?.total || 0);
       }
     } catch (err) {
-      setError('Error al cargar facturas');
+      setError(i18next.t('subscription:errors.loadInvoices'));
       console.error(err);
     } finally {
       setLoading(false);
